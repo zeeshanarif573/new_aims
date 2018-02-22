@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:id="@+id/custom_spinner_item"
+        android:fontFamily="@font/ubuntu_light"
+        android:textColor="#000"
+        android:background="@drawable/custom_form_edittext"
+        android:padding="10dp"
+        />
