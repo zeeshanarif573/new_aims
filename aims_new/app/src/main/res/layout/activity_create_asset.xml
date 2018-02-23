@@ -136,8 +136,7 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginTop="10dp"
-                    android:entries="@array/asset_type"></Spinner>
+                    android:layout_marginTop="10dp"></Spinner>
 
             </LinearLayout>
 
@@ -150,20 +149,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/submitCreateAsset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/login_button"
-            android:fontFamily="@font/ubuntu_light"
-            android:text="Submit"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+        <!--<Button-->
+        <!--android:id="@+id/submitCreateAsset"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="30dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginRight="30dp"-->
+        <!--android:layout_marginBottom="20dp"-->
+        <!--android:background="@color/login_button"-->
+        <!--android:fontFamily="@font/ubuntu_light"-->
+        <!--android:text="Submit"-->
+        <!--android:textAllCaps="false"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textStyle="bold" />-->
 
 
     </RelativeLayout>

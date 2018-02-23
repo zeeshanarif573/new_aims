@@ -9,28 +9,44 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#5ac0ef">
+        android:background="#5ac0ef"
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/back_btn_createAsset"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_gravity="center"
+            android:padding="10dp"
             android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
+            android:id="@+id/btn"
             android:background="@drawable/ic_action_arrow_back"
-            android:padding="10dp" />
+            />
+
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="35dp"
+            android:layout_weight="0.37"
             android:layout_marginRight="20dp"
-            android:fontFamily="@font/ubuntu_light"
+            android:gravity="center"
             android:text="Asset Details"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:fontFamily="@font/ubuntu_light"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/doneAssetDetails"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1.75"
+            android:background="@drawable/ic_action_circle" />
+
 
     </LinearLayout>
 

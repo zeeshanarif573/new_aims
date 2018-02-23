@@ -12,11 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.Template_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
 import com.example.muhammadzeeshan.aims_new.R;
 
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.Loader1;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class CreateTemplate extends AppCompatActivity {
@@ -33,7 +34,6 @@ public class CreateTemplate extends AppCompatActivity {
         setContentView(R.layout.activity_create_template);
 
         initialization();
-        getData();
 
         submitCreateTemplate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +45,7 @@ public class CreateTemplate extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        Loader1(view, CreateTemplate.this);
+                        CreatingTemplateLoader(view, CreateTemplate.this);
 
                         //Handler for Saving Data.........................
                         Handler handler = new Handler();
@@ -56,9 +56,10 @@ public class CreateTemplate extends AppCompatActivity {
 
                                 progress1.dismiss();
 
-                                databaseHelper.insertDataIntoTemplate(new Template_Data(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+                                databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+                                startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
 
-                                startActivity(new Intent(CreateTemplate.this, CreateAsset.class));
+                                getData();
 
                             }
                         }, 2000);
@@ -69,7 +70,25 @@ public class CreateTemplate extends AppCompatActivity {
                 alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+
+                        CreatingTemplateLoader(view, CreateTemplate.this);
+
+                        //Handler for Saving Data.........................
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                progress1.dismiss();
+
+                                databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+                                startActivity(new Intent(CreateTemplate.this, CreateAsset.class));
+
+                                getData();
+
+                            }
+                        }, 4000);
                     }
                 });
 

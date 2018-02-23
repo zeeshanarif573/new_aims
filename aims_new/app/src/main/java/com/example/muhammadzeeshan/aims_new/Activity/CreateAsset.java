@@ -1,13 +1,13 @@
 package com.example.muhammadzeeshan.aims_new.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,16 +18,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
+import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.Asset_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateIdAndName;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;
-
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.Loader1;
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class CreateAsset extends AppCompatActivity {
 
@@ -35,10 +34,10 @@ public class CreateAsset extends AppCompatActivity {
     Button submitCreateAsset, back_btn_createAsset;
     Snackbar snackbar;
     Spinner select_type;
-    String Template_Id, Template_Name;
+    String Template_Id, Template_Name, assetTitle, assetDescription, selectedItem, selectedItemId, selectedItemName;
     ArrayAdapter adapter;
     TextView show;
-    ArrayList<String> TemplateNameList;
+    ArrayList<TemplateIdAndName> TemplateNameList;
     AlertDialog.Builder alertDialog;
     DatabaseHelper databaseHelper;
     ArrayList<String> spinnerItems;
@@ -53,27 +52,25 @@ public class CreateAsset extends AppCompatActivity {
         hideKeyboard();
 
         getTemplateData();
-        getAssetData();
 
-        if (Template_Name.equals("")) {
+
+        if (TemplateNameList.size() != 0) {
             spinnerItems.add("Select");
             spinnerItems.add("Create new Template");
-
-        } else {
-
-            spinnerItems.add("Select");
-            spinnerItems.add("Create new Template");
-
             for (int i = 0; i < TemplateNameList.size(); i++) {
 
-                spinnerItems.add(TemplateNameList.get(i));
+                spinnerItems.add(TemplateNameList.get(i).getTemplateName());
             }
 
+        } else {
+            spinnerItems.add("Select");
+            spinnerItems.add("Create new Template");
         }
 
-        adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.custom_spinner_item, spinnerItems);
+        adapter = new ArrayAdapter<String>(CreateAsset.this, R.layout.custom_spinner_item, spinnerItems);
         adapter.setDropDownViewResource(R.layout.custom_spinner_item);
         select_type.setAdapter(adapter);
+
 
         back_btn_createAsset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,9 +86,61 @@ public class CreateAsset extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
-                if (select_type.getSelectedItem().equals("Create new Template")) {
-                    startActivity(new Intent(CreateAsset.this, TemplateManagement.class));
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                if (select_type.getSelectedItem().equals("Create new Template") || select_type.getSelectedItem().equals("Select")) {
+
+                    if (!select_type.getSelectedItem().equals("Select")) {
+                        startActivity(new Intent(CreateAsset.this, TemplateManagement.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    }
+
+                } else {
+
+                    if (TextUtils.isEmpty(create_asset_title.getText().toString())) {
+
+                        select_type.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        create_asset_title.setError("Please give title of form");
+
+                    } else if (TextUtils.isEmpty(create_asset_desc.getText().toString())) {
+
+                        select_type.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                        create_asset_desc.setError("Please give desciption of form");
+
+                    } else {
+
+                        assetTitle = create_asset_title.getText().toString();
+                        assetDescription = create_asset_desc.getText().toString();
+                        selectedItem = select_type.getSelectedItem().toString();
+
+                        for (TemplateIdAndName templateIdAndName : TemplateNameList) {
+                            if (templateIdAndName.getTemplateName().equals(selectedItem)) {
+                                selectedItemId = templateIdAndName.getTemplateId();
+                                selectedItemName = templateIdAndName.getTemplateName();
+
+                            }
+                        }
+
+                        if(getAssetTemplateData()){
+
+                            Intent intent = new Intent(CreateAsset.this, AssetDetails.class);
+
+                            intent.putExtra("AssetTitle", assetTitle);
+                            intent.putExtra("AssetDescription", assetDescription);
+                            intent.putExtra("SelectedItem", selectedItem);
+                            intent.putExtra("SelectedItemId", selectedItemId);
+                            intent.putExtra("SelectedItemName", selectedItemName);
+
+                            startActivity(intent);
+                        }
+
+                        else if(!getAssetTemplateData()) {
+                            startActivity(new Intent(CreateAsset.this, AssetTemplate.class));
+                        }
+
+                    }
+
                 }
             }
 
@@ -102,50 +151,6 @@ public class CreateAsset extends AppCompatActivity {
 
         });
 
-        submitCreateAsset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Wanted to create CheckOut, CheckIn and Inspection Template? ");
-                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                        Loader1(view, CreateAsset.this);
-
-                        //Handler for Saving Data.........................
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-                                progress1.dismiss();
-
-                                databaseHelper.insertDataIntoAsset(new Asset_Data(Template_Id, create_asset_title.getText().toString(), create_asset_desc.getText().toString(), select_type.getSelectedItem().toString(), "InStock"));
-
-
-                                Log.e("Template_ID", Template_Id);
-                                startActivity(new Intent(CreateAsset.this, AssetDetails.class));
-
-
-                            }
-                        }, 2000);
-
-                    }
-                });
-
-                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                        dialogInterface.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = alertDialog.create();
-                dialog.show();
 
 //                if (TextUtils.isEmpty(create_asset_title.getText().toString())) {
 //                    create_asset_title.setError("Please give title of form");
@@ -175,9 +180,6 @@ public class CreateAsset extends AppCompatActivity {
 //
 //                }
 
-            }
-        });
-
     }
 
     @Override
@@ -204,7 +206,6 @@ public class CreateAsset extends AppCompatActivity {
         create_asset_desc = findViewById(R.id.create_asset_desc);
 
         back_btn_createAsset = findViewById(R.id.back_btn_createAsset);
-        submitCreateAsset = findViewById(R.id.submitCreateAsset);
 
         Layout_CreateAsset_Template = findViewById(R.id.linearLayout_CreateAsset);
     }
@@ -214,22 +215,6 @@ public class CreateAsset extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    void getAssetData() {
-
-        Cursor cursor = databaseHelper.RetrieveData("select * from asset");
-        while (cursor.moveToNext()) {
-
-            String Asset_Id = cursor.getString(0);
-            String Asset_Name = cursor.getString(1);
-            String Asset_Description = cursor.getString(2);
-            String Asset_Type = cursor.getString(3);
-            String Status = cursor.getString(4);
-            String template_Id = cursor.getString(5);
-
-            Log.e("Retrieve", "Asset_Id: " + Asset_Id + ", Template_Id: " + template_Id + " Name: " + Asset_Name + ", Description: " + Asset_Description + ", Type: " + Asset_Type + ", Status: " + Status);
-        }
-    }
-
     void getTemplateData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from Template");
@@ -237,11 +222,36 @@ public class CreateAsset extends AppCompatActivity {
 
             Template_Id = cursor.getString(0);
             Template_Name = cursor.getString(1);
-            String Template_Description = cursor.getString(2);
 
-            TemplateNameList.add(Template_Name);
+            TemplateNameList.add(new TemplateIdAndName(Template_Id, Template_Name));
 
         }
     }
+
+    boolean getAssetTemplateData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from asset_template where Template_Id = " + selectedItemId);
+
+        if(cursor != null){
+
+            while (cursor.moveToNext()) {
+
+                String AssetTemplate_Id = cursor.getString(0);
+                String Widget_Type = cursor.getString(1);
+                String Widget_Label = cursor.getString(2);
+                String Widget_Data = cursor.getString(3);
+                String Template_Id = cursor.getString(4);
+
+                Log.e("AssetTemplate_Data", "AssetTemplate_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+                Toast.makeText(this, "Contains", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+
+        }
+        Toast.makeText(this, "Not Contains", Toast.LENGTH_SHORT).show();
+        return false;
+
+    }
+
 
 }

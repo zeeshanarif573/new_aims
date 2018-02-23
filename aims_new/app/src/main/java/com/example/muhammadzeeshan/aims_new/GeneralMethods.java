@@ -84,7 +84,7 @@ public class GeneralMethods {
         });
     }
 
-    public static  void Loader1(View view , Context context) {
+    public static  void CreatingAssetLoader(View view , Context context) {
         progress1 = new ProgressDialog(context);
         progress1.setTitle("Creating Asset");
         progress1.setMessage("Please Wait...");
@@ -92,6 +92,16 @@ public class GeneralMethods {
 
         progress1.show();
     }
+
+    public static  void CreatingTemplateLoader(View view , Context context) {
+        progress1 = new ProgressDialog(context);
+        progress1.setTitle("Creating Asset");
+        progress1.setMessage("Please Wait...");
+        progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        progress1.show();
+    }
+
 
     public static void Loader2(View view, Context context) {
         progress2 = new ProgressDialog(context);

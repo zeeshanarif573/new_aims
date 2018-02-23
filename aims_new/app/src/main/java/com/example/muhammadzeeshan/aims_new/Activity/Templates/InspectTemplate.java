@@ -30,12 +30,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
+import com.example.muhammadzeeshan.aims_new.Activity.CreateAsset;
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
 import com.example.muhammadzeeshan.aims_new.Models.Asset_Form_Widget_Data;
-import com.example.muhammadzeeshan.aims_new.Models.Asset_Widgets_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.InspectWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
@@ -48,19 +48,19 @@ public class InspectTemplate extends AppCompatActivity {
 
     Snackbar snackbar;
     FloatingActionButton fab_Open, fab_Close;
-    ArrayList<Asset_Widgets_Data> list;
+    ArrayList<InspectWidgets> list;
     List<Asset_Form_Widget_Data> widgetList;
     View snackView;
     AlertDialog.Builder alertDialog;
     ProgressDialog progress;
-    String get_Asset_form_id;
     LinearLayout skip_Inspect;
     DatabaseHelper databaseHelper;
     Button doneAssetInspect;
+    String Template_Id;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature;
     Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature;
-    LinearLayout Main_Layout, skip_checkOut;
+    LinearLayout InspectWidgetsLayout;
     int index = 0;
     CoordinatorLayout snackbar_Layout;
     CircleButton editTextButton, textViewButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
@@ -72,6 +72,8 @@ public class InspectTemplate extends AppCompatActivity {
 
         initialization();
         dialog_transparency();
+
+        getTemplateData();
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,7 +117,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     hideKeyboard();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("EditText", label_editText.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("EditText", label_editText.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -146,8 +148,8 @@ public class InspectTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Log.e("TypeClicked", widgetsData.getAsset_widget_type());
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            Log.e("TypeClicked", widgetsData.getWidget_type());
+                                            InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -162,7 +164,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_editText.setText("");
                                 }
@@ -192,7 +194,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     checkbox_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("CheckBox", label_checkBox.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("CheckBox", label_checkBox.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -223,7 +225,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -237,7 +239,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
                                     linearLayout_for_button.addView(delete_Button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_checkBox.setText("");
                                 }
@@ -267,7 +269,7 @@ public class InspectTemplate extends AppCompatActivity {
                                 } else {
                                     textView_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("TextView", label_textView.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("TextView", label_textView.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -293,7 +295,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -306,7 +308,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_textView.setText("");
                                 }
@@ -334,7 +336,7 @@ public class InspectTemplate extends AppCompatActivity {
                                 }
                                 date_dialog.dismiss();
 
-                                final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Date", label_date.getText().toString());
+                                final InspectWidgets widgetsData = new InspectWidgets("Date", label_date.getText().toString());
                                 list.add(widgetsData);
 
                                 //Horizontal Layout...........................
@@ -365,7 +367,7 @@ public class InspectTemplate extends AppCompatActivity {
                                 delete_Button.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        Main_Layout.removeView(parent_horizontal_Layout);
+                                        InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                         list.remove(widgetsData);
                                     }
                                 });
@@ -381,7 +383,7 @@ public class InspectTemplate extends AppCompatActivity {
                                 linearLayout_for_button.addView(delete_Button);
                                 parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                Main_Layout.addView(parent_horizontal_Layout);
+                                InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                 label_date.setText("");
 
@@ -411,7 +413,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     time_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Time", label_time.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("Time", label_time.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -442,7 +444,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -457,7 +459,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_time.setText("");
                                 }
@@ -492,7 +494,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                         camera_dialog.dismiss();
 
-                                        final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Camera", label_camera.getText().toString());
+                                        final InspectWidgets widgetsData = new InspectWidgets("Camera", label_camera.getText().toString());
                                         list.add(widgetsData);
 
                                         //Horizontal Layout...........................
@@ -528,7 +530,7 @@ public class InspectTemplate extends AppCompatActivity {
                                         delete_Button.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                                                Main_Layout.removeView(parent_horizontal_Layout);
+                                                InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                                 list.remove(widgetsData);
                                             }
                                         });
@@ -546,7 +548,7 @@ public class InspectTemplate extends AppCompatActivity {
                                         linearLayout_for_button.addView(delete_Button);
                                         parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                        Main_Layout.addView(parent_horizontal_Layout);
+                                        InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                         label_camera.setText("");
                                     }
@@ -579,7 +581,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     signature_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Signature", label_signature.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("Signature", label_signature.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -615,7 +617,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            InspectWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -632,7 +634,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    InspectWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_signature.setText("");
                                 }
@@ -685,7 +687,7 @@ public class InspectTemplate extends AppCompatActivity {
                         dialogInterface.dismiss();
 
                         finish();
-                        startActivity(new Intent(InspectTemplate.this, TemplateManagement.class));
+                        startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
@@ -718,11 +720,12 @@ public class InspectTemplate extends AppCompatActivity {
                         for (int i = 0; i < list.size(); i++) {
 
                             Log.e("ListSize", String.valueOf(list.size()));
-                         //   databaseHelper.insertDataIntoAssetWidgets(new Asset_Widgets_Data(get_Asset_form_id, list.get(i).getAsset_widget_type(), list.get(i).getAsset_widget_label(), ""));
+                            databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
 
+                            getInspectData();
                         }
                         Toast.makeText(InspectTemplate.this, "Template is Created Successfully", Toast.LENGTH_SHORT).show();
-                        // startActivity(new Intent(InspectTemplate.this, InspectTemplate.class));
+                         startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                     }
@@ -763,7 +766,7 @@ public class InspectTemplate extends AppCompatActivity {
 
 
         snackbar_Layout = findViewById(R.id.asset_snackbar_Layout);
-        Main_Layout = (LinearLayout) findViewById(R.id.Assets_CheckOut);
+        InspectWidgetsLayout = (LinearLayout) findViewById(R.id.InspectWidgetsLayout);
         skip_Inspect = (LinearLayout) findViewById(R.id.skip_Inspect);
 
         label_editText = editText_dialog.findViewById(R.id.label_edittext);
@@ -841,6 +844,31 @@ public class InspectTemplate extends AppCompatActivity {
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         progress.show();
+    }
+
+    void getTemplateData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
+        while (cursor.moveToNext()) {
+
+            Template_Id = cursor.getString(0);
+
+        }
+    }
+
+    void getInspectData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from inspect");
+        while (cursor.moveToNext()) {
+
+            String AssetTemplate_Id = cursor.getString(0);
+            String Widget_Type = cursor.getString(1);
+            String Widget_Label = cursor.getString(2);
+            String Widget_Data = cursor.getString(3);
+            String Template_Id = cursor.getString(4);
+
+            Log.e("Inspect_Data", "Inspect_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+        }
     }
 
     @Override

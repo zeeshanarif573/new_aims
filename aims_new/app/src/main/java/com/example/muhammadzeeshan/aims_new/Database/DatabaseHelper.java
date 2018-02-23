@@ -6,8 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.muhammadzeeshan.aims_new.Models.Asset_Data;
-import com.example.muhammadzeeshan.aims_new.Models.Template_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.Asset_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckInWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckOutWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.InspectWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
 
 /**
  * Created by Muhammad Zeeshan on 12/30/2017.
@@ -16,7 +20,7 @@ import com.example.muhammadzeeshan.aims_new.Models.Template_Data;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    protected static final String DATABASE_NAME = "aims_new";
+    protected static final String DATABASE_NAME = "aimss";
 
     protected static final String TABLE_ASSET = "asset";
     protected static final String TABLE_TEMPLATE = "template";
@@ -130,7 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Insert Data Into Widget Table.....................
-    public boolean insertDataIntoTemplate(Template_Data template_data) {
+    public boolean insertDataIntoTemplate(TemplateData template_data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -139,6 +143,82 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("Template_Description", template_data.getTemplate_description());
 
         long result = db.insert(TABLE_TEMPLATE, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    //Insert Data Into Asset_Template Table.....................
+    public boolean insertDataIntoAssetTemplate(AssetTemplatesWidgets widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id", widgets.getTemplate_id());
+        values.put("Widget_Type", widgets.getWidget_type());
+        values.put("Widget_Label", widgets.getWidget_label());
+        values.put("Widget_Data", widgets.getWidget_data());
+
+        long result = db.insert(TABLE_ASSET_TEMPLATE, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    //Insert Data Into CheckOut Table.....................
+    public boolean insertDataIntoCheckoutTemplate(CheckOutWidgets widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Widget_Type", widgets.getWidget_type());
+        values.put("Widget_Label", widgets.getWidget_label());
+        values.put("Widget_Data", widgets.getWidget_data());
+
+        long result = db.insert(TABLE_CHECKOUT, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    //Insert Data Into CheckOut Table.....................
+    public boolean insertDataIntoCheckinTemplate(CheckInWidgets widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Widget_Type", widgets.getWidget_type());
+        values.put("Widget_Label", widgets.getWidget_label());
+        values.put("Widget_Data", widgets.getWidget_data());
+
+        long result = db.insert(TABLE_CHECKIN, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    //Insert Data Into CheckOut Table.....................
+    public boolean insertDataIntoInspectTemplate(InspectWidgets widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Widget_Type", widgets.getWidget_type());
+        values.put("Widget_Label", widgets.getWidget_label());
+        values.put("Widget_Data", widgets.getWidget_data());
+
+        long result = db.insert(TABLE_INSPECT, null, values);
 
         if (result == -1)
             return false;

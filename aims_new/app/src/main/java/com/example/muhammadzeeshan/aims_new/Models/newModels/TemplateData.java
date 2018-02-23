@@ -1,26 +1,26 @@
-package com.example.muhammadzeeshan.aims_new.Models;
+package com.example.muhammadzeeshan.aims_new.Models.newModels;
 
 /**
  * Created by Muhammad Zeeshan on 1/4/2018.
  */
 
-public class Template_Data {
+public class TemplateData {
 
     String template_id, template_name, template_description;
 
-    public Template_Data( String template_id, String template_name, String template_description) {
+    public TemplateData(String template_id, String template_name, String template_description) {
 
         this.template_id = template_id;
         this.template_name = template_name;
         this.template_description = template_description;
     }
 
-    public Template_Data(String template_name, String template_description) {
+    public TemplateData(String template_name, String template_description) {
         this.template_name = template_name;
         this.template_description = template_description;
     }
 
-    public Template_Data() {
+    public TemplateData() {
     }
 
     public String getTemplate_id() {

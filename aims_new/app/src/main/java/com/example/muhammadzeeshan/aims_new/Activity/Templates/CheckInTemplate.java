@@ -33,7 +33,7 @@ import android.widget.Toast;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
 import com.example.muhammadzeeshan.aims_new.Models.Asset_Form_Widget_Data;
-import com.example.muhammadzeeshan.aims_new.Models.Asset_Widgets_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckInWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
@@ -46,18 +46,18 @@ public class CheckInTemplate extends AppCompatActivity {
 
     Snackbar snackbar;
     FloatingActionButton fab_Open, fab_Close;
-    ArrayList<Asset_Widgets_Data> list;
+    ArrayList<CheckInWidgets> list;
     List<Asset_Form_Widget_Data> widgetList;
     View snackView;
     AlertDialog.Builder alertDialog;
     ProgressDialog progress;
-    String get_Asset_form_id;
+    String Template_Id;
     DatabaseHelper databaseHelper;
     Button doneAssetCheckin;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature;
     Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature;
-    LinearLayout Main_Layout, skip_checkIn;
+    LinearLayout CheckInWidgetsLayout, skip_checkIn;
     int index = 0;
     CoordinatorLayout snackbar_Layout;
     CircleButton editTextButton, textViewButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
@@ -69,6 +69,8 @@ public class CheckInTemplate extends AppCompatActivity {
 
         initialization();
         dialog_transparency();
+
+        getTemplateData();
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +114,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     hideKeyboard();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("EditText", label_editText.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("EditText", label_editText.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -143,8 +145,8 @@ public class CheckInTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Log.e("TypeClicked", widgetsData.getAsset_widget_type());
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            Log.e("TypeClicked", widgetsData.getWidget_type());
+                                            CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -159,7 +161,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_editText.setText("");
                                 }
@@ -189,7 +191,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     checkbox_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("CheckBox", label_checkBox.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("CheckBox", label_checkBox.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -220,7 +222,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -234,7 +236,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
                                     linearLayout_for_button.addView(delete_Button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_checkBox.setText("");
                                 }
@@ -264,7 +266,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                 } else {
                                     textView_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("TextView", label_textView.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("TextView", label_textView.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -290,7 +292,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -303,7 +305,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_textView.setText("");
                                 }
@@ -331,7 +333,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                 }
                                 date_dialog.dismiss();
 
-                                final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Date", label_date.getText().toString());
+                                final CheckInWidgets widgetsData = new CheckInWidgets("Date", label_date.getText().toString());
                                 list.add(widgetsData);
 
                                 //Horizontal Layout...........................
@@ -362,7 +364,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                 delete_Button.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        Main_Layout.removeView(parent_horizontal_Layout);
+                                        CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                         list.remove(widgetsData);
                                     }
                                 });
@@ -378,7 +380,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                 linearLayout_for_button.addView(delete_Button);
                                 parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                Main_Layout.addView(parent_horizontal_Layout);
+                                CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                 label_date.setText("");
 
@@ -408,7 +410,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     time_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Time", label_time.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("Time", label_time.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -439,7 +441,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -454,7 +456,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_time.setText("");
                                 }
@@ -489,7 +491,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                         camera_dialog.dismiss();
 
-                                        final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Camera", label_camera.getText().toString());
+                                        final CheckInWidgets widgetsData = new CheckInWidgets("Camera", label_camera.getText().toString());
                                         list.add(widgetsData);
 
                                         //Horizontal Layout...........................
@@ -525,7 +527,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                         delete_Button.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                                                Main_Layout.removeView(parent_horizontal_Layout);
+                                                CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                                 list.remove(widgetsData);
                                             }
                                         });
@@ -543,7 +545,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                         linearLayout_for_button.addView(delete_Button);
                                         parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                        Main_Layout.addView(parent_horizontal_Layout);
+                                        CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                         label_camera.setText("");
                                     }
@@ -576,7 +578,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     signature_dialog.dismiss();
 
-                                    final Asset_Widgets_Data widgetsData = new Asset_Widgets_Data("Signature", label_signature.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("Signature", label_signature.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -612,7 +614,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     delete_Button.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            Main_Layout.removeView(parent_horizontal_Layout);
+                                            CheckInWidgetsLayout.removeView(parent_horizontal_Layout);
                                             list.remove(widgetsData);
                                         }
                                     });
@@ -629,7 +631,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     linearLayout_for_button.addView(delete_Button);
                                     parent_horizontal_Layout.addView(linearLayout_for_button);
 
-                                    Main_Layout.addView(parent_horizontal_Layout);
+                                    CheckInWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_signature.setText("");
                                 }
@@ -716,11 +718,12 @@ public class CheckInTemplate extends AppCompatActivity {
                         for (int i = 0; i < list.size(); i++) {
 
                             Log.e("ListSize", String.valueOf(list.size()));
-                      //      databaseHelper.insertDataIntoAssetWidgets(new Asset_Widgets_Data(get_Asset_form_id, list.get(i).getAsset_widget_type(), list.get(i).getAsset_widget_label(), ""));
+                            databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
 
+                            getCheckInData();
                         }
-                        Toast.makeText(CheckInTemplate.this, "Template is Created Successfully", Toast.LENGTH_SHORT).show();
-                        // startActivity(new Intent(CheckInTemplate.this, CheckInTemplate.class));
+                        Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
+                         startActivity(new Intent(CheckInTemplate.this, InspectTemplate.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                     }
@@ -761,7 +764,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
 
         snackbar_Layout = findViewById(R.id.asset_snackbar_Layout);
-        Main_Layout = (LinearLayout) findViewById(R.id.Assets_CheckOut);
+        CheckInWidgetsLayout = (LinearLayout) findViewById(R.id.CheckInWidgetsLayout);
         skip_checkIn = (LinearLayout) findViewById(R.id.skip_checkIn);
 
         label_editText = editText_dialog.findViewById(R.id.label_edittext);
@@ -785,7 +788,7 @@ public class CheckInTemplate extends AppCompatActivity {
         label_signature = signature_dialog.findViewById(R.id.label_signature);
         done_label_signature = signature_dialog.findViewById(R.id.done_signature_labels);
 
-        fab_Open = (FloatingActionButton) findViewById(R.id.fab_Close_checkIn);
+        fab_Open = (FloatingActionButton) findViewById(R.id.fab_Open_checkIn);
         fab_Close = (FloatingActionButton) findViewById(R.id.fab_Close_checkIn);
 
         doneAssetCheckin = findViewById(R.id.doneAssetCheckin);
@@ -839,6 +842,31 @@ public class CheckInTemplate extends AppCompatActivity {
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         progress.show();
+    }
+
+    void getTemplateData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
+        while (cursor.moveToNext()) {
+
+            Template_Id = cursor.getString(0);
+
+        }
+    }
+
+    void getCheckInData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from checkin");
+        while (cursor.moveToNext()) {
+
+            String AssetTemplate_Id = cursor.getString(0);
+            String Widget_Type = cursor.getString(1);
+            String Widget_Label = cursor.getString(2);
+            String Widget_Data = cursor.getString(3);
+            String Template_Id = cursor.getString(4);
+
+            Log.e("CheckIn_Data", "checkIn_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+        }
     }
 
     @Override
