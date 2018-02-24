@@ -9,4 +9,15 @@
         <item>Select</item>
         <item>Create new Template</item>
     </string-array>
+
+    <item name="layout1" type="id" />
+    <item name="layout2" type="id" />
+    <item name="layout3" type="id" />
+    <item name="layout4" type="id" />
+    <item name="layout5" type="id" />
+    <item name="layout6" type="id" />
+    <item name="layout7" type="id" />
+    <item name="layout8" type="id" />
+    <item name="layout9" type="id" />
+
 </resources>

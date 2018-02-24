@@ -42,6 +42,8 @@ import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+
 public class CheckInTemplate extends AppCompatActivity {
 
     Snackbar snackbar;
@@ -706,7 +708,7 @@ public class CheckInTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Loader(view);
+                CreatingTemplateLoader(view, CheckInTemplate.this);
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {

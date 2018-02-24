@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.Asset_Data;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetData;
 import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckInWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckOutWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.newModels.InspectWidgets;
@@ -114,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Insert Data Into Form Table.....................
-    public boolean insertDataIntoAsset(Asset_Data data) {
+    public boolean insertDataIntoAsset(AssetData data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -232,16 +232,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery(sql, null);
     }
 
-    //Update Data Into Widgets Table......................
-//    public int UpdateWidgetTable(String id, String data) {
-//        SQLiteDatabase database = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        values.put("Widget_data", data);
-//
-//        int count = database.update(TABLE_WIDGETS, values, "Widget_Id = '" + id + "'", null);
-//        return count;
-//    }
+
+    //Update Data Into Asset Template Table......................
+    public int UpdateAssetTemplateTable(String id, String data) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Widget_data", data);
+
+        int count = database.update(TABLE_ASSET_TEMPLATE, values, "Widget_Id = '" + id + "'", null);
+        return count;
+    }
+
 
     //Insert Data Into Asset Form Table.....................
 //    public boolean insertDataIntoAssetForms(AssetFormData data) {

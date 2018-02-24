@@ -2,13 +2,13 @@ package com.example.muhammadzeeshan.aims_new.Activity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -17,8 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
@@ -31,12 +29,11 @@ import java.util.ArrayList;
 public class CreateAsset extends AppCompatActivity {
 
     EditText create_asset_title, create_asset_desc;
-    Button submitCreateAsset, back_btn_createAsset;
+    Button back_btn_createAsset;
     Snackbar snackbar;
     Spinner select_type;
     String Template_Id, Template_Name, assetTitle, assetDescription, selectedItem, selectedItemId, selectedItemName;
     ArrayAdapter adapter;
-    TextView show;
     ArrayList<TemplateIdAndName> TemplateNameList;
     AlertDialog.Builder alertDialog;
     DatabaseHelper databaseHelper;
@@ -122,7 +119,7 @@ public class CreateAsset extends AppCompatActivity {
                             }
                         }
 
-                        if(getAssetTemplateData()){
+                        if (getAssetTemplateData()) {
 
                             Intent intent = new Intent(CreateAsset.this, AssetDetails.class);
 
@@ -133,10 +130,21 @@ public class CreateAsset extends AppCompatActivity {
                             intent.putExtra("SelectedItemName", selectedItemName);
 
                             startActivity(intent);
-                        }
 
-                        else if(!getAssetTemplateData()) {
-                            startActivity(new Intent(CreateAsset.this, AssetTemplate.class));
+                        } else {
+
+                            Snackbar.make(Layout_CreateAsset_Template, "You first have to create template..", Snackbar.LENGTH_LONG).show();
+
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    startActivity(new Intent(CreateAsset.this, AssetTemplate.class));
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                }
+                            }, 2000);
+
                         }
 
                     }
@@ -230,28 +238,40 @@ public class CreateAsset extends AppCompatActivity {
 
     boolean getAssetTemplateData() {
 
-        Cursor cursor = databaseHelper.RetrieveData("select * from asset_template where Template_Id = " + selectedItemId);
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-        if(cursor != null){
+        String count = "SELECT count(*) FROM asset_template where Template_Id = " + selectedItemId;
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
 
-            while (cursor.moveToNext()) {
+        if (icount > 0) {
 
-                String AssetTemplate_Id = cursor.getString(0);
-                String Widget_Type = cursor.getString(1);
-                String Widget_Label = cursor.getString(2);
-                String Widget_Data = cursor.getString(3);
-                String Template_Id = cursor.getString(4);
-
-                Log.e("AssetTemplate_Data", "AssetTemplate_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
-                Toast.makeText(this, "Contains", Toast.LENGTH_SHORT).show();
-            }
             return true;
 
         }
-        Toast.makeText(this, "Not Contains", Toast.LENGTH_SHORT).show();
         return false;
 
+//        Cursor cursor = databaseHelper.RetrieveData("select count(*) from asset_template where Template_Id = " + selectedItemId);
+//
+//        if (cursor != null) {
+//
+//            while (cursor.moveToNext()) {
+//
+//                String AssetTemplate_Id = cursor.getString(0);
+//                String Widget_Type = cursor.getString(1);
+//                String Widget_Label = cursor.getString(2);
+//                String Widget_Data = cursor.getString(3);
+//                String Template_Id = cursor.getString(4);
+//
+//                Log.e("AssetTemplate_Data", "AssetTemplate_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+//                Toast.makeText(this, "Contains", Toast.LENGTH_SHORT).show();
+//            }
+//            return true;
+//
+//        }
+//        Toast.makeText(this, "Not Contains", Toast.LENGTH_SHORT).show();
+//        return false;
     }
-
 
 }

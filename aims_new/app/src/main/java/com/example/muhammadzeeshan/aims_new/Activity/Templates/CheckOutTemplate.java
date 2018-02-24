@@ -42,6 +42,8 @@ import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+
 public class CheckOutTemplate extends AppCompatActivity {
 
     Snackbar snackbar;
@@ -706,7 +708,7 @@ public class CheckOutTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Loader(view);
+                CreatingTemplateLoader(view, CheckOutTemplate.this);
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -833,15 +835,6 @@ public class CheckOutTemplate extends AppCompatActivity {
     public void hideKeyboard() {
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-    }
-
-    public void Loader(View view) {
-        progress = new ProgressDialog(this);
-        progress.setTitle("Template is Creating");
-        progress.setMessage("Please Wait...");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-        progress.show();
     }
 
     void getTemplateData() {

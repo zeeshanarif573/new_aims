@@ -1,4 +1,4 @@
-package com.example.muhammadzeeshan.aims_new.Models;
+package com.example.muhammadzeeshan.aims_new.Models.newModels;
 
 import android.widget.Button;
 import android.widget.CheckBox;

@@ -3,7 +3,6 @@ package com.example.muhammadzeeshan.aims_new;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -24,7 +23,7 @@ import java.util.Date;
 
 public class GeneralMethods {
 
-    static  byte[] byteArray;
+    static byte[] byteArray;
     public static ProgressDialog progress1;
     public static ProgressDialog progress2;
     public static ProgressDialog progress3;
@@ -43,7 +42,7 @@ public class GeneralMethods {
         return new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
     }
 
-    public static void getArrayList(File photoFile, final Context context, Activity activity,  int id) {
+    public static void getArrayList(File photoFile, final Context context, Activity activity, int id) {
 
         ImageView imageView = new ImageView(context);
         LinearLayout.LayoutParams Image = new LinearLayout.LayoutParams(100, 90);
@@ -68,7 +67,7 @@ public class GeneralMethods {
 
                 Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
 
-            //    Intent intent = new Intent(context, ImageEditing.class);
+                //    Intent intent = new Intent(context, ImageEditing.class);
 
                 Bitmap bitmap = takenImage;
 
@@ -78,13 +77,13 @@ public class GeneralMethods {
 
                 Log.e("Byte Array", String.valueOf(byteArray));
 //
-            //    intent.putExtra("ByteArray", byteArray);
-             //   context.startActivity(intent);
+                //    intent.putExtra("ByteArray", byteArray);
+                //   context.startActivity(intent);
             }
         });
     }
 
-    public static  void CreatingAssetLoader(View view , Context context) {
+    public static void CreatingAssetLoader(View view, Context context) {
         progress1 = new ProgressDialog(context);
         progress1.setTitle("Creating Asset");
         progress1.setMessage("Please Wait...");
@@ -93,9 +92,18 @@ public class GeneralMethods {
         progress1.show();
     }
 
-    public static  void CreatingTemplateLoader(View view , Context context) {
+    public static void CreatingTemplateLoader(View view, Context context) {
         progress1 = new ProgressDialog(context);
-        progress1.setTitle("Creating Asset");
+        progress1.setTitle("Creating Template");
+        progress1.setMessage("Please Wait...");
+        progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        progress1.show();
+    }
+
+    public static void SavingData(View view, Context context) {
+        progress1 = new ProgressDialog(context);
+        progress1.setTitle("Record is Saving");
         progress1.setMessage("Please Wait...");
         progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
