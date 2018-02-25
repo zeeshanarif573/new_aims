@@ -61,6 +61,7 @@ public class NavigationDrawer extends Fragment {
             public void onClick(View view) {
                 getActivity().finish();
                 startActivity(new Intent(getContext(), TemplateManagement.class));
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 

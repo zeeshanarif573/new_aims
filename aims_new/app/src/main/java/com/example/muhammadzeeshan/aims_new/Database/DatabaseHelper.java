@@ -245,6 +245,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    //Delete Data in Form Table,.......................
+    public Integer deleteRecordfromAssetsWidgets(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_ASSET, "Asset_Id = ?", new String[]{id});
+    }
+
+
+
     //Insert Data Into Asset Form Table.....................
 //    public boolean insertDataIntoAssetForms(AssetFormData data) {
 //
@@ -303,13 +311,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //
 //        int count = database.update(TABLE_ASSET_FORMS, values, "Asset_Form_Id = '" + id + "'", null);
 //        return count;
-//    }
-
-    //Delete Data in Form Table,.......................
-//    public Integer deleteRecordfromWidgets(String id)
-//    {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        return db.delete(TABLE_WIDGETS, "Form_Id = ?", new String[]{id});
 //    }
 
     //Delete Data in Form Table,.......................

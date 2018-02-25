@@ -27,8 +27,9 @@
         <activity android:name=".Activity.TemplateManagement" />
         <activity android:name=".Activity.CreateTemplate" />
         <activity android:name=".Activity.Templates.AssetTemplate" />
-        <activity android:name=".Activity.TemplateDetails.AssetDetails" />
-        <activity android:name=".Activity.TemplateDetails.CheckOutDetails"></activity>
+        <activity android:name=".Activity.TemplateDetails.AssetTemplateDetails" />
+        <activity android:name=".Activity.TemplateDetails.CheckOutDetails" />
+        <activity android:name=".Activity.TemplateDetails.AssetDetails"></activity>
     </application>
 
 </manifest>

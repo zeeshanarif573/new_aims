@@ -7,13 +7,15 @@
     android:background="#efefef"
     tools:context="com.example.muhammadzeeshan.aims_new.Activity.TemplateManagement">
 
-    <ListView
+    <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ListView"
-        android:visibility="gone">
+        android:id="@+id/expandable_ListView"
+        android:visibility="visible"
+        android:padding="6dp"
+        android:layout_marginTop="40dp">
 
-    </ListView>
+    </ExpandableListView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,73 +45,73 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="visible"
-        android:id="@+id/welcome_text">
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical"-->
+        <!--android:gravity="center"-->
+        <!--android:visibility="gone"-->
+        <!--android:id="@+id/welcome_template_text">-->
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:layout_marginTop="150dp">
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1.5"-->
+            <!--android:layout_marginTop="150dp">-->
 
-            <ImageView
-                android:layout_width="85dp"
-                android:layout_height="85dp"
-                android:layout_gravity="center"
-                android:background="@drawable/cirlce"
-                android:id="@+id/imageView" />
+            <!--<ImageView-->
+                <!--android:layout_width="85dp"-->
+                <!--android:layout_height="85dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:background="@drawable/cirlce"-->
+                <!--android:id="@+id/imageView" />-->
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:elevation="20dp"
-                android:id="@+id/template"
-                android:layout_gravity="center"
-                android:tint="@color/dark_blue"
-                android:layout_centerInParent="true"
-                android:src="@drawable/if_technology_mix___final_09_998677" />
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="20dp"-->
+                <!--android:elevation="20dp"-->
+                <!--android:id="@+id/template"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:tint="@color/dark_blue"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:src="@drawable/if_technology_mix___final_09_998677" />-->
 
-        </FrameLayout>
+        <!--</FrameLayout>-->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:layout_marginBottom="100dp"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center"
-            >
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="3"-->
+            <!--android:layout_marginBottom="100dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:orientation="vertical"-->
+            <!--android:gravity="center"-->
+            <!--&gt;-->
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Create your first Template"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textColor="@color/dark_blue"
-                android:fontFamily="@font/ubuntu_light"
-                android:textStyle="bold" />
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Create your first Template"-->
+                <!--android:textAlignment="center"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textColor="@color/dark_blue"-->
+                <!--android:fontFamily="@font/ubuntu_light"-->
+                <!--android:textStyle="bold" />-->
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_blue"
-                android:text="Tap the plus button to create from scratch"
-                android:textAlignment="center"
-                android:fontFamily="@font/ubuntu_light"
-                android:textSize="16sp"
-                />
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="@color/dark_blue"-->
+                <!--android:text="Tap the plus button to create from scratch"-->
+                <!--android:textAlignment="center"-->
+                <!--android:fontFamily="@font/ubuntu_light"-->
+                <!--android:textSize="16sp"-->
+                <!--/>-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"

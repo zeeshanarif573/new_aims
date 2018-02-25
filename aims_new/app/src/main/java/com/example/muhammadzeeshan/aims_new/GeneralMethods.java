@@ -120,7 +120,7 @@ public class GeneralMethods {
         progress2.show();
     }
 
-    public static void Loader3(View view, Context context) {
+    public static void DeletingRecord(View view, Context context) {
         progress3 = new ProgressDialog(context);
         progress3.setTitle("Deleting Record");
         progress3.setMessage("Please Wait...");

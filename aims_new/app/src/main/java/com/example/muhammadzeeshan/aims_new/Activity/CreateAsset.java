@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateIdAndName;
@@ -121,7 +121,7 @@ public class CreateAsset extends AppCompatActivity {
 
                         if (getAssetTemplateData()) {
 
-                            Intent intent = new Intent(CreateAsset.this, AssetDetails.class);
+                            Intent intent = new Intent(CreateAsset.this, AssetTemplateDetails.class);
 
                             intent.putExtra("AssetTitle", assetTitle);
                             intent.putExtra("AssetDescription", assetDescription);
