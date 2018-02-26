@@ -18,6 +18,7 @@ import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class CreateTemplate extends AppCompatActivity {
@@ -39,31 +40,33 @@ public class CreateTemplate extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
 
+                CreatingTemplateLoader(view, CreateTemplate.this);
+
+                //Handler for Saving Data.........................
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        creatingTemplate.dismiss();
+                        databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+
+                        AlertDialog dialog = alertDialog.create();
+                        dialog.show();
+
+                        getData();
+
+                    }
+                }, 2000);
+
+
                 alertDialog.setTitle("Alert");
                 alertDialog.setMessage("Wanted to create CheckOut, CheckIn and Inspection Template? ");
                 alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
-                        CreatingTemplateLoader(view, CreateTemplate.this);
-
-                        //Handler for Saving Data.........................
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-                                progress1.dismiss();
-
-                                databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
-                                startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
-
-                                getData();
-
-                            }
-                        }, 2000);
-
+                        startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
                     }
                 });
 
@@ -71,29 +74,11 @@ public class CreateTemplate extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        CreatingTemplateLoader(view, CreateTemplate.this);
+                        dialogInterface.dismiss();
+                        startActivity(new Intent(CreateTemplate.this, CreateAsset.class));
 
-                        //Handler for Saving Data.........................
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-
-                                progress1.dismiss();
-
-                                databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
-                                startActivity(new Intent(CreateTemplate.this, CreateAsset.class));
-
-                                getData();
-
-                            }
-                        }, 4000);
                     }
                 });
-
-                AlertDialog dialog = alertDialog.create();
-                dialog.show();
 
             }
         });

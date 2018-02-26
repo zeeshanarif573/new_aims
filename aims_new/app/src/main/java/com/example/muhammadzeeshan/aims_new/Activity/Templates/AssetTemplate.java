@@ -720,7 +720,7 @@ public class AssetTemplate extends AppCompatActivity {
                         for (int i = 0; i < list.size(); i++) {
 
                             Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
+                            databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
 
                             getAssetTemplateData();
                         }
@@ -839,15 +839,6 @@ public class AssetTemplate extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    public void Loader(View view) {
-        progress = new ProgressDialog(this);
-        progress.setTitle("Template is Creating");
-        progress.setMessage("Please Wait...");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-        progress.show();
-    }
-
     void getTemplateData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from Template");
@@ -866,10 +857,9 @@ public class AssetTemplate extends AppCompatActivity {
             String AssetTemplate_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
-            String Widget_Data = cursor.getString(3);
-            String Template_Id = cursor.getString(4);
+            String Template_Id = cursor.getString(3);
 
-            Log.e("AssetTemplate_Data", "AssetTemplate_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+            Log.e("AssetTemplate_Data", "Widget_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
         }
     }
 

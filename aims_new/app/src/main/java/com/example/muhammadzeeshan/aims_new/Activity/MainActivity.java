@@ -16,6 +16,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
 import com.example.muhammadzeeshan.aims_new.Adapter.ViewAssetAdapter;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<AssetData> form_list;
     ViewAssetAdapter adapter;
     AlertDialog.Builder alertDialog;
-    String AssetId, AssetName, AssetDescription, Status;
+    String AssetId, AssetName, AssetDescription, Status, TemplateId;
     android.support.v4.app.FragmentTransaction fragmentTransaction;
 
     @Override
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 AssetData assetData = form_list.get(position);
                 String TemplateId = assetData.getTemplate_id();
 
+                Toast.makeText(MainActivity.this, TemplateId, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, AssetDetails.class);
                 intent.putExtra("TemplateId", TemplateId);
                 startActivity(intent);
@@ -173,10 +175,11 @@ public class MainActivity extends AppCompatActivity {
             AssetName = cursor.getString(1);
             AssetDescription = cursor.getString(2);
             Status = cursor.getString(4);
+            TemplateId = cursor.getString(5);
 
             Log.e("Asset_form_ID ", AssetId + "form_name " + AssetName);
 
-            form_list.add(new AssetData(AssetId, AssetName, AssetDescription, Status));
+            form_list.add(new AssetData(TemplateId , AssetId, AssetName, Status));
         }
         adapter.notifyDataSetChanged();
 

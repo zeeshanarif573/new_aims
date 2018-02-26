@@ -25,10 +25,10 @@ public class AssetData {
         this.status = status;
     }
 
-    public AssetData(String asset_id, String asset_name, String asset_description, String status) {
+    public AssetData(String template_id, String asset_id, String asset_name, String status) {
+        this.template_id = template_id;
         this.asset_id = asset_id;
         this.asset_name = asset_name;
-        this.asset_description = asset_description;
         this.status = status;
     }
 

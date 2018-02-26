@@ -251,27 +251,6 @@ public class CreateAsset extends AppCompatActivity {
 
         }
         return false;
-
-//        Cursor cursor = databaseHelper.RetrieveData("select count(*) from asset_template where Template_Id = " + selectedItemId);
-//
-//        if (cursor != null) {
-//
-//            while (cursor.moveToNext()) {
-//
-//                String AssetTemplate_Id = cursor.getString(0);
-//                String Widget_Type = cursor.getString(1);
-//                String Widget_Label = cursor.getString(2);
-//                String Widget_Data = cursor.getString(3);
-//                String Template_Id = cursor.getString(4);
-//
-//                Log.e("AssetTemplate_Data", "AssetTemplate_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
-//                Toast.makeText(this, "Contains", Toast.LENGTH_SHORT).show();
-//            }
-//            return true;
-//
-//        }
-//        Toast.makeText(this, "Not Contains", Toast.LENGTH_SHORT).show();
-//        return false;
     }
 
 }

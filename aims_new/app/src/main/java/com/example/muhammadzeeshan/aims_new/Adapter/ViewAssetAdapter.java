@@ -47,13 +47,13 @@ public class ViewAssetAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup) {
         if (view == null) {
             //INFLATE CUSTOM LAYOUT
             view = LayoutInflater.from(c).inflate(R.layout.view_asset_layout, viewGroup, false);
         }
 
-        final AssetData assetFormData = (AssetData) this.getItem(i);
+        final AssetData assetFormData = (AssetData) this.getItem(position);
 
         TextView nameTxt = (TextView) view.findViewById(R.id.nameTxt);
         TextView operation = (TextView) view.findViewById(R.id.operation);

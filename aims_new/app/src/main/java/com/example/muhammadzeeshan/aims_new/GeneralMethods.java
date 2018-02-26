@@ -25,6 +25,8 @@ public class GeneralMethods {
 
     static byte[] byteArray;
     public static ProgressDialog progress1;
+    public static ProgressDialog creatingTemplate;
+    public static ProgressDialog creatingAsset;
     public static ProgressDialog progress2;
     public static ProgressDialog progress3;
 
@@ -84,21 +86,21 @@ public class GeneralMethods {
     }
 
     public static void CreatingAssetLoader(View view, Context context) {
-        progress1 = new ProgressDialog(context);
-        progress1.setTitle("Creating Asset");
-        progress1.setMessage("Please Wait...");
-        progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        creatingAsset = new ProgressDialog(context);
+        creatingAsset.setTitle("Creating Asset");
+        creatingAsset.setMessage("Please Wait...");
+        creatingAsset.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-        progress1.show();
+        creatingAsset.show();
     }
 
     public static void CreatingTemplateLoader(View view, Context context) {
-        progress1 = new ProgressDialog(context);
-        progress1.setTitle("Creating Template");
-        progress1.setMessage("Please Wait...");
-        progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        creatingTemplate = new ProgressDialog(context);
+        creatingTemplate.setTitle("Creating Template");
+        creatingTemplate.setMessage("Please Wait...");
+        creatingTemplate.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-        progress1.show();
+        creatingTemplate.show();
     }
 
     public static void SavingData(View view, Context context) {

@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -46,9 +47,10 @@ import com.example.muhammadzeeshan.aims_new.GeneralMethods;
 import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
 import com.example.muhammadzeeshan.aims_new.Models.DateModel;
 import com.example.muhammadzeeshan.aims_new.Models.SignaturePadModel;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.Widgets_Model;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetData;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.newModels.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 import com.github.gcacace.signaturepad.views.SignaturePad;
@@ -80,7 +82,7 @@ import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getOutputMedia
 public class AssetTemplateDetails extends AppCompatActivity {
 
     DatabaseHelper databaseHelper;
-    String Asset_Template_Id, generate_type, generate_label;
+    String Widget_Id, generate_type, generate_label;
     LinearLayout layout;
     ArrayList<Widgets_Model> widgetList;
     Dialog date_dialog, time_dialog;
@@ -114,6 +116,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 20;
     String date, AssetTitle, AssetDescription, SelectedItem, SelectedItemId, SelectedItemName;
 
+    String AssetId;
     GeneralMethods generalMethods;
 
     private ArrayList<DateModel> labelTextViewList = new ArrayList<>();
@@ -154,8 +157,11 @@ public class AssetTemplateDetails extends AppCompatActivity {
                         progress1.dismiss();
 
                         databaseHelper.insertDataIntoAsset(new AssetData(SelectedItemId, AssetTitle, AssetDescription, SelectedItem, "InStock"));
-                        UpdateDataIntoDatabase();
-                     //   generateReport();
+
+                        getAssetData();
+                        getAssetTemplateInfo();
+
+                        InsertDataIntoAssetTemplate();
                         getAssetTemplateData();
 
                         Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
@@ -421,7 +427,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
         Cursor cursor = databaseHelper.RetrieveData("Select * from asset_template where Template_Id =" + SelectedItemId);
         while (cursor.moveToNext()) {
 
-            Asset_Template_Id = (cursor.getString(0));
+            Widget_Id = (cursor.getString(0));
             generate_type = cursor.getString(1);
             generate_label = cursor.getString(2);
 
@@ -444,7 +450,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 EditText editText = utils.CreateEdittext(AssetTemplateDetails.this, "", 15, 20, 10, 15, new ColorDrawable(Color.TRANSPARENT));
 
                 Widgets_Model widgets_model = new Widgets_Model();
-                widgets_model.setId(Asset_Template_Id);
+                widgets_model.setId(Widget_Id);
                 widgets_model.setEditText(editText);
                 widgets_model.setLabel(generate_label);
 
@@ -473,7 +479,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 TextView textView_hint = utils.CreateTextView(AssetTemplateDetails.this, generate_label, 0, 10, 10, 15);
 
                 Widgets_Model widgets_model = new Widgets_Model();
-                widgets_model.setId(Asset_Template_Id);
+                widgets_model.setId(Widget_Id);
                 widgets_model.setCheckBox(checkBox);
                 widgets_model.setLabel(generate_label);
 
@@ -502,7 +508,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 editText.setLayoutParams(params);
 
                 Widgets_Model widgets_model = new Widgets_Model();
-                widgets_model.setId(Asset_Template_Id);
+                widgets_model.setId(Widget_Id);
                 widgets_model.setEditText(editText);
                 widgets_model.setLabel(generate_label);
 
@@ -574,7 +580,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 scrollView.addView(displayImages);
 
                 final String finalIndex = String.valueOf(index);
-                final String widgetId = Asset_Template_Id;
+                final String widgetId = Widget_Id;
 
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -599,7 +605,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 });
 
                 Widgets_Model id_widget_model = new Widgets_Model();
-                id_widget_model.setId(Asset_Template_Id);
+                id_widget_model.setId(Widget_Id);
                 id_widget_model.setImageView(displayImages);
                 id_widget_model.setLabel(generate_label);
 
@@ -649,7 +655,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 button_Layout.addView(button);
 
                 Widgets_Model id_widget_model = new Widgets_Model();
-                id_widget_model.setId(Asset_Template_Id);
+                id_widget_model.setId(Widget_Id);
                 id_widget_model.setSignature(pad);
                 id_widget_model.setLabel(generate_label);
 
@@ -694,7 +700,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 ImageView date_icon = utils.CreateImageView(AssetTemplateDetails.this, 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_calendar));
 
                 final Widgets_Model id_widget_model = new Widgets_Model();
-                id_widget_model.setId(Asset_Template_Id);
+                id_widget_model.setId(Widget_Id);
                 id_widget_model.setDatePicker(date_picker);
                 id_widget_model.setLabel(generate_label);
 
@@ -772,7 +778,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
 
                 final Widgets_Model id_widget_model = new Widgets_Model();
-                id_widget_model.setId(Asset_Template_Id);
+                id_widget_model.setId(Widget_Id);
                 id_widget_model.setTimePicker(time_picker);
                 id_widget_model.setLabel(generate_label);
 
@@ -953,27 +959,98 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     }
 
-    public void UpdateDataIntoDatabase() {
+//    public void UpdateDataIntoAssetTemplate() {
+//
+//        for (Widgets_Model id_widget_model : widgetList) {
+//
+//            //Condition for EditText..............................
+//            if (id_widget_model.getEditText() != null) {
+//                databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), id_widget_model.getEditText().getText().toString());
+//
+//                //Condition for CheckBox..............................
+//            } else if (id_widget_model.getCheckBox() != null) {
+//                if (id_widget_model.getCheckBox().isChecked()) {
+//                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), "true");
+//                } else {
+//                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), "false");
+//                }
+//
+//                //Condition for TextView..............................
+//            } else if (id_widget_model.getTextView() != null) {
+//                databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), id_widget_model.getTextView().getText().toString());
+//
+//                //Condition for Camera..............................
+//            } else if (id_widget_model.getImageView() != null) {
+//                StringBuilder FinalImageString = new StringBuilder("");
+//
+//                for (CameraModel cameraModel : ImageList) {
+//                    if (id_widget_model.getId().equals(cameraModel.getId())) {
+//                        FinalImageString.append(cameraModel.getImage_file().getAbsolutePath() + ",");
+//                    }
+//                }
+//
+//                if (FinalImageString.length() > 1) {
+//                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
+//                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), imagePath);
+//
+//                } else {
+//                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
+//                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), imagePath);
+//                }
+//
+//
+//                //Condition for Date..............................
+//            } else if (id_widget_model.getDatePicker() != null) {
+//
+//                for (DateModel dateModel : labelTextViewList) {
+//
+//                    if (id_widget_model.getId().equals(dateModel.getId())) {
+//                        databaseHelper.UpdateAssetTemplateTable(dateModel.getId(), dateModel.getDate());
+//                    }
+//                }
+//
+//
+//                //Condition for Time..............................
+//            } else if (id_widget_model.getTimePicker() != null) {
+//
+//                for (DateModel dateModel : labelTextViewList) {
+//
+//                    if (id_widget_model.getId().equals(dateModel.getId())) {
+//                        databaseHelper.UpdateAssetTemplateTable(dateModel.getId(), dateModel.getTime());
+//                    }
+//                }
+//
+//                //Condition for Signature..............................
+//            } else if (id_widget_model.getSignature() != null) {
+//                //   InsertSignatureToDB(id_widget_model.getId());
+//            }
+//        }
+//        Toast.makeText(this, "Data Saved Successfully", Toast.LENGTH_SHORT).show();
+//
+//    }
+
+
+    public void InsertDataIntoAssetTemplate() {
 
         for (Widgets_Model id_widget_model : widgetList) {
 
             //Condition for EditText..............................
             if (id_widget_model.getEditText() != null) {
-                databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), id_widget_model.getEditText().getText().toString());
+                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
 
-                //Condition for CheckBox..............................
+//                Condition for CheckBox..............................
             } else if (id_widget_model.getCheckBox() != null) {
                 if (id_widget_model.getCheckBox().isChecked()) {
-                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), "true");
+                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
                 } else {
-                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), "false");
+                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
                 }
 
-                //Condition for TextView..............................
+//                Condition for TextView..............................
             } else if (id_widget_model.getTextView() != null) {
-                databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), id_widget_model.getTextView().getText().toString());
+                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
 
-                //Condition for Camera..............................
+//                Condition for Camera..............................
             } else if (id_widget_model.getImageView() != null) {
                 StringBuilder FinalImageString = new StringBuilder("");
 
@@ -985,42 +1062,45 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                 if (FinalImageString.length() > 1) {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
-                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), imagePath);
+                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+
 
                 } else {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
-                    databaseHelper.UpdateAssetTemplateTable(id_widget_model.getId(), imagePath);
+                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+
                 }
 
 
-                //Condition for Date..............................
+//                Condition for Date..............................
             } else if (id_widget_model.getDatePicker() != null) {
 
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.UpdateAssetTemplateTable(dateModel.getId(), dateModel.getDate());
+                        databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
+
                     }
                 }
 
 
-                //Condition for Time..............................
+//                Condition for Time..............................
             } else if (id_widget_model.getTimePicker() != null) {
 
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.UpdateAssetTemplateTable(dateModel.getId(), dateModel.getTime());
+                        databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
+
                     }
                 }
 
-                //Condition for Signature..............................
+//                Condition for Signature..............................
             } else if (id_widget_model.getSignature() != null) {
                 InsertSignatureToDB(id_widget_model.getId());
             }
         }
         Toast.makeText(this, "Data Saved Successfully", Toast.LENGTH_SHORT).show();
-
     }
 
     //Signature Methods.................................
@@ -1036,7 +1116,8 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                 photo = addJpgSignatureToGallery(signatureBitmap);
                 signatureImage.add(photo);
-                databaseHelper.UpdateAssetTemplateTable(widget_id, photo.toString());
+                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, photo.toString()));
+
             }
 
         }
@@ -1140,10 +1221,10 @@ public class AssetTemplateDetails extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         widgetList = new ArrayList<>();
         generate_list = new ArrayList<>();
-            ImageList = new ArrayList<>();
+        ImageList = new ArrayList<>();
         layout = (LinearLayout) findViewById(R.id.mainLayout);
 
-             padList = new ArrayList<>();
+        padList = new ArrayList<>();
         //pad.setBackgroundColor(Color.WHITE);
 
         date_dialog = new Dialog(AssetTemplateDetails.this);
@@ -1151,19 +1232,19 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
         getDate = date_dialog.findViewById(R.id.getDate);
 
-        //  time_dialog = new Dialog(AssetTemplate.this);
-//        time_dialog.setContentView(R.layout.click_time_dialog);
+        time_dialog = new Dialog(AssetTemplateDetails.this);
+        time_dialog.setContentView(R.layout.click_time_dialog);
 
-//        getTime = time_dialog.findViewById(R.id.getTime);
-//
-//        date_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        date_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
-//
-//        time_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        time_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
-//
-//        date_picker = date_dialog.findViewById(R.id.date_picker);
-//        time_picker = time_dialog.findViewById(R.id.timePicker);
+        getTime = time_dialog.findViewById(R.id.getTime);
+
+        date_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        date_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+
+        time_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        time_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+
+        date_picker = date_dialog.findViewById(R.id.date_picker);
+        time_picker = time_dialog.findViewById(R.id.timePicker);
 
         //  done_submit_form = (Button) findViewById(R.id.done_submit_form);
         //  back_btn_generate_widget = (Button) findViewById(R.id.back_btn_generate_widget);
@@ -1171,19 +1252,72 @@ public class AssetTemplateDetails extends AppCompatActivity {
         signatureImage = new ArrayList<>();
     }
 
-    void getAssetTemplateData() {
+    void getAssetTemplateInfo() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from asset_template");
         while (cursor.moveToNext()) {
 
-            String AssetTemplate_Id = cursor.getString(0);
+            String Widget_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
-            String Widget_Data = cursor.getString(3);
-            String Template_Id = cursor.getString(4);
+            String Template_Id = cursor.getString(3);
 
-            Log.e("AssetTemplate_Data", "Widget_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+
+            Log.e("AssetTemplate_Data", "Widget_Id: " + Widget_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
         }
     }
 
+    void getAssetTemplateData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from asset_template_data");
+        while (cursor.moveToNext()) {
+
+            String Data_Id = cursor.getString(0);
+            String Template_Id = cursor.getString(1);
+            String Asset_Id = cursor.getString(2);
+            String Widget_Id = cursor.getString(3);
+            String Widget_Data = cursor.getString(4);
+
+
+            Log.e("AssetTemplate_Data", "Data_Id: " + Data_Id + " ,Template_Id: " + Template_Id + " ,Asset_Id: " + Asset_Id + " ,Widget_Id: " + Widget_Id + " ,Widget_Data: " + Widget_Data);
+        }
+    }
+
+    boolean CountAssetTemplateData() {
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        String count = "SELECT count(Asset_Id) FROM asset_template";
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+
+        if (icount > 0) {
+
+            return true;
+
+        }
+        return false;
+    }
+
+    void getAssetData() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from asset");
+        while (cursor.moveToNext()) {
+
+            AssetId = cursor.getString(0);
+            String AssetName = cursor.getString(1);
+            String AssetDescription = cursor.getString(2);
+            String AssetType = cursor.getString(3);
+            String Status = cursor.getString(4);
+            String Template_Id = cursor.getString(5);
+
+            Log.e("Asset_Data", "AssetId : " + AssetId + " ,AssetName: " + AssetName + " ,AssetDescription: " + AssetDescription + " ,AssetType: " + AssetType + " ,Status: " + Status + " ,Template_Id: " + Template_Id);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }
