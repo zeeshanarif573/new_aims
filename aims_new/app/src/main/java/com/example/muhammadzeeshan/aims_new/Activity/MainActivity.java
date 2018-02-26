@@ -126,11 +126,10 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
                 AssetData assetData = form_list.get(position);
-                String TemplateId = assetData.getTemplate_id();
+                String AssetId = assetData.getAsset_id();
 
-                Toast.makeText(MainActivity.this, TemplateId, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, AssetDetails.class);
-                intent.putExtra("TemplateId", TemplateId);
+                intent.putExtra("AssetId", AssetId);
                 startActivity(intent);
             }
         });
@@ -176,8 +175,6 @@ public class MainActivity extends AppCompatActivity {
             AssetDescription = cursor.getString(2);
             Status = cursor.getString(4);
             TemplateId = cursor.getString(5);
-
-            Log.e("Asset_form_ID ", AssetId + "form_name " + AssetName);
 
             form_list.add(new AssetData(TemplateId , AssetId, AssetName, Status));
         }

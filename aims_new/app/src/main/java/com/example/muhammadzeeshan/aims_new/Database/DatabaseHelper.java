@@ -280,11 +280,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.delete(TABLE_ASSET, "Asset_Id = ?", new String[]{id});
     }
 
-    String val = "SELECT ATD.Data_Id, ASS.Asset_Name\n" +
-            "FROM asset_template_data ATD\n" +
-            "LEFT JOIN asset ASS ON ATD.Asset_Id = ASS.Asset_Id\n" +
-            "LEFT JOIN asset_template AT ON ATD.Widget_Id = AT.Widget_Id\n" +
-            "LEFT JOIN template TEM ON ATD.Template_Id = TEM.Template_Id";
 
     //Insert Data Into Asset Form Table.....................
 //    public boolean insertDataIntoAssetForms(AssetFormData data) {
