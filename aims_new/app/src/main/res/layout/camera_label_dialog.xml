@@ -24,6 +24,8 @@
                 android:background="@color/check_buttons"
                 android:textColor="#fff"
                 android:padding="10dp"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:textAlignment="center"
                 />
 
@@ -46,6 +48,8 @@
                 android:inputType="text"
                 android:ellipsize="end"
                 android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:hint="Enter Label for Image..."/>
 
         </LinearLayout>
@@ -66,6 +70,8 @@
                 android:background="@color/check_buttons"
                 android:padding="10dp"
                 android:text="Done"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 

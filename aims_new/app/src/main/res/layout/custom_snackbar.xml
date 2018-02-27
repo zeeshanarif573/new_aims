@@ -83,7 +83,7 @@
                 android:layout_height="74dip"
                 android:src="@drawable/ic_action_textview"
                 app:cb_color="@color/check_buttons"
-                android:id="@+id/circle_btn4"
+                android:id="@+id/circle_btn3"
                 app:cb_pressedRingWidth="8dip" />
 
             <TextView
@@ -92,6 +92,32 @@
                 android:textAlignment="center"
                 android:textColor="#000"
                 android:text="TextView"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <at.markushi.ui.CircleButton
+                android:layout_width="74dip"
+                android:layout_height="74dip"
+                android:src="@drawable/ic_action_category"
+                app:cb_color="@color/check_buttons"
+                android:id="@+id/circle_btn4"
+                app:cb_pressedRingWidth="8dip" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="#000"
+                android:text="Section"/>
 
         </LinearLayout>
 
@@ -108,7 +134,7 @@
                 android:layout_height="74dip"
                 android:src="@drawable/ic_action_camera"
                 app:cb_color="@color/check_buttons"
-                android:id="@+id/circle_btn6"
+                android:id="@+id/circle_btn5"
                 app:cb_pressedRingWidth="8dip" />
 
             <TextView
@@ -133,7 +159,7 @@
                 android:layout_height="74dip"
                 android:src="@drawable/ic_action_signature"
                 app:cb_color="@color/check_buttons"
-                android:id="@+id/circle_btn8"
+                android:id="@+id/circle_btn6"
                 app:cb_pressedRingWidth="8dip" />
 
             <TextView
@@ -157,7 +183,7 @@
                 android:layout_width="74dip"
                 android:layout_height="74dip"
                 android:src="@drawable/ic_action_date"
-                android:id="@+id/circle_btn9"
+                android:id="@+id/circle_btn7"
                 app:cb_color="@color/check_buttons"
                 app:cb_pressedRingWidth="8dip" />
 
@@ -183,7 +209,7 @@
                 android:layout_height="74dip"
                 android:src="@drawable/ic_action_time"
                 app:cb_color="@color/check_buttons"
-                android:id="@+id/circle_btn10"
+                android:id="@+id/circle_btn8"
                 app:cb_pressedRingWidth="8dip" />
 
             <TextView

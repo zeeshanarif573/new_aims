@@ -1,4 +1,4 @@
-package com.example.muhammadzeeshan.aims_new.Models.newModels;
+package com.example.muhammadzeeshan.aims_new.Models;
 
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +23,7 @@ public class Widgets_Model {
     SignaturePad signature;
     DatePicker datePicker;
     TimePicker timePicker;
-    TextView textView;
+    TextView textView ,section;
     LinearLayout imageView;
 
     public String getId() {
@@ -104,5 +104,13 @@ public class Widgets_Model {
 
     public void setLabel(String label) {
         Label = label;
+    }
+
+    public TextView getSection() {
+        return section;
+    }
+
+    public void setSection(TextView section) {
+        this.section = section;
     }
 }

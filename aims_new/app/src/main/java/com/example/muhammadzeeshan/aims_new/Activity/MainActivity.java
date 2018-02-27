@@ -1,34 +1,26 @@
 package com.example.muhammadzeeshan.aims_new.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
 import com.example.muhammadzeeshan.aims_new.Adapter.ViewAssetAdapter;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.Fragments.NavigationDrawer;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;
-
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.DeletingRecord;
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress3;
 
 public class MainActivity extends AppCompatActivity {
 

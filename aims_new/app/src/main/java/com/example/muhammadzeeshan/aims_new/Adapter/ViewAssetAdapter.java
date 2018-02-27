@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;

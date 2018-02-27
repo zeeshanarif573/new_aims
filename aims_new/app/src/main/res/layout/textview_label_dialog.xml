@@ -24,6 +24,9 @@
                 android:background="@color/check_buttons"
                 android:textColor="#fff"
                 android:padding="10dp"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
+
                 android:textAlignment="center"
                 />
 
@@ -43,6 +46,9 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginLeft="15dp"
                 android:maxLines="1"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
+
                 android:ellipsize="end"
                 android:inputType="text"
                 android:textSize="14sp"
@@ -67,6 +73,9 @@
                 android:padding="10dp"
                 android:textAllCaps="false"
                 android:text="Done"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
+
                 android:textColor="#fff" />
 
         </LinearLayout>

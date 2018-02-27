@@ -1,6 +1,5 @@
 package com.example.muhammadzeeshan.aims_new.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,12 +13,11 @@ import android.widget.EditText;
 
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class CreateTemplate extends AppCompatActivity {
 
@@ -56,29 +54,11 @@ public class CreateTemplate extends AppCompatActivity {
                         dialog.show();
 
                         getData();
+                        finish();
+                        startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
 
                     }
                 }, 2000);
-
-
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Wanted to create CheckOut, CheckIn and Inspection Template? ");
-                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
-                    }
-                });
-
-                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                        dialogInterface.dismiss();
-                        startActivity(new Intent(CreateTemplate.this, CreateAsset.class));
-
-                    }
-                });
 
             }
         });
@@ -109,4 +89,9 @@ public class CreateTemplate extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
 }

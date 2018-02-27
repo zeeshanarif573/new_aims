@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,8 +33,7 @@ import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
-import com.example.muhammadzeeshan.aims_new.Models.Asset_Form_Widget_Data;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
@@ -42,6 +42,7 @@ import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
+import static android.graphics.Typeface.BOLD;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
 
 public class AssetTemplate extends AppCompatActivity {
@@ -56,13 +57,14 @@ public class AssetTemplate extends AppCompatActivity {
     String Template_Id;
     DatabaseHelper databaseHelper;
     Button doneAssettemplate;
-    EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature;
-    Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog;
-    Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature;
+    EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature, label_section;
+    Dialog editText_dialog, checkbox_dialog, textView_dialog, section_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog;
+    Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature, done_label_section;
     LinearLayout AssetTemplateWidgetsLayout, skip_asset;
     int index = 0;
+    Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
     CoordinatorLayout snackbar_Layout;
-    CircleButton editTextButton, textViewButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
+    CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,11 +284,10 @@ public class AssetTemplate extends AppCompatActivity {
                                     LinearLayout vertical_Layout = utils.CreateLinearLayout(AssetTemplate.this, LinearLayout.VERTICAL, vertical_params, null);
 
                                     TextView textView_heading = utils.CreateTextView(AssetTemplate.this, label_textView.getText().toString(), 3, 15, 10, 15);
-                                    EditText editText = utils.CreateEdittext(AssetTemplate.this, "", 25, 0, 10, 15, getResources().getDrawable(R.drawable.custom_edittext_widget));
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(AssetTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(AssetTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -300,7 +301,6 @@ public class AssetTemplate extends AppCompatActivity {
                                     });
 
                                     vertical_Layout.addView(textView_heading);
-                                    vertical_Layout.addView(editText);
 
                                     parent_horizontal_Layout.addView(vertical_Layout);
 
@@ -310,6 +310,76 @@ public class AssetTemplate extends AppCompatActivity {
                                     AssetTemplateWidgetsLayout.addView(parent_horizontal_Layout);
 
                                     label_textView.setText("");
+                                }
+                            }
+                        });
+                    }
+                });
+
+                //Section Functionality Implemented...............
+                sectionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        section_dialog.show();
+
+                        done_label_section.setOnClickListener(new View.OnClickListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                            @Override
+                            public void onClick(View view) {
+
+                                if (label_section.getText().toString().isEmpty()) {
+
+                                    Toast.makeText(AssetTemplate.this, "Please Provide Label Before Adding Widget", Toast.LENGTH_LONG).show();
+                                    section_dialog.dismiss();
+
+                                } else {
+                                    section_dialog.dismiss();
+
+                                    final AssetTemplatesWidgets widgetsData = new AssetTemplatesWidgets("Section", label_textView.getText().toString());
+                                    list.add(widgetsData);
+
+                                    //Horizontal Layout...........................
+                                    LinearLayout.LayoutParams horizontal_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                    final LinearLayout parent_horizontal_Layout = utils.CreateLinearLayout(AssetTemplate.this, LinearLayout.HORIZONTAL, horizontal_params, getResources().getDrawable(R.drawable.custom_linear_background));
+                                    horizontal_params.setMargins(0, 0, 10, 10);
+
+                                    //Vertical Layout................................
+                                    LinearLayout.LayoutParams vertical_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, (float) 0.25);
+                                    vertical_params.setMargins(20, 0, 10, 15);
+                                    LinearLayout vertical_Layout = utils.CreateLinearLayout(AssetTemplate.this, LinearLayout.VERTICAL, vertical_params, null);
+
+                                    TextView textView_heading = utils.CreateTextView(AssetTemplate.this, label_section.getText().toString(), 3, 15, 10, 15);
+                                    textView_heading.setTextSize(18);
+
+                                    font();
+                                    textView_heading.setTypeface(ubuntu_medium_font, BOLD);
+
+                                    //Delete Button Layout...........................
+                                    LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
+                                    button_params.setMargins(0, 25, 12, 5);
+                                    LinearLayout linearLayout_for_button = utils.CreateLinearLayout(AssetTemplate.this, LinearLayout.VERTICAL, button_params, null);
+                                    Button delete_Button = utils.CreateButton(AssetTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
+
+                                    //Button Functionality............................
+                                    delete_Button.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            AssetTemplateWidgetsLayout.removeView(parent_horizontal_Layout);
+                                            list.remove(widgetsData);
+                                        }
+                                    });
+
+                                    vertical_Layout.addView(textView_heading);
+
+                                    parent_horizontal_Layout.addView(vertical_Layout);
+
+                                    linearLayout_for_button.addView(delete_Button);
+                                    parent_horizontal_Layout.addView(linearLayout_for_button);
+
+                                    AssetTemplateWidgetsLayout.addView(parent_horizontal_Layout);
+
+                                    label_section.setText("");
                                 }
                             }
                         });
@@ -755,6 +825,9 @@ public class AssetTemplate extends AppCompatActivity {
         textView_dialog = new Dialog(this);
         textView_dialog.setContentView(R.layout.textview_label_dialog);
 
+        section_dialog = new Dialog(this);
+        section_dialog.setContentView(R.layout.section_label_dialog);
+
         date_dialog = new Dialog(this);
         date_dialog.setContentView(R.layout.date_label_dialog);
 
@@ -779,6 +852,9 @@ public class AssetTemplate extends AppCompatActivity {
 
         label_textView = textView_dialog.findViewById(R.id.label_textview);
         done_label_textView = textView_dialog.findViewById(R.id.done_textview_labels);
+
+        label_section = section_dialog.findViewById(R.id.label_section);
+        done_label_section = section_dialog.findViewById(R.id.done_section_label);
 
         label_date = date_dialog.findViewById(R.id.label_date);
         done_label_date = date_dialog.findViewById(R.id.done_date_labels);
@@ -809,6 +885,10 @@ public class AssetTemplate extends AppCompatActivity {
         textView_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         textView_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
 
+        section_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        section_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+
+
         date_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         date_dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
 
@@ -826,11 +906,12 @@ public class AssetTemplate extends AppCompatActivity {
     public void initButtons() {
         editTextButton = (CircleButton) snackView.findViewById(R.id.circle_btn1);
         checkBoxButton = (CircleButton) snackView.findViewById(R.id.circle_btn2);
-        textViewButton = (CircleButton) snackView.findViewById(R.id.circle_btn4);
-        cameraButton = (CircleButton) snackView.findViewById(R.id.circle_btn6);
-        signatureButton = (CircleButton) snackView.findViewById(R.id.circle_btn8);
-        dateButton = (CircleButton) snackView.findViewById(R.id.circle_btn9);
-        timeButton = (CircleButton) snackView.findViewById(R.id.circle_btn10);
+        textViewButton = (CircleButton) snackView.findViewById(R.id.circle_btn3);
+        sectionButton = (CircleButton) snackView.findViewById(R.id.circle_btn4);
+        cameraButton = (CircleButton) snackView.findViewById(R.id.circle_btn5);
+        signatureButton = (CircleButton) snackView.findViewById(R.id.circle_btn6);
+        dateButton = (CircleButton) snackView.findViewById(R.id.circle_btn7);
+        timeButton = (CircleButton) snackView.findViewById(R.id.circle_btn8);
 
     }
 
@@ -865,7 +946,11 @@ public class AssetTemplate extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+    }
 
+    void font(){
+        ubuntu_light_font = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/ubuntu_light.ttf");
+        ubuntu_medium_font = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/Ubuntu-Medium.ttf");
+        source_sans_pro = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/SourceSansPro-Light.ttf");
     }
 }

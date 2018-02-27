@@ -6,13 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplateData;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetTemplatesWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckInWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.CheckOutWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.InspectWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.AssetData;
+import com.example.muhammadzeeshan.aims_new.Models.CheckInWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.CheckOutWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.InspectWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 
 /**
  * Created by Muhammad Zeeshan on 12/30/2017.

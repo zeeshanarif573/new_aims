@@ -1,4 +1,4 @@
-package com.example.muhammadzeeshan.aims_new.Models.newModels;
+package com.example.muhammadzeeshan.aims_new.Models;
 
 /**
  * Created by Muhammad Zeeshan on 1/4/2018.

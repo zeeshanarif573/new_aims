@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.HashMap;

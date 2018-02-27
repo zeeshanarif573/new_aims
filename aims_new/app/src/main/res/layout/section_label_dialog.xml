@@ -2,8 +2,10 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dp">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +21,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add Label For Time"
+                android:text="Add Label For Section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/ubuntu_light"
@@ -41,17 +43,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="15dp"
-                android:id="@+id/label_time"
+                android:id="@+id/label_section"
                 android:layout_marginRight="15dp"
                 android:layout_marginLeft="15dp"
                 android:maxLines="1"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:textSize="14sp"
                 android:ellipsize="end"
                 android:inputType="text"
-                android:textStyle="bold"
-                android:fontFamily="@font/ubuntu_light"
-
-                android:hint="Enter Label for Time..."/>
+                android:hint="Enter Label of Section..."/>
 
         </LinearLayout>
 
@@ -61,20 +62,19 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/done_time_labels"
+                android:id="@+id/done_section_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/check_buttons"
+                android:background="@color/login_button"
                 android:padding="10dp"
-                android:textAllCaps="false"
                 android:text="Done"
                 android:textStyle="bold"
                 android:fontFamily="@font/ubuntu_light"
-
+                android:textAllCaps="false"
                 android:textColor="#fff" />
 
         </LinearLayout>

@@ -21,7 +21,7 @@ import android.widget.Spinner;
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateIdAndName;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateIdAndName;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ public class CreateAsset extends AppCompatActivity {
                 if (select_type.getSelectedItem().equals("Create new Template") || select_type.getSelectedItem().equals("Select")) {
 
                     if (!select_type.getSelectedItem().equals("Select")) {
-                        startActivity(new Intent(CreateAsset.this, TemplateManagement.class));
+                        startActivity(new Intent(CreateAsset.this, CreateTemplate.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
 
@@ -159,43 +159,11 @@ public class CreateAsset extends AppCompatActivity {
 
         });
 
-
-//                if (TextUtils.isEmpty(create_asset_title.getText().toString())) {
-//                    create_asset_title.setError("Please give title of form");
-//                } else if (TextUtils.isEmpty(create_asset_desc.getText().toString())) {
-//                    create_asset_desc.setError("Please give desciption of form");
-//                } else {
-//                    databaseHelper.insertDataIntoAssetForms(new AssetFormData(create_asset_title.getText().toString(), create_asset_desc.getText().toString(), "null"));
-//                    getAssetFormData();
-//
-//                    snackbar = Snackbar.make(Layout_CreateAsset_Template, "Form Created Successfully", Snackbar.LENGTH_LONG);
-//                    snackbar.show();
-//
-//                    create_asset_title.setText("");
-//                    create_asset_desc.setText("");
-//
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            Intent intent = new Intent(CreateAsset.this, AddAssetWidget.class);
-//                            intent.putExtra("Asset_Form_Id", Asset_Str_Id);
-//                            startActivity(intent);
-//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-//                        }
-//                    }, 700);
-//
-//                }
-
     }
 
     @Override
     public void onBackPressed() {
         finish();
-
-        startActivity(new Intent(CreateAsset.this, MainActivity.class));
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         super.onBackPressed();
 
     }

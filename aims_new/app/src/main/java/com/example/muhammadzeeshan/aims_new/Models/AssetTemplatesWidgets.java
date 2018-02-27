@@ -1,32 +1,34 @@
-package com.example.muhammadzeeshan.aims_new.Models.newModels;
+package com.example.muhammadzeeshan.aims_new.Models;
 
 /**
  * Created by Muhammad Zeeshan on 2/22/2018.
  */
 
-public class CheckOutWidgets {
+public class AssetTemplatesWidgets {
 
-    String template_id, checkout_id, widget_type, widget_label, widget_data;
+    String template_id, asset_template_id, widget_type, widget_label;
 
-    public CheckOutWidgets(String template_id, String widget_type, String widget_label, String widget_data) {
+    public AssetTemplatesWidgets(String template_id, String widget_type, String widget_label) {
         this.template_id = template_id;
         this.widget_type = widget_type;
         this.widget_label = widget_label;
-        this.widget_data = widget_data;
     }
 
-    public CheckOutWidgets(String widget_type, String widget_label) {
+    public AssetTemplatesWidgets(String widget_type, String widget_label) {
         this.widget_type = widget_type;
         this.widget_label = widget_label;
     }
 
-    public CheckOutWidgets(String widget_type, String widget_label, String widget_data) {
+    public AssetTemplatesWidgets(String template_id, String asset_template_id, String widget_type, String widget_label) {
+        this.template_id = template_id;
+        this.asset_template_id = asset_template_id;
         this.widget_type = widget_type;
         this.widget_label = widget_label;
-        this.widget_data = widget_data;
+
     }
 
-    public CheckOutWidgets() {
+    public AssetTemplatesWidgets() {
+
     }
 
     public String getTemplate_id() {
@@ -37,12 +39,12 @@ public class CheckOutWidgets {
         this.template_id = template_id;
     }
 
-    public String getCheckout_id() {
-        return checkout_id;
+    public String getAsset_template_id() {
+        return asset_template_id;
     }
 
-    public void setCheckout_id(String checkout_id) {
-        this.checkout_id = checkout_id;
+    public void setAsset_template_id(String asset_template_id) {
+        this.asset_template_id = asset_template_id;
     }
 
     public String getWidget_type() {
@@ -61,11 +63,4 @@ public class CheckOutWidgets {
         this.widget_label = widget_label;
     }
 
-    public String getWidget_data() {
-        return widget_data;
-    }
-
-    public void setWidget_data(String widget_data) {
-        this.widget_data = widget_data;
-    }
 }

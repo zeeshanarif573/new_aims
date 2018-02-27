@@ -26,6 +26,8 @@
                 android:background="@color/check_buttons"
                 android:textColor="#fff"
                 android:padding="10dp"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:textAlignment="center"
                 />
 
@@ -48,6 +50,9 @@
                 android:textSize="14sp"
                 android:ellipsize="end"
                 android:inputType="text"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
+
                 android:hint="Enter Label of EditText..."/>
 
         </LinearLayout>
@@ -68,6 +73,8 @@
                 android:background="@color/login_button"
                 android:padding="10dp"
                 android:text="Done"
+                android:textStyle="bold"
+                android:fontFamily="@font/ubuntu_light"
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 

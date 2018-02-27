@@ -11,7 +11,7 @@ import android.widget.ExpandableListView;
 
 import com.example.muhammadzeeshan.aims_new.Adapter.TemplateAdapter;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.newModels.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;
@@ -83,5 +83,11 @@ public class TemplateManagement extends AppCompatActivity {
 
             Log.e("TemplateManagement_Data", "Template_Id: " + Template_Id + " ,Template_Name: " + Template_Name);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(TemplateManagement.this, MainActivity.class));
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 }
