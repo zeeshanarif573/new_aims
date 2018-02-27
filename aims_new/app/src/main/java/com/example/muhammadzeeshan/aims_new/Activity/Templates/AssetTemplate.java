@@ -33,27 +33,25 @@ import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
 import static android.graphics.Typeface.BOLD;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
 
 public class AssetTemplate extends AppCompatActivity {
 
     Snackbar snackbar;
     FloatingActionButton fab_Open, fab_Close;
     ArrayList<AssetTemplatesWidgets> list;
-    List<Asset_Form_Widget_Data> widgetList;
     View snackView;
     AlertDialog.Builder alertDialog;
-    ProgressDialog progress;
     String Template_Id;
     DatabaseHelper databaseHelper;
     Button doneAssettemplate;
@@ -64,6 +62,7 @@ public class AssetTemplate extends AppCompatActivity {
     int index = 0;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
     CoordinatorLayout snackbar_Layout;
+    AlertDialog dialog;
     CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
 
     @Override
@@ -785,20 +784,27 @@ public class AssetTemplate extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        progress.dismiss();
-
+                        creatingTemplate.dismiss();
                         for (int i = 0; i < list.size(); i++) {
 
                             Log.e("ListSize", String.valueOf(list.size()));
                             databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
 
                             getAssetTemplateData();
+
+                            dialog = alertDialog.create();
+                            dialog.show();
                         }
 
                         Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AssetTemplate.this, CheckOutTemplate.class));
+
+                        finish();
+                        Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
+                        intent.putExtra("from", "AssetTemplate");
+                        startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
+                        dialog.dismiss();
                     }
                 }, 2000);
             }
@@ -811,10 +817,8 @@ public class AssetTemplate extends AppCompatActivity {
 
         list = new ArrayList<>();
 
-        progress = new ProgressDialog(this);
-
         databaseHelper = new DatabaseHelper(this);
-        widgetList = new ArrayList<>();
+        //widgetList = new ArrayList<>();
 
         editText_dialog = new Dialog(this);
         editText_dialog.setContentView(R.layout.edittext_label_dialog);
@@ -948,7 +952,7 @@ public class AssetTemplate extends AppCompatActivity {
     public void onBackPressed() {
     }
 
-    void font(){
+    void font() {
         ubuntu_light_font = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/ubuntu_light.ttf");
         ubuntu_medium_font = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/Ubuntu-Medium.ttf");
         source_sans_pro = Typeface.createFromAsset(AssetTemplate.this.getAssets(), "font/SourceSansPro-Light.ttf");

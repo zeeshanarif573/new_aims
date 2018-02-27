@@ -1,27 +1,27 @@
-package com.example.muhammadzeeshan.aims_new.Models;
+package com.example.muhammadzeeshan.aims_new.Models.CheckOut;
 
 /**
- * Created by Muhammad Zeeshan on 2/26/2018.
+ * Created by Muhammad Zeeshan on 2/27/2018.
  */
 
-public class AssetTemplateData {
+public class CheckOutData {
 
     String Template_Id , Asset_Id, Widget_Id, Widget_Data;
 
-    public AssetTemplateData(String template_Id, String asset_Id, String widget_Id, String widget_Data) {
+    public CheckOutData(String template_Id, String asset_Id, String widget_Id, String widget_Data) {
         Template_Id = template_Id;
         Asset_Id = asset_Id;
         Widget_Id = widget_Id;
         Widget_Data = widget_Data;
     }
 
-    public AssetTemplateData(String template_Id, String asset_Id, String widget_Data) {
+    public CheckOutData(String template_Id, String asset_Id, String widget_Data) {
         Template_Id = template_Id;
         Asset_Id = asset_Id;
         Widget_Data = widget_Data;
     }
 
-    public AssetTemplateData() {
+    public CheckOutData() {
     }
 
     public String getTemplate_Id() {

@@ -10,13 +10,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +31,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.CheckOutDetails;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
-import com.example.muhammadzeeshan.aims_new.Models.CheckOutWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
@@ -50,7 +50,6 @@ public class CheckOutTemplate extends AppCompatActivity {
     Snackbar snackbar;
     FloatingActionButton fab_Open, fab_Close;
     ArrayList<CheckOutWidgets> list;
-    List<Asset_Form_Widget_Data> widgetList;
     View snackView;
     AlertDialog.Builder alertDialog;
     ProgressDialog progress;
@@ -58,7 +57,7 @@ public class CheckOutTemplate extends AppCompatActivity {
     DatabaseHelper databaseHelper;
     Button done_create_asset_template;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature, label_section;
-    Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog, section_dialog ;
+    Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog, section_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature, done_label_section;
     LinearLayout CheckoutWidgetsLayout, skip_checkOut;
     int index = 0;
@@ -66,10 +65,18 @@ public class CheckOutTemplate extends AppCompatActivity {
     CoordinatorLayout snackbar_Layout;
     CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
 
+    String from = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_out_template);
+
+        if (getIntent().getExtras() != null) {
+            if (getIntent().hasExtra("from")) {
+                from = getIntent().getStringExtra("from");
+            }
+        }
 
         initialization();
         dialog_transparency();
@@ -757,6 +764,7 @@ public class CheckOutTemplate extends AppCompatActivity {
                         dialogInterface.dismiss();
 
                         finish();
+
                         startActivity(new Intent(CheckOutTemplate.this, CheckInTemplate.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
@@ -791,13 +799,21 @@ public class CheckOutTemplate extends AppCompatActivity {
                         for (int i = 0; i < list.size(); i++) {
 
                             Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
+                            databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
                             getCheckoutData();
 
                         }
                         Toast.makeText(CheckOutTemplate.this, "CheckOut Template is Created Successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(CheckOutTemplate.this, CheckInTemplate.class));
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+
+                        if (from.equalsIgnoreCase("AssetTemplate")) {
+                            startActivity(new Intent(CheckOutTemplate.this, CheckInTemplate.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        } else if (from.equalsIgnoreCase("AssetDetails")) {
+                            startActivity(new Intent(CheckOutTemplate.this, CheckOutDetails.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+
 
                     }
                 }, 2000);
@@ -812,7 +828,6 @@ public class CheckOutTemplate extends AppCompatActivity {
         progress = new ProgressDialog(this);
 
         databaseHelper = new DatabaseHelper(this);
-        widgetList = new ArrayList<>();
 
         editText_dialog = new Dialog(this);
         editText_dialog.setContentView(R.layout.edittext_label_dialog);
@@ -937,10 +952,9 @@ public class CheckOutTemplate extends AppCompatActivity {
             String AssetTemplate_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
-            String Widget_Data = cursor.getString(3);
-            String Template_Id = cursor.getString(4);
+            String Template_Id = cursor.getString(3);
 
-            Log.e("Checkout_Data", "CheckOut_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+            Log.e("Checkout_Data", "CheckOut_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
         }
     }
 
@@ -949,7 +963,7 @@ public class CheckOutTemplate extends AppCompatActivity {
 
     }
 
-    void font(){
+    void font() {
         ubuntu_light_font = Typeface.createFromAsset(CheckOutTemplate.this.getAssets(), "font/ubuntu_light.ttf");
         ubuntu_medium_font = Typeface.createFromAsset(CheckOutTemplate.this.getAssets(), "font/Ubuntu-Medium.ttf");
         source_sans_pro = Typeface.createFromAsset(CheckOutTemplate.this.getAssets(), "font/SourceSansPro-Light.ttf");

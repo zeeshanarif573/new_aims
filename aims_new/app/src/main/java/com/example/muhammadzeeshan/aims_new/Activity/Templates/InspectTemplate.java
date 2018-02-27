@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,14 +31,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.CreateAsset;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
-import com.example.muhammadzeeshan.aims_new.Models.InspectWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.Inspect.InspectWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import at.markushi.ui.CircleButton;
 
@@ -49,7 +50,6 @@ public class InspectTemplate extends AppCompatActivity {
     Snackbar snackbar;
     FloatingActionButton fab_Open, fab_Close;
     ArrayList<InspectWidgets> list;
-    List<Asset_Form_Widget_Data> widgetList;
     View snackView;
     AlertDialog.Builder alertDialog;
     ProgressDialog progress;
@@ -758,7 +758,7 @@ public class InspectTemplate extends AppCompatActivity {
                         dialogInterface.dismiss();
 
                         finish();
-//                        startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
+                        startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
@@ -813,7 +813,6 @@ public class InspectTemplate extends AppCompatActivity {
         progress = new ProgressDialog(this);
 
         databaseHelper = new DatabaseHelper(this);
-        widgetList = new ArrayList<>();
 
         editText_dialog = new Dialog(this);
         editText_dialog.setContentView(R.layout.edittext_label_dialog);

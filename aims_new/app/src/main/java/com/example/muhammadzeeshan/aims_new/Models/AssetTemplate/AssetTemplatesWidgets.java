@@ -1,4 +1,4 @@
-package com.example.muhammadzeeshan.aims_new.Models;
+package com.example.muhammadzeeshan.aims_new.Models.AssetTemplate;
 
 /**
  * Created by Muhammad Zeeshan on 2/22/2018.

@@ -1,17 +1,19 @@
 package com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
+import com.example.muhammadzeeshan.aims_new.Activity.Templates.CheckOutTemplate;
+import com.example.muhammadzeeshan.aims_new.Activity.Templates.InspectTemplate;
 import com.example.muhammadzeeshan.aims_new.Adapter.ViewAssetAdapter;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.R;
@@ -32,10 +36,10 @@ public class AssetDetails extends AppCompatActivity {
     String getReportId;
     DatabaseHelper databaseHelper;
     LinearLayout mainLayout;
-    Button change_operation, back_btn_add_Assets2;
+    Button checkOut, checkIn, Inspect;
     ViewAssetAdapter assetsAdapter;
-    String operation_value;
-    String getAssetId;
+    String status;
+    String getAssetId, getTemplateId;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -46,12 +50,110 @@ public class AssetDetails extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
         mainLayout = findViewById(R.id.detail_main_Layout);
+        checkOut = findViewById(R.id.checkOut);
+        checkIn = findViewById(R.id.checkIn);
+        Inspect = findViewById(R.id.Inspect);
 
         Intent intent = getIntent();
         getAssetId = intent.getStringExtra("AssetId");
+        getTemplateId = intent.getStringExtra("TemplateId");
         Toast.makeText(this, getAssetId, Toast.LENGTH_SHORT).show();
 
         getWidgets();
+        checkOperation();
+
+        if (status.equals("Instock")) {
+            checkIn.setVisibility(View.GONE);
+            Inspect.setVisibility(View.GONE);
+            checkOut.setVisibility(View.VISIBLE);
+            checkOut.setText("CheckOut");
+
+        } else if (status.equals("CheckOut")) {
+            checkOut.setVisibility(View.GONE);
+            checkIn.setVisibility(View.VISIBLE);
+            checkIn.setText("CheckIn");
+            Inspect.setVisibility(View.VISIBLE);
+            Inspect.setText("Inspect");
+        }
+
+        checkOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (getCheckoutData()) {
+                    startActivity(new Intent(AssetDetails.this, CheckOutDetails.class));
+                } else {
+                    Snackbar.make(mainLayout, "You first have to create CheckOut Template..", Snackbar.LENGTH_LONG).show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Intent intent = new Intent(AssetDetails.this, CheckOutTemplate.class);
+                            intent.putExtra("from", "AssetDetails");
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    }, 1200);
+                }
+
+                //  databaseHelper.UpdateAssetTable(getAssetId, "CheckOut");
+                //   Snackbar.make(mainLayout, "Status Updated to CheckOut", Snackbar.LENGTH_SHORT).show();
+
+            }
+        });
+
+        checkIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//                if(getCheckInData()){
+//                    startActivity(new Intent(AssetDetails.this, CheckInDetails.class));
+//                }
+//                else {
+//                    Snackbar.make(mainLayout, "You first have to create CheckIn Template..", Snackbar.LENGTH_LONG).show();
+//
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            startActivity(new Intent(AssetDetails.this, CheckInTemplate.class));
+//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//                        }
+//                    }, 1200);
+//                }
+
+                nextAcivity();
+                databaseHelper.UpdateAssetTable(getAssetId, "Instock");
+                Snackbar.make(mainLayout, "Status Updated to Instock", Snackbar.LENGTH_SHORT).show();
+
+            }
+        });
+
+        Inspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (getCheckInData()) {
+                    startActivity(new Intent(AssetDetails.this, InspectDetails.class));
+                } else {
+                    Snackbar.make(mainLayout, "You first have to create Inspect Template..", Snackbar.LENGTH_LONG).show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            startActivity(new Intent(AssetDetails.this, InspectTemplate.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    }, 1200);
+                }
+
+            }
+        });
 
     }
 
@@ -63,7 +165,7 @@ public class AssetDetails extends AppCompatActivity {
                 " LEFT JOIN asset ON asset_template_data.Asset_Id = asset.Asset_Id " +
                 " LEFT JOIN asset_template ON asset_template_data.Widget_Id = asset_template.Widget_Id" +
                 " LEFT JOIN template ON asset_template_data.Template_Id = template.Template_Id " +
-                " where asset.Asset_Id = " + getAssetId ;
+                " where asset.Asset_Id = " + getAssetId;
 
         Cursor cursor = databaseHelper.RetrieveData(val);
 
@@ -77,7 +179,7 @@ public class AssetDetails extends AppCompatActivity {
                 parentLayout.setOrientation(LinearLayout.HORIZONTAL);
 
                 LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                parent_params.setMargins(0,10,0,0);
+                parent_params.setMargins(0, 10, 0, 0);
                 parentLayout.setLayoutParams(parent_params);
 
                 //TextView Label Layout..............................
@@ -91,13 +193,13 @@ public class AssetDetails extends AppCompatActivity {
                 //TextView Data Layout..............................
                 LinearLayout data_Layout = new LinearLayout(this);
                 LinearLayout.LayoutParams data_Params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                data_Params.setMargins(10,0,0,0);
+                data_Params.setMargins(10, 0, 0, 0);
                 data_Layout.setLayoutParams(data_Params);
 
                 TextView data = new TextView(this);
                 data_Layout.addView(data);
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 font();
@@ -118,7 +220,7 @@ public class AssetDetails extends AppCompatActivity {
                 linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
                 LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                parent_params.setMargins(0,10,0,0);
+                parent_params.setMargins(0, 10, 0, 0);
                 linearLayout.setLayoutParams(parent_params);
 
                 //TextView Label Layout..............................
@@ -133,13 +235,13 @@ public class AssetDetails extends AppCompatActivity {
                 //TextView Data Layout..............................
                 LinearLayout data_Layout = new LinearLayout(this);
                 LinearLayout.LayoutParams data_Params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                data_Params.setMargins(10,0,0,0);
+                data_Params.setMargins(10, 0, 0, 0);
                 data_Layout.setLayoutParams(data_Params);
 
                 TextView data = new TextView(this);
                 data_Layout.addView(data);
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 font();
@@ -168,7 +270,7 @@ public class AssetDetails extends AppCompatActivity {
                 label.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
                 data.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 linearLayout.addView(label);
@@ -193,7 +295,7 @@ public class AssetDetails extends AppCompatActivity {
                 label.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
                 data.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 linearLayout.addView(label);
@@ -219,19 +321,19 @@ public class AssetDetails extends AppCompatActivity {
                     TextView textView = new TextView(this);
 
                     LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    parent_params.setMargins(0,10,0,0);
+                    parent_params.setMargins(0, 10, 0, 0);
                     textView.setLayoutParams(parent_params);
 
-                    textView.setText(cursor.getString(3)+":");
+                    textView.setText(cursor.getString(3) + ":");
 
                     font();
                     textView.setTypeface(ubuntu_light_font);
 
                     LinearLayout image_Layout = new LinearLayout(this);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(300, 400);
-                    params.setMargins(10,10,0,0);
+                    params.setMargins(10, 10, 0, 0);
                     ImageView imageView = new ImageView(this);
-                    imageView.setPadding(0,10,0,10);
+                    imageView.setPadding(0, 10, 0, 10);
                     imageView.setBackground(getResources().getDrawable(R.drawable.custom_status_layout));
                     imageView.setLayoutParams(params);
                     imageView.setImageBitmap(bitmap);
@@ -250,16 +352,16 @@ public class AssetDetails extends AppCompatActivity {
                 String getPath = cursor.getString(4);
 
                 LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                parent_params.setMargins(0,10,0,0);
+                parent_params.setMargins(0, 10, 0, 0);
                 label.setLayoutParams(parent_params);
 
                 Bitmap bitmap = BitmapFactory.decodeFile(getPath);
                 ImageView imageView = new ImageView(this);
-                imageView.setPadding(0,10,0,10);
+                imageView.setPadding(0, 10, 0, 10);
                 imageView.setBackground(getResources().getDrawable(R.drawable.custom_status_layout));
 
                 LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                image_params.setMargins(0,10,0,0);
+                image_params.setMargins(0, 10, 0, 0);
                 imageView.setLayoutParams(parent_params);
 
                 label.setText(cursor.getString(3));
@@ -282,7 +384,7 @@ public class AssetDetails extends AppCompatActivity {
                 linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
                 LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                parent_params.setMargins(0,10,0,0);
+                parent_params.setMargins(0, 10, 0, 0);
                 linearLayout.setLayoutParams(parent_params);
 
                 //TextView Label Layout..............................
@@ -296,13 +398,13 @@ public class AssetDetails extends AppCompatActivity {
                 //TextView Data Layout..............................
                 LinearLayout data_Layout = new LinearLayout(this);
                 LinearLayout.LayoutParams data_Params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                data_Params.setMargins(10,0,0,0);
+                data_Params.setMargins(10, 0, 0, 0);
                 data_Layout.setLayoutParams(data_Params);
 
                 TextView data = new TextView(this);
                 data_Layout.addView(data);
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 font();
@@ -324,7 +426,7 @@ public class AssetDetails extends AppCompatActivity {
 
 
                 LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                parent_params.setMargins(0,10,0,0);
+                parent_params.setMargins(0, 10, 0, 0);
                 linearLayout.setLayoutParams(parent_params);
 
                 //TextView Label Layout..............................
@@ -338,14 +440,14 @@ public class AssetDetails extends AppCompatActivity {
                 //TextView Data Layout..............................
                 LinearLayout data_Layout = new LinearLayout(this);
                 LinearLayout.LayoutParams data_Params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                data_Params.setMargins(10,0,0,0);
+                data_Params.setMargins(10, 0, 0, 0);
                 data_Layout.setLayoutParams(data_Params);
 
                 TextView data = new TextView(this);
                 data_Layout.addView(data);
 
 
-                label.setText(cursor.getString(3)+":");
+                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 font();
@@ -362,32 +464,79 @@ public class AssetDetails extends AppCompatActivity {
         }
     }
 
-    void getData(){
+    void checkOperation() {
 
-        String val = "SELECT asset_template_data.Data_Id, asset.Asset_Name, asset_template.Widget_Type, asset_template.Widget_Label, asset_template_data.Widget_Data " +
-                " FROM asset_template_data " +
-                " LEFT JOIN asset ON asset_template_data.Asset_Id = asset.Asset_Id " +
-                " LEFT JOIN asset_template ON asset_template_data.Widget_Id = asset_template.Widget_Id" +
-                " LEFT JOIN template ON asset_template_data.Template_Id = template.Template_Id " +
-                " where asset.Asset_Id = " + getAssetId ;
+        Cursor cursor = databaseHelper.RetrieveData("SELECT status FROM asset where Asset_Id = '" + getAssetId + "'");
 
-        Cursor cursor = databaseHelper.RetrieveData(val);
+        while (cursor.moveToNext()) {
+            status = cursor.getString(0);
 
-        while (cursor.moveToNext()){
-
-            String Data_Id = cursor.getString(0);
-            String AssetName = cursor.getString(1);
-            String Widget_Type = cursor.getString(2);
-            String Widget_Label = cursor.getString(3);
-            String Widget_Data = cursor.getString(4);
-
-            Log.e("Values", "Data_Id: " + Data_Id + " ,AssetName: "+ AssetName + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+            Log.e("Status", status);
         }
     }
 
-    void font(){
+    public void nextAcivity() {
+
+        assetsAdapter = new ViewAssetAdapter(AssetDetails.this, R.layout.view_asset_layout, form_list);
+        listView.setAdapter(assetsAdapter);
+        assetsAdapter.notifyDataSetChanged();
+        startActivity(new Intent(AssetDetails.this, MainActivity.class));
+    }
+
+    void font() {
         ubuntu_light_font = Typeface.createFromAsset(AssetDetails.this.getAssets(), "font/ubuntu_light.ttf");
         ubuntu_medium_font = Typeface.createFromAsset(AssetDetails.this.getAssets(), "font/Ubuntu-Medium.ttf");
         source_sans_pro = Typeface.createFromAsset(AssetDetails.this.getAssets(), "font/SourceSansPro-Light.ttf");
+    }
+
+    boolean getCheckoutData() {
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        String count = "SELECT count(*) FROM checkout where Template_Id = " + getTemplateId;
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+
+        if (icount > 0) {
+
+            return true;
+
+        }
+        return false;
+    }
+
+    boolean getCheckInData() {
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        String count = "SELECT count(*) FROM checkin where Template_Id = " + getTemplateId;
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+
+        if (icount > 0) {
+
+            return true;
+
+        }
+        return false;
+    }
+
+    boolean getInspectData() {
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        String count = "SELECT count(*) FROM inspect where Template_Id = " + getTemplateId;
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+
+        if (icount > 0) {
+
+            return true;
+
+        }
+        return false;
     }
 }

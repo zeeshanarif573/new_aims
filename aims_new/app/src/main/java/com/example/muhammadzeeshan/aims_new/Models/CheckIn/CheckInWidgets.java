@@ -1,32 +1,32 @@
-package com.example.muhammadzeeshan.aims_new.Models;
+package com.example.muhammadzeeshan.aims_new.Models.CheckIn;
 
 /**
  * Created by Muhammad Zeeshan on 2/22/2018.
  */
 
-public class CheckOutWidgets {
+public class CheckInWidgets {
 
-    String template_id, checkout_id, widget_type, widget_label, widget_data;
+    String template_id, checkin_id, widget_type, widget_label, widget_data;
 
-    public CheckOutWidgets(String template_id, String widget_type, String widget_label, String widget_data) {
+    public CheckInWidgets(String template_id, String widget_type, String widget_label, String widget_data) {
         this.template_id = template_id;
         this.widget_type = widget_type;
         this.widget_label = widget_label;
         this.widget_data = widget_data;
     }
 
-    public CheckOutWidgets(String widget_type, String widget_label) {
-        this.widget_type = widget_type;
-        this.widget_label = widget_label;
-    }
-
-    public CheckOutWidgets(String widget_type, String widget_label, String widget_data) {
+    public CheckInWidgets(String widget_type, String widget_label, String widget_data) {
         this.widget_type = widget_type;
         this.widget_label = widget_label;
         this.widget_data = widget_data;
     }
 
-    public CheckOutWidgets() {
+    public CheckInWidgets(String widget_type, String widget_label) {
+        this.widget_type = widget_type;
+        this.widget_label = widget_label;
+    }
+
+    public CheckInWidgets() {
     }
 
     public String getTemplate_id() {
@@ -37,12 +37,12 @@ public class CheckOutWidgets {
         this.template_id = template_id;
     }
 
-    public String getCheckout_id() {
-        return checkout_id;
+    public String getCheckin_id() {
+        return checkin_id;
     }
 
-    public void setCheckout_id(String checkout_id) {
-        this.checkout_id = checkout_id;
+    public void setCheckin_id(String checkin_id) {
+        this.checkin_id = checkin_id;
     }
 
     public String getWidget_type() {

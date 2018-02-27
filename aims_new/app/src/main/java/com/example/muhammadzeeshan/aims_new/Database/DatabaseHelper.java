@@ -6,12 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplateData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.CheckInWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.CheckOutWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.InspectWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.CheckIn.CheckInWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutData;
+import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.Inspect.InspectWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 
 /**
@@ -31,6 +32,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     protected static final String TABLE_INSPECT = "inspect";
 
     protected static final String TABLE_ASSET_TEMPLATE_DATA = "asset_template_data";
+    protected static final String TABLE_CHECKOUT_DATA = "checkout_data";
+    protected static final String TABLE_CHECKIN_DATA = "checkin_data";
+    protected static final String TABLE_INSPECT_DATA = "inspect_data";
 
 
     String CREATE_TABLE_ASSET = "CREATE TABLE " + TABLE_ASSET +
@@ -52,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "Widget_Type TEXT, " +
             "Widget_Label TEXT, " +
             "Template_Id INTEGER, " +
-            "FOREIGN KEY (Template_Id) REFERENCES template(Template_Id)); " ;
+            "FOREIGN KEY (Template_Id) REFERENCES template(Template_Id)); ";
 
     String CREATE_TABLE_CHECKOUT = "CREATE TABLE " + TABLE_CHECKOUT +
             "( Widget_Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -85,6 +89,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "FOREIGN KEY (Asset_Id) REFERENCES asset(Asset_Id)" +
             "FOREIGN KEY (Widget_Id) REFERENCES asset_template(Widget_Id)); ";
 
+    String CREATE_TABLE_CHECKOUT_DATA = "CREATE TABLE " + TABLE_CHECKOUT_DATA +
+            "( Data_Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "Template_Id TEXT, " +
+            "Asset_Id TEXT, " +
+            "Widget_Id INTEGER, " +
+            "Widget_Data INTEGER, " +
+            "FOREIGN KEY (Template_Id) REFERENCES template(Template_Id) " +
+            "FOREIGN KEY (Asset_Id) REFERENCES asset(Asset_Id)" +
+            "FOREIGN KEY (Widget_Id) REFERENCES asset_template(Widget_Id)); ";
+
+    String CREATE_TABLE_CHECKIN_DATA = "CREATE TABLE " + TABLE_CHECKIN_DATA +
+            "( Data_Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "Template_Id TEXT, " +
+            "Asset_Id TEXT, " +
+            "Widget_Id INTEGER, " +
+            "Widget_Data INTEGER, " +
+            "FOREIGN KEY (Template_Id) REFERENCES template(Template_Id) " +
+            "FOREIGN KEY (Asset_Id) REFERENCES asset(Asset_Id)" +
+            "FOREIGN KEY (Widget_Id) REFERENCES asset_template(Widget_Id)); ";
+
+    String CREATE_TABLE_INSPECT_DATA = "CREATE TABLE " + TABLE_INSPECT_DATA +
+            "( Data_Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "Template_Id TEXT, " +
+            "Asset_Id TEXT, " +
+            "Widget_Id INTEGER, " +
+            "Widget_Data INTEGER, " +
+            "FOREIGN KEY (Template_Id) REFERENCES template(Template_Id) " +
+            "FOREIGN KEY (Asset_Id) REFERENCES asset(Asset_Id)" +
+            "FOREIGN KEY (Widget_Id) REFERENCES asset_template(Widget_Id)); ";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -100,6 +134,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_TEMPLATE);
         db.execSQL(CREATE_TABLE_INSPECT);
         db.execSQL(CREATE_TABLE_ASSET_TEMPLATE_DATA);
+        db.execSQL(CREATE_TABLE_CHECKOUT_DATA);
+        db.execSQL(CREATE_TABLE_CHECKIN_DATA);
+        db.execSQL(CREATE_TABLE_INSPECT_DATA);
 
     }
 
@@ -113,6 +150,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql5 = "DROP TABLE IF EXISTS " + CREATE_TABLE_TEMPLATE;
         String sql6 = "DROP TABLE IF EXISTS " + CREATE_TABLE_INSPECT;
         String sql7 = "DROP TABLE IF EXISTS " + CREATE_TABLE_ASSET_TEMPLATE_DATA;
+        String sql8 = "DROP TABLE IF EXISTS " + CREATE_TABLE_CHECKOUT_DATA;
+        String sql9 = "DROP TABLE IF EXISTS " + CREATE_TABLE_CHECKIN_DATA;
+        String sql10 = "DROP TABLE IF EXISTS " + CREATE_TABLE_INSPECT_DATA;
 
         db.execSQL(sql1);
         db.execSQL(sql2);
@@ -121,12 +161,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(sql5);
         db.execSQL(sql6);
         db.execSQL(sql7);
-
+        db.execSQL(sql8);
+        db.execSQL(sql9);
+        db.execSQL(sql10);
 
         onCreate(db);
     }
 
-    //Insert Data Into Form Table.....................
+    //Insert Data Into Asset Table.....................
     public boolean insertDataIntoAsset(AssetData data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -146,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    //Insert Data Into Widget Table.....................
+    //Insert Data Into Template Table.....................
     public boolean insertDataIntoTemplate(TemplateData template_data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -187,7 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Template_Id", (widgets.getTemplate_id()));
         values.put("Widget_Type", widgets.getWidget_type());
         values.put("Widget_Label", widgets.getWidget_label());
 
@@ -199,13 +241,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    //Insert Data Into CheckOut Table.....................
+    //Insert Data Into CheckIn Table.....................
     public boolean insertDataIntoCheckinTemplate(CheckInWidgets widgets) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Template_Id", (widgets.getTemplate_id()));
         values.put("Widget_Type", widgets.getWidget_type());
         values.put("Widget_Label", widgets.getWidget_label());
 
@@ -217,13 +259,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
-    //Insert Data Into CheckOut Table.....................
+    //Insert Data Into Inspect Table.....................
     public boolean insertDataIntoInspectTemplate(InspectWidgets widgets) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put("Template_Id",(widgets.getTemplate_id()));
+        values.put("Template_Id", (widgets.getTemplate_id()));
         values.put("Widget_Type", widgets.getWidget_type());
         values.put("Widget_Label", widgets.getWidget_label());
 
@@ -236,12 +278,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Insert Record Into Asset_Template_Data Table.....................
-    public boolean insertDataIntoAssetTemplateData(AssetTemplateData widgets) {
+    public boolean insertIntoAssetTemplateData(AssetTemplateData widgets) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put("Template_Id",(widgets.getTemplate_Id()));
+        values.put("Template_Id", (widgets.getTemplate_Id()));
         values.put("Asset_Id", widgets.getAsset_Id());
         values.put("Widget_Id", widgets.getWidget_Id());
         values.put("Widget_data", widgets.getWidget_Data());
@@ -254,6 +296,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
+    //Insert Record Into Checkout Table.....................
+    public boolean insertIntoCheckoutData(CheckOutData widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id", (widgets.getTemplate_Id()));
+        values.put("Asset_Id", widgets.getAsset_Id());
+        values.put("Widget_Id", widgets.getWidget_Id());
+        values.put("Widget_data", widgets.getWidget_Data());
+
+        long result = db.insert(TABLE_CHECKOUT_DATA, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+
+
+
 
     //Retrieve Data from Table......................
     public Cursor RetrieveData(String sql) {
@@ -262,16 +326,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    //Update Data Into Asset Template Table......................
-//    public int UpdateAssetTemplateTable(String id, String data) {
-//        SQLiteDatabase database = this.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//
-//        values.put("Widget_data", data);
-//
-//        int count = database.update(TABLE_ASSET_TEMPLATE, values, "Widget_Id = '" + id + "'", null);
-//        return count;
-//    }
+    //Update Data Into Asset Table......................
+    public int UpdateAssetTable(String id, String data) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("status", data);
+
+        int count = database.update(TABLE_ASSET, values, "Asset_Id = '" + id + "'", null);
+        return count;
+    }
 
 
     //Delete Data in Form Table,.......................

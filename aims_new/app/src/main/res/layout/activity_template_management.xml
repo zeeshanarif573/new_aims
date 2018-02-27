@@ -8,12 +8,13 @@
     tools:context="com.example.muhammadzeeshan.aims_new.Activity.TemplateManagement">
 
     <ExpandableListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/expandable_ListView"
-        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="532dp"
+        android:layout_marginTop="40dp"
         android:padding="6dp"
-        android:layout_marginTop="40dp">
+        android:visibility="visible"
+        tools:layout_editor_absoluteY="35dp">
 
     </ExpandableListView>
 
@@ -37,7 +38,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="20dp"
             android:fontFamily="@font/ubuntu_light"
-            android:text="Create Template"
+            android:text="Template Management"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="18sp"

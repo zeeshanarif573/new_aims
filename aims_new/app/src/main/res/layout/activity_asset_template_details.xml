@@ -32,7 +32,7 @@
             android:layout_weight="0.37"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:text="Asset Details"
+            android:text="Asset Template Details"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textStyle="bold"

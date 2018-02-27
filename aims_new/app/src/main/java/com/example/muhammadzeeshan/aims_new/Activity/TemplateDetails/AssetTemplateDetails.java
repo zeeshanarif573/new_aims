@@ -47,8 +47,8 @@ import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
 import com.example.muhammadzeeshan.aims_new.Models.DateModel;
 import com.example.muhammadzeeshan.aims_new.Models.SignaturePadModel;
 import com.example.muhammadzeeshan.aims_new.Models.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplateData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
@@ -96,28 +96,21 @@ public class AssetTemplateDetails extends AppCompatActivity {
     AlertDialog.Builder alertDialog;
     Dialog dialog, get_header_footer_pdf;
     Button doneAssetDetails;
-    byte[] byteArray;
-    int day, year, month, hour, minute;
+    int hour, minute;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    String form_id;
     Uri uri;
     File uriToFile;
     ArrayList<AssetTemplatesWidgets> generate_list;
     ArrayList<SignaturePadModel> padList;
-
     ArrayList<File> signatureImage;
     String time, get_hour, get_min;
-    /*--------------*/
     File photoFile;
-    boolean insertOneTimeFlag = false;
     ProgressDialog progress1;
     ProgressDialog progress2;
     private int PICK_IMAGE_REQUEST = 20;
     String date, AssetTitle, AssetDescription, SelectedItem, SelectedItemId, SelectedItemName;
-
     String AssetId;
     GeneralMethods generalMethods;
-
     private ArrayList<DateModel> labelTextViewList = new ArrayList<>();
     private DateModel latestLabel;
 
@@ -979,32 +972,31 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     }
 
-
     public void InsertDataIntoAssetTemplate() {
 
         for (Widgets_Model id_widget_model : widgetList) {
 
             //Condition for EditText..............................
             if (id_widget_model.getEditText() != null) {
-                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
 
 //           Condition for CheckBox..............................
             } else if (id_widget_model.getCheckBox() != null) {
                 if (id_widget_model.getCheckBox().isChecked()) {
-                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
+                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
                 } else {
-                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
+                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
                 }
             }
 
 //          Condition for TextView..............................
             else if (id_widget_model.getTextView() != null) {
-                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
             }
 
 //          Condition for Section..............................
             else if (id_widget_model.getSection() != null) {
-                databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
             }
 
 //          Condition for Camera..............................
@@ -1019,12 +1011,12 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                 if (FinalImageString.length() > 1) {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
-                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
 
 
                 } else {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
-                    databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
 
                 }
 
@@ -1035,7 +1027,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
+                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
 
                     }
                 }
@@ -1047,7 +1039,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
+                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
 
                     }
                 }
@@ -1065,7 +1057,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                         photo = addJpgSignatureToGallery(signatureBitmap);
                         signatureImage.add(photo);
-                        databaseHelper.insertDataIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), photo.toString()));
+                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), photo.toString()));
 
                     }
                 }
@@ -1075,12 +1067,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     }
 
-    //Signature Methods.................................
-    void InsertSignatureToDB(String widget_id) {
-
-        // insertOneTimeFlag = true;
-    }
-
+    //Signature Methods...........................................
     public File getAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(

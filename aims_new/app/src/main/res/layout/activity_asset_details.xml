@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:id="@+id/detail_Layout"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -56,12 +57,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5.5">
+        android:layout_weight="5.5"
+        android:orientation="horizontal">
 
         <Button
-            android:id="@+id/change_operation"
+            android:id="@+id/checkOut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="5dp"
@@ -69,6 +72,39 @@
             android:backgroundTint="@color/check_buttons"
             android:fontFamily="@font/ubuntu_light"
             android:textAllCaps="false"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/checkIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="@color/check_buttons"
+            android:fontFamily="@font/ubuntu_light"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/Inspect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="@color/check_buttons"
+            android:fontFamily="@font/ubuntu_light"
+            android:textAllCaps="false"
+            android:visibility="gone"
             android:textColor="@color/white"
             android:textStyle="bold" />
 

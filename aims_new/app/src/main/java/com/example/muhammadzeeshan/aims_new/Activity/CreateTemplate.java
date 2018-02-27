@@ -25,6 +25,7 @@ public class CreateTemplate extends AppCompatActivity {
     DatabaseHelper databaseHelper;
     AlertDialog.Builder alertDialog;
     String Template_Id, Template_Name;
+    AlertDialog dialog;
     EditText create_template_name, create_template_desc;
 
     @Override
@@ -50,13 +51,14 @@ public class CreateTemplate extends AppCompatActivity {
                         creatingTemplate.dismiss();
                         databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
 
-                        AlertDialog dialog = alertDialog.create();
+                        dialog = alertDialog.create();
                         dialog.show();
 
                         getData();
                         finish();
                         startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
 
+                        dialog.dismiss();
                     }
                 }, 2000);
 
