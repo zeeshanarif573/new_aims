@@ -44,9 +44,9 @@ import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.GeneralMethods;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
-import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutData;
 import com.example.muhammadzeeshan.aims_new.Models.DateModel;
 import com.example.muhammadzeeshan.aims_new.Models.SignaturePadModel;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.Models.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
@@ -71,6 +71,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.SavingData;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getArrayList;
@@ -105,11 +107,12 @@ public class CheckOutDetails extends AppCompatActivity {
     String time, get_hour, get_min;
     File photoFile;
     private int PICK_IMAGE_REQUEST = 20;
-    String date, AssetTitle, AssetDescription, SelectedItem, SelectedItemId, SelectedItemName;
-    String AssetId;
+    String date;
     GeneralMethods generalMethods;
+    String getCheckout_AssetId, getCheckout_AssetName, getCheckout_TemplateId;
     private ArrayList<DateModel> labelTextViewList = new ArrayList<>();
     private DateModel latestLabel;
+    Date currentTime;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -118,13 +121,16 @@ public class CheckOutDetails extends AppCompatActivity {
         setContentView(R.layout.activity_check_out_details);
 
         databaseHelper = new DatabaseHelper(this);
-        Intent intent = getIntent();
 
-        AssetTitle = intent.getStringExtra("AssetTitle");
-        AssetDescription = intent.getStringExtra("AssetDescription");
-        SelectedItem = intent.getStringExtra("SelectedItem");
-        SelectedItemId = intent.getStringExtra("SelectedItemId");
-        SelectedItemName = intent.getStringExtra("SelectedItemName");
+        Intent intent = getIntent();
+        getCheckout_TemplateId = intent.getStringExtra("AssetId");
+        getCheckout_AssetId = intent.getStringExtra("TemplateId");
+        getCheckout_AssetName = intent.getStringExtra("AssetName");
+
+
+        currentTime = Calendar.getInstance().getTime();
+
+        Log.e("Id"," ,Template_ID: " + getCheckout_TemplateId + " Asset_ID: " + getCheckout_AssetId);
 
         init();
         getCreatedWidgets();
@@ -144,9 +150,10 @@ public class CheckOutDetails extends AppCompatActivity {
 
                         getCheckoutInfo();
                         InsertDataIntoCheckOut();
-                        getCheckoutData();
+                        generateReport();
+                        getTemplateData();
 
-                        databaseHelper.UpdateAssetTable(AssetId, "Instock");
+                        databaseHelper.UpdateAssetTable(getCheckout_AssetId, "CheckOut");
 
                         Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
                         startActivity(new Intent(CheckOutDetails.this, MainActivity.class));
@@ -154,7 +161,7 @@ public class CheckOutDetails extends AppCompatActivity {
                     }
                 }, 2000);
 
-                Snackbar.make(layout, "Status Updated to Instock", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(layout, "Status Updated to CheckOut", Snackbar.LENGTH_SHORT).show();
 
             }
         });
@@ -163,7 +170,7 @@ public class CheckOutDetails extends AppCompatActivity {
 
     void generateReport() {
 
-        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/alto.pdf";
+        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/" + "CheckOut\\" + getCheckout_AssetName +"\\"+ currentTime + ".pdf";
 
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/PDF");
@@ -209,30 +216,30 @@ public class CheckOutDetails extends AppCompatActivity {
         header.setFont(titleFont);
         // Add item into Paragraph
 
-        try {
-
-            BitmapFactory.Options logo_options = new BitmapFactory.Options();
-            logo_options.inSampleSize = 8;
-
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-            Bitmap result = Bitmap.createScaledBitmap(bitmap,
-                    80, 80, false);
-
-            Log.e("Inside PDF", bitmap.toString());
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            Image image = Image.getInstance(stream.toByteArray());
-            image.setAlignment(Element.ALIGN_CENTER);
-            header.add(image);
-
-        } catch (IOException ex) {
-            return;
-        }
+//        try {
+//
+//            BitmapFactory.Options logo_options = new BitmapFactory.Options();
+//            logo_options.inSampleSize = 8;
+//
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//
+//            Bitmap result = Bitmap.createScaledBitmap(bitmap,
+//                    80, 80, false);
+//
+//            Log.e("Inside PDF", bitmap.toString());
+//
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//            Image image = Image.getInstance(stream.toByteArray());
+//            image.setAlignment(Element.ALIGN_CENTER);
+//            header.add(image);
+//
+//        } catch (IOException ex) {
+//            return;
+//        }
 
         header.add("\n");
-        header.add(header_name.getText().toString() + "\n");
+        header.add("Header Name" + "\n");
         header.add("\n");
 
         // Create Table into Document with 1 Row
@@ -296,6 +303,14 @@ public class CheckOutDetails extends AppCompatActivity {
                 prProfile.add("\n");
                 prProfile.add(" " + widgets_model.getLabel() + ":");
                 prProfile.add(" " + widgets_model.getTextView().getText().toString());
+                prProfile.add("\n");
+            }
+
+            //Condition for Section..............................
+            else if (widgets_model.getSection() != null) {
+                prProfile.add("\n");
+                prProfile.add(" " + widgets_model.getLabel() + ":");
+                prProfile.add(" " + widgets_model.getSection().getText().toString());
                 prProfile.add("\n");
             }
 
@@ -403,13 +418,14 @@ public class CheckOutDetails extends AppCompatActivity {
         document.newPage();
     }
 
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     void getCreatedWidgets() {
 
         int index = 0;
 
-        Cursor cursor = databaseHelper.RetrieveData("Select * from checkout where Template_Id =" + SelectedItemId);
+        Cursor cursor = databaseHelper.RetrieveData("Select * from checkout where Template_Id =" + getCheckout_TemplateId);
         while (cursor.moveToNext()) {
 
             Widget_Id = (cursor.getString(0));
@@ -971,25 +987,25 @@ public class CheckOutDetails extends AppCompatActivity {
 
             //Condition for EditText..............................
             if (id_widget_model.getEditText() != null) {
-                databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
+                databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
 
 //           Condition for CheckBox..............................
             } else if (id_widget_model.getCheckBox() != null) {
                 if (id_widget_model.getCheckBox().isChecked()) {
-                    databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
+                    databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), "Checked"));
                 } else {
-                    databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
+                    databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), "UnChecked"));
                 }
             }
 
 //          Condition for TextView..............................
             else if (id_widget_model.getTextView() != null) {
-                databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
+                databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
             }
 
 //          Condition for Section..............................
             else if (id_widget_model.getSection() != null) {
-                databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
+                databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
             }
 
 //          Condition for Camera..............................
@@ -1004,12 +1020,12 @@ public class CheckOutDetails extends AppCompatActivity {
 
                 if (FinalImageString.length() > 1) {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
-                    databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), imagePath));
 
 
                 } else {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
-                    databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), imagePath));
 
                 }
 
@@ -1020,7 +1036,7 @@ public class CheckOutDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
+                        databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), dateModel.getDate()));
 
                     }
                 }
@@ -1032,7 +1048,7 @@ public class CheckOutDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
+                        databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), dateModel.getTime()));
 
                     }
                 }
@@ -1050,7 +1066,7 @@ public class CheckOutDetails extends AppCompatActivity {
 
                         photo = addJpgSignatureToGallery(signatureBitmap);
                         signatureImage.add(photo);
-                        databaseHelper.insertIntoCheckoutData(new CheckOutData(SelectedItemId, AssetId, id_widget_model.getId(), photo.toString()));
+                        databaseHelper.insertIntoCheckoutData(new TemplateData(getCheckout_TemplateId, getCheckout_AssetId, id_widget_model.getId(), photo.toString()));
 
                     }
                 }
@@ -1189,7 +1205,7 @@ public class CheckOutDetails extends AppCompatActivity {
 
     void getCheckoutInfo() {
 
-        Cursor cursor = databaseHelper.RetrieveData("select * from asset_template");
+        Cursor cursor = databaseHelper.RetrieveData("select * from checkout");
         while (cursor.moveToNext()) {
 
             String Widget_Id = cursor.getString(0);
@@ -1202,7 +1218,7 @@ public class CheckOutDetails extends AppCompatActivity {
         }
     }
 
-    void getCheckoutData() {
+    void getTemplateData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from checkout_data");
         while (cursor.moveToNext()) {
@@ -1220,6 +1236,5 @@ public class CheckOutDetails extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
     }
 }

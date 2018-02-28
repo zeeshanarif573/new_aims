@@ -11,7 +11,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.muhammadzeeshan.aims_new.Activity.TemplateManagement;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Reports;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.R;
 
 
@@ -51,7 +52,7 @@ public class NavigationDrawer extends Fragment {
             public void onClick(View view) {
 
                 getActivity().finish();
-           //     startActivity(new Intent(getContext(), Reports.class));
+                startActivity(new Intent(getContext(), Reports.class));
                 getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });

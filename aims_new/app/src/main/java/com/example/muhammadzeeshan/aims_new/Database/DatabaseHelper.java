@@ -7,13 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.muhammadzeeshan.aims_new.Models.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplateData;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.CheckIn.CheckInWidgets;
-import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutData;
 import com.example.muhammadzeeshan.aims_new.Models.CheckOut.CheckOutWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.Inspect.InspectWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateDescription;
 
 /**
  * Created by Muhammad Zeeshan on 12/30/2017.
@@ -22,7 +21,7 @@ import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    protected static final String DATABASE_NAME = "ty";
+    protected static final String DATABASE_NAME = "iauditor";
 
     protected static final String TABLE_ASSET = "asset";
     protected static final String TABLE_TEMPLATE = "template";
@@ -189,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Insert Data Into Template Table.....................
-    public boolean insertDataIntoTemplate(TemplateData template_data) {
+    public boolean insertDataIntoTemplate(TemplateDescription template_data) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -204,6 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else
             return true;
     }
+
 
     //Insert Data Into Asset_Template Table.....................
     public boolean insertDataIntoAssetTemplate(AssetTemplatesWidgets widgets) {
@@ -277,8 +277,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
+
     //Insert Record Into Asset_Template_Data Table.....................
-    public boolean insertIntoAssetTemplateData(AssetTemplateData widgets) {
+    public boolean insertIntoAssetTemplateData(TemplateData widgets) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -297,7 +298,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Insert Record Into Checkout Table.....................
-    public boolean insertIntoCheckoutData(CheckOutData widgets) {
+    public boolean insertIntoCheckoutData(TemplateData widgets) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -315,7 +316,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
+    //Insert Record Into Checkin Table.....................
+    public boolean insertIntoCheckinData(TemplateData widgets) {
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id", (widgets.getTemplate_Id()));
+        values.put("Asset_Id", widgets.getAsset_Id());
+        values.put("Widget_Id", widgets.getWidget_Id());
+        values.put("Widget_data", widgets.getWidget_Data());
+
+        long result = db.insert(TABLE_CHECKIN_DATA, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    //Insert Record Into Inspect Table.....................
+    public boolean insertIntoInspectData(TemplateData widgets) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("Template_Id", (widgets.getTemplate_Id()));
+        values.put("Asset_Id", widgets.getAsset_Id());
+        values.put("Widget_Id", widgets.getWidget_Id());
+        values.put("Widget_data", widgets.getWidget_Data());
+
+        long result = db.insert(TABLE_INSPECT_DATA, null, values);
+
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }
 
 
 
@@ -324,7 +361,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery(sql, null);
     }
-
 
     //Update Data Into Asset Table......................
     public int UpdateAssetTable(String id, String data) {
@@ -336,7 +372,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int count = database.update(TABLE_ASSET, values, "Asset_Id = '" + id + "'", null);
         return count;
     }
-
 
     //Delete Data in Form Table,.......................
     public Integer deleteRecordfromAssetsWidgets(String id) {

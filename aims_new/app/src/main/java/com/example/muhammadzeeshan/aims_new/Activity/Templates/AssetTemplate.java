@@ -791,10 +791,10 @@ public class AssetTemplate extends AppCompatActivity {
                             databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
 
                             getAssetTemplateData();
-
-                            dialog = alertDialog.create();
-                            dialog.show();
                         }
+
+                        dialog = alertDialog.create();
+                        dialog.show();
 
                         Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
 
@@ -805,6 +805,7 @@ public class AssetTemplate extends AppCompatActivity {
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                         dialog.dismiss();
+
                     }
                 }, 2000);
             }
@@ -930,7 +931,6 @@ public class AssetTemplate extends AppCompatActivity {
         while (cursor.moveToNext()) {
 
             Template_Id = cursor.getString(0);
-
         }
     }
 

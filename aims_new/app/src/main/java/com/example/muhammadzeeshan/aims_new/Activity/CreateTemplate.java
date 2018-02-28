@@ -13,7 +13,7 @@ import android.widget.EditText;
 
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateDescription;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
@@ -49,7 +49,7 @@ public class CreateTemplate extends AppCompatActivity {
                     public void run() {
 
                         creatingTemplate.dismiss();
-                        databaseHelper.insertDataIntoTemplate(new TemplateData(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+                        databaseHelper.insertDataIntoTemplate(new TemplateDescription(create_template_name.getText().toString(), create_template_desc.getText().toString()));
 
                         dialog = alertDialog.create();
                         dialog.show();
@@ -57,6 +57,7 @@ public class CreateTemplate extends AppCompatActivity {
                         getData();
                         finish();
                         startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                         dialog.dismiss();
                     }

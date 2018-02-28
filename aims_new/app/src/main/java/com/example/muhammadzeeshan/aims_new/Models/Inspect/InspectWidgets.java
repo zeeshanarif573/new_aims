@@ -6,13 +6,12 @@ package com.example.muhammadzeeshan.aims_new.Models.Inspect;
 
 public class InspectWidgets {
 
-    String template_id, inspect_id, widget_type, widget_label, widget_data;
+    String template_id, inspect_id, widget_type, widget_label;
 
-    public InspectWidgets(String template_id, String widget_type, String widget_label, String widget_data) {
+    public InspectWidgets(String template_id, String widget_type, String widget_label) {
         this.template_id = template_id;
         this.widget_type = widget_type;
         this.widget_label = widget_label;
-        this.widget_data = widget_data;
     }
 
     public InspectWidgets(String widget_type, String widget_label) {
@@ -20,11 +19,6 @@ public class InspectWidgets {
         this.widget_label = widget_label;
     }
 
-    public InspectWidgets(String widget_type, String widget_label, String widget_data) {
-        this.widget_type = widget_type;
-        this.widget_label = widget_label;
-        this.widget_data = widget_data;
-    }
 
     public InspectWidgets() {
     }
@@ -61,11 +55,4 @@ public class InspectWidgets {
         this.widget_label = widget_label;
     }
 
-    public String getWidget_data() {
-        return widget_data;
-    }
-
-    public void setWidget_data(String widget_data) {
-        this.widget_data = widget_data;
-    }
 }

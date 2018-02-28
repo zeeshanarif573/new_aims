@@ -44,6 +44,7 @@ import at.markushi.ui.CircleButton;
 
 import static android.graphics.Typeface.BOLD;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
 
 public class CheckOutTemplate extends AppCompatActivity {
 
@@ -52,10 +53,10 @@ public class CheckOutTemplate extends AppCompatActivity {
     ArrayList<CheckOutWidgets> list;
     View snackView;
     AlertDialog.Builder alertDialog;
-    ProgressDialog progress;
-    String Template_Id;
+    AlertDialog dialog;
+    String getAssetDetail_TemplateId, getAssetDetail_AssetId, getAssetDetail_AssetName, TemplateId;
     DatabaseHelper databaseHelper;
-    Button done_create_asset_template;
+    Button done_create_checkout_template;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature, label_section;
     Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog, section_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature, done_label_section;
@@ -78,10 +79,17 @@ public class CheckOutTemplate extends AppCompatActivity {
             }
         }
 
+        Intent intent = getIntent();
+        getAssetDetail_TemplateId = intent.getStringExtra("TemplateId");
+        getAssetDetail_AssetId = intent.getStringExtra("AssetId");
+        getAssetDetail_AssetName = intent.getStringExtra("AssetName");
+
+        Log.e("Id's", "Asset_ID: " + getAssetDetail_AssetId + " ,Template_ID: " + getAssetDetail_TemplateId);
+
         initialization();
         dialog_transparency();
 
-        getTemplateData();
+        getTemplateId();
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +302,7 @@ public class CheckOutTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(CheckOutTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(CheckOutTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -343,7 +351,7 @@ public class CheckOutTemplate extends AppCompatActivity {
                                 } else {
                                     section_dialog.dismiss();
 
-                                    final CheckOutWidgets widgetsData = new CheckOutWidgets("Section", label_textView.getText().toString());
+                                    final CheckOutWidgets widgetsData = new CheckOutWidgets("Section", label_section.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -356,7 +364,7 @@ public class CheckOutTemplate extends AppCompatActivity {
                                     vertical_params.setMargins(20, 0, 10, 15);
                                     LinearLayout vertical_Layout = utils.CreateLinearLayout(CheckOutTemplate.this, LinearLayout.VERTICAL, vertical_params, null);
 
-                                    TextView textView_heading = utils.CreateTextView(CheckOutTemplate.this, label_textView.getText().toString(), 3, 15, 10, 15);
+                                    TextView textView_heading = utils.CreateTextView(CheckOutTemplate.this, label_section.getText().toString(), 3, 15, 10, 15);
                                     textView_heading.setTextSize(18);
 
                                     font();
@@ -364,7 +372,7 @@ public class CheckOutTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(CheckOutTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(CheckOutTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -392,7 +400,6 @@ public class CheckOutTemplate extends AppCompatActivity {
                         });
                     }
                 });
-
 
                 //Date Functionality Implemented...............
                 dateButton.setOnClickListener(new View.OnClickListener() {
@@ -783,7 +790,7 @@ public class CheckOutTemplate extends AppCompatActivity {
             }
         });
 
-        done_create_asset_template.setOnClickListener(new View.OnClickListener() {
+        done_create_checkout_template.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -794,24 +801,55 @@ public class CheckOutTemplate extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        progress.dismiss();
-
-                        for (int i = 0; i < list.size(); i++) {
-
-                            Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                            getCheckoutData();
-
-                        }
-                        Toast.makeText(CheckOutTemplate.this, "CheckOut Template is Created Successfully", Toast.LENGTH_SHORT).show();
-
+                        creatingTemplate.dismiss();
 
                         if (from.equalsIgnoreCase("AssetTemplate")) {
-                            startActivity(new Intent(CheckOutTemplate.this, CheckInTemplate.class));
+
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getCheckoutData();
+
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(CheckOutTemplate.this, CheckInTemplate.class);
+                            intent.putExtra("from", "CheckOutTemplate");
+                            startActivity(intent);
+
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
+
                         } else if (from.equalsIgnoreCase("AssetDetails")) {
-                            startActivity(new Intent(CheckOutTemplate.this, CheckOutDetails.class));
+
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getCheckoutData();
+
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                            Intent intent = new Intent(CheckOutTemplate.this, CheckOutDetails.class);
+                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                            intent.putExtra("AssetId", getAssetDetail_AssetId);
+                            intent.putExtra("AssetName", getAssetDetail_AssetName);
+
+                            startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
                         }
 
 
@@ -824,8 +862,6 @@ public class CheckOutTemplate extends AppCompatActivity {
     void initialization() {
 
         list = new ArrayList<>();
-
-        progress = new ProgressDialog(this);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -867,8 +903,8 @@ public class CheckOutTemplate extends AppCompatActivity {
         label_textView = textView_dialog.findViewById(R.id.label_textview);
         done_label_textView = textView_dialog.findViewById(R.id.done_textview_labels);
 
-        label_section = textView_dialog.findViewById(R.id.label_section);
-        done_label_section = textView_dialog.findViewById(R.id.done_section_label);
+        label_section = section_dialog.findViewById(R.id.label_section);
+        done_label_section = section_dialog.findViewById(R.id.done_section_label);
 
         label_date = date_dialog.findViewById(R.id.label_date);
         done_label_date = date_dialog.findViewById(R.id.done_date_labels);
@@ -885,7 +921,7 @@ public class CheckOutTemplate extends AppCompatActivity {
         fab_Open = (FloatingActionButton) findViewById(R.id.fab_Open_checkOut);
         fab_Close = (FloatingActionButton) findViewById(R.id.fab_Close_checkOut);
 
-        done_create_asset_template = findViewById(R.id.doneAssetCheckout);
+        done_create_checkout_template = findViewById(R.id.doneAssetCheckout);
         alertDialog = new AlertDialog.Builder(this);
     }
 
@@ -934,27 +970,27 @@ public class CheckOutTemplate extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    void getTemplateData() {
-
-        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
-        while (cursor.moveToNext()) {
-
-            Template_Id = cursor.getString(0);
-
-        }
-    }
-
     void getCheckoutData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from checkout");
         while (cursor.moveToNext()) {
 
-            String AssetTemplate_Id = cursor.getString(0);
+            String CheckoutTemplate_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
             String Template_Id = cursor.getString(3);
 
-            Log.e("Checkout_Data", "CheckOut_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
+            Log.e("Checkout_Data", "CheckOut_Id: " + CheckoutTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
+        }
+    }
+
+    void getTemplateId() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
+        while (cursor.moveToNext()) {
+
+            TemplateId = cursor.getString(0);
+
         }
     }
 

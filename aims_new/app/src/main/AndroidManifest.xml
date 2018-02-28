@@ -56,14 +56,16 @@
         <activity android:name=".Activity.Templates.CheckOutTemplate" />
         <activity android:name=".Activity.Templates.CheckInTemplate" />
         <activity android:name=".Activity.Templates.InspectTemplate" />
-        <activity android:name=".Activity.TemplateManagement" />
+        <activity android:name=".Activity.NavigationDrawer.TemplateManagement" />
         <activity android:name=".Activity.CreateTemplate" />
         <activity android:name=".Activity.Templates.AssetTemplate" />
         <activity android:name=".Activity.TemplateDetails.AssetTemplateDetails" />
         <activity android:name=".Activity.TemplateDetails.CheckOutDetails" />
         <activity android:name=".Activity.TemplateDetails.AssetDetails" />
         <activity android:name=".Activity.TemplateDetails.CheckInDetails" />
-        <activity android:name=".Activity.TemplateDetails.InspectDetails"></activity>
+        <activity android:name=".Activity.TemplateDetails.InspectDetails" />
+        <activity android:name=".Activity.PDF_Activity" />
+        <activity android:name=".Activity.NavigationDrawer.Reports"></activity>
     </application>
 
 </manifest>

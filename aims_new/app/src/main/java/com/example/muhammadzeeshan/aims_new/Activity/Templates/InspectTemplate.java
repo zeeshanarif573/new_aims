@@ -32,8 +32,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.CreateAsset;
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.CheckInDetails;
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.InspectDetails;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
+import com.example.muhammadzeeshan.aims_new.Models.CheckIn.CheckInWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.Inspect.InspectWidgets;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
@@ -44,6 +47,7 @@ import at.markushi.ui.CircleButton;
 
 import static android.graphics.Typeface.BOLD;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
 
 public class InspectTemplate extends AppCompatActivity {
 
@@ -52,16 +56,17 @@ public class InspectTemplate extends AppCompatActivity {
     ArrayList<InspectWidgets> list;
     View snackView;
     AlertDialog.Builder alertDialog;
-    ProgressDialog progress;
     LinearLayout skip_Inspect;
     DatabaseHelper databaseHelper;
-    Button doneAssetInspect;
-    String Template_Id;
+    Button done_create_Inspect_template;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature, label_section;
     Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog, section_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature, done_label_section;
     LinearLayout InspectWidgetsLayout;
     int index = 0;
+    AlertDialog dialog;
+    String from = "";
+    String getAssetDetail_TemplateId, getAssetDetail_AssetId, getAssetDetail_AssetName, TemplateId;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
     CoordinatorLayout snackbar_Layout;
     CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
@@ -71,10 +76,24 @@ public class InspectTemplate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspect_template);
 
+        if (getIntent().getExtras() != null) {
+            if (getIntent().hasExtra("from")) {
+                from = getIntent().getStringExtra("from");
+            }
+        }
+
+        Intent intent = getIntent();
+        getAssetDetail_TemplateId = intent.getStringExtra("TemplateId");
+        getAssetDetail_AssetId = intent.getStringExtra("AssetId");
+        getAssetDetail_AssetName = intent.getStringExtra("AssetName");
+
+        Log.e("Id's", "Asset_ID: " + getAssetDetail_AssetId + " ,Template_ID: " + getAssetDetail_TemplateId);
+
+
         initialization();
         dialog_transparency();
 
-        getTemplateData();
+        getTemplateId();
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -287,7 +306,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(InspectTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(InspectTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -336,7 +355,7 @@ public class InspectTemplate extends AppCompatActivity {
                                 } else {
                                     section_dialog.dismiss();
 
-                                    final InspectWidgets widgetsData = new InspectWidgets("Section", label_textView.getText().toString());
+                                    final InspectWidgets widgetsData = new InspectWidgets("Section", label_section.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -349,7 +368,7 @@ public class InspectTemplate extends AppCompatActivity {
                                     vertical_params.setMargins(20, 0, 10, 15);
                                     LinearLayout vertical_Layout = utils.CreateLinearLayout(InspectTemplate.this, LinearLayout.VERTICAL, vertical_params, null);
 
-                                    TextView textView_heading = utils.CreateTextView(InspectTemplate.this, label_textView.getText().toString(), 3, 15, 10, 15);
+                                    TextView textView_heading = utils.CreateTextView(InspectTemplate.this, label_section.getText().toString(), 3, 15, 10, 15);
                                     textView_heading.setTextSize(18);
 
                                     font();
@@ -358,7 +377,7 @@ public class InspectTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(InspectTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(InspectTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -775,7 +794,7 @@ public class InspectTemplate extends AppCompatActivity {
             }
         });
 
-        doneAssetInspect.setOnClickListener(new View.OnClickListener() {
+        done_create_Inspect_template.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -786,31 +805,64 @@ public class InspectTemplate extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        progress.dismiss();
+                        creatingTemplate.dismiss();
 
-                        for (int i = 0; i < list.size(); i++) {
+                        if (from.equalsIgnoreCase("CheckInTemplate")) {
 
-                            Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getInspectData();
 
-                            getInspectData();
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
+
+                        } else if (from.equalsIgnoreCase("AssetDetails")) {
+
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getInspectData();
+
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                            Intent intent = new Intent(InspectTemplate.this, InspectDetails.class);
+                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                            intent.putExtra("AssetId", getAssetDetail_AssetId);
+                            intent.putExtra("AssetName", getAssetDetail_AssetName);
+
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
                         }
-                        Toast.makeText(InspectTemplate.this, "Template is Created Successfully", Toast.LENGTH_SHORT).show();
-//                         startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
-                        finish();
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
                     }
                 }, 2000);
             }
         });
+        
     }
 
     void initialization() {
 
         list = new ArrayList<>();
-
-        progress = new ProgressDialog(this);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -852,8 +904,8 @@ public class InspectTemplate extends AppCompatActivity {
         label_textView = textView_dialog.findViewById(R.id.label_textview);
         done_label_textView = textView_dialog.findViewById(R.id.done_textview_labels);
 
-        label_section = textView_dialog.findViewById(R.id.label_section);
-        done_label_section = textView_dialog.findViewById(R.id.done_section_label);
+        label_section = section_dialog.findViewById(R.id.label_section);
+        done_label_section = section_dialog.findViewById(R.id.done_section_label);
 
         label_date = date_dialog.findViewById(R.id.label_date);
         done_label_date = date_dialog.findViewById(R.id.done_date_labels);
@@ -870,7 +922,7 @@ public class InspectTemplate extends AppCompatActivity {
         fab_Open = (FloatingActionButton) findViewById(R.id.fab_Open_Inspect);
         fab_Close = (FloatingActionButton) findViewById(R.id.fab_Close_Inspect);
 
-        doneAssetInspect = findViewById(R.id.doneAssetInspect);
+        done_create_Inspect_template = findViewById(R.id.doneAssetInspect);
         alertDialog = new AlertDialog.Builder(this);
     }
 
@@ -919,12 +971,12 @@ public class InspectTemplate extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    void getTemplateData() {
+    void getTemplateId() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from Template");
         while (cursor.moveToNext()) {
 
-            Template_Id = cursor.getString(0);
+            TemplateId = cursor.getString(0);
 
         }
     }
@@ -937,10 +989,9 @@ public class InspectTemplate extends AppCompatActivity {
             String AssetTemplate_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
-            String Widget_Data = cursor.getString(3);
-            String Template_Id = cursor.getString(4);
+            String Template_Id = cursor.getString(3);
 
-            Log.e("Inspect_Data", "Inspect_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+            Log.e("Inspect_Data", "Inspect_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
         }
     }
 

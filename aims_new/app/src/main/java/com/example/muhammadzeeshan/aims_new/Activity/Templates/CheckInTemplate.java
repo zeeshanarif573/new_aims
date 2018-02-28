@@ -10,13 +10,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.CheckInDetails;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
 import com.example.muhammadzeeshan.aims_new.Models.CheckIn.CheckInWidgets;
@@ -43,6 +44,7 @@ import at.markushi.ui.CircleButton;
 
 import static android.graphics.Typeface.BOLD;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingTemplateLoader;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingTemplate;
 
 public class CheckInTemplate extends AppCompatActivity {
 
@@ -52,9 +54,8 @@ public class CheckInTemplate extends AppCompatActivity {
     View snackView;
     AlertDialog.Builder alertDialog;
     ProgressDialog progress;
-    String Template_Id;
     DatabaseHelper databaseHelper;
-    Button doneAssetCheckin;
+    Button done_create_checkin_template;
     EditText label_editText, label_checkBox, label_textView, label_date, label_time, label_camera, label_signature, label_section;
     Dialog editText_dialog, checkbox_dialog, textView_dialog, date_dialog, time_dialog, signature_dialog, camera_dialog, section_dialog;
     Button done_label_editText, done_label_checkBox, done_label_textView, done_label_date, done_label_time, done_label_camera, done_label_signature, done_label_section;
@@ -62,6 +63,9 @@ public class CheckInTemplate extends AppCompatActivity {
     int index = 0;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
     CoordinatorLayout snackbar_Layout;
+    AlertDialog dialog;
+    String from = "";
+    String getAssetDetail_TemplateId, getAssetDetail_AssetId, TemplateId, getAssetDetail_AssetName;
     CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
 
     @Override
@@ -69,10 +73,24 @@ public class CheckInTemplate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in_template);
 
+        if (getIntent().getExtras() != null) {
+            if (getIntent().hasExtra("from")) {
+                from = getIntent().getStringExtra("from");
+            }
+        }
+
+        Intent intent = getIntent();
+        getAssetDetail_TemplateId = intent.getStringExtra("TemplateId");
+        getAssetDetail_AssetId = intent.getStringExtra("AssetId");
+        getAssetDetail_AssetName = intent.getStringExtra("AssetName");
+
+        Log.e("Id's", "Asset_ID: " + getAssetDetail_AssetId + " ,Template_ID: " + getAssetDetail_TemplateId);
+
+
         initialization();
         dialog_transparency();
 
-        getTemplateData();
+        getTemplateId();
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,7 +303,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(CheckInTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(CheckInTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -334,7 +352,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                 } else {
                                     section_dialog.dismiss();
 
-                                    final CheckInWidgets widgetsData = new CheckInWidgets("Section", label_textView.getText().toString());
+                                    final CheckInWidgets widgetsData = new CheckInWidgets("Section", label_section.getText().toString());
                                     list.add(widgetsData);
 
                                     //Horizontal Layout...........................
@@ -347,7 +365,7 @@ public class CheckInTemplate extends AppCompatActivity {
                                     vertical_params.setMargins(20, 0, 10, 15);
                                     LinearLayout vertical_Layout = utils.CreateLinearLayout(CheckInTemplate.this, LinearLayout.VERTICAL, vertical_params, null);
 
-                                    TextView textView_heading = utils.CreateTextView(CheckInTemplate.this, label_textView.getText().toString(), 3, 15, 10, 15);
+                                    TextView textView_heading = utils.CreateTextView(CheckInTemplate.this, label_section.getText().toString(), 3, 15, 10, 15);
                                     textView_heading.setTextSize(18);
 
                                     font();
@@ -355,7 +373,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
                                     //Delete Button Layout...........................
                                     LinearLayout.LayoutParams button_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 40, (float) 3);
-                                    button_params.setMargins(0, 45, 12, 5);
+                                    button_params.setMargins(0, 25, 12, 5);
                                     LinearLayout linearLayout_for_button = utils.CreateLinearLayout(CheckInTemplate.this, LinearLayout.VERTICAL, button_params, null);
                                     Button delete_Button = utils.CreateButton(CheckInTemplate.this, "", 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_cancel));
 
@@ -772,7 +790,7 @@ public class CheckInTemplate extends AppCompatActivity {
             }
         });
 
-        doneAssetCheckin.setOnClickListener(new View.OnClickListener() {
+        done_create_checkin_template.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -783,30 +801,68 @@ public class CheckInTemplate extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        progress.dismiss();
+                        creatingTemplate.dismiss();
 
-                        for (int i = 0; i < list.size(); i++) {
+                        if (from.equalsIgnoreCase("CheckOutTemplate")) {
 
-                            Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label(), ""));
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getCheckinData();
 
-                            getCheckInData();
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(CheckInTemplate.this, InspectTemplate.class);
+                            intent.putExtra("from", "CheckInTemplate");
+                            startActivity(intent);
+
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
+
+                        } else if (from.equalsIgnoreCase("AssetDetails")) {
+
+                            for (int i = 0; i < list.size(); i++) {
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                getCheckinData();
+
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                            Intent intent = new Intent(CheckInTemplate.this, CheckInDetails.class);
+                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                            intent.putExtra("AssetId", getAssetDetail_AssetId);
+                            intent.putExtra("AssetName", getAssetDetail_AssetName);
+                            startActivity(intent);
+
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
                         }
-                        Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
-                         startActivity(new Intent(CheckInTemplate.this, InspectTemplate.class));
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
 
                     }
                 }, 2000);
             }
         });
+
     }
 
     void initialization() {
 
         list = new ArrayList<>();
-
-        progress = new ProgressDialog(this);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -848,8 +904,8 @@ public class CheckInTemplate extends AppCompatActivity {
         label_textView = textView_dialog.findViewById(R.id.label_textview);
         done_label_textView = textView_dialog.findViewById(R.id.done_textview_labels);
 
-        label_section = textView_dialog.findViewById(R.id.label_section);
-        done_label_section = textView_dialog.findViewById(R.id.done_section_label);
+        label_section = section_dialog.findViewById(R.id.label_section);
+        done_label_section = section_dialog.findViewById(R.id.done_section_label);
 
         label_date = date_dialog.findViewById(R.id.label_date);
         done_label_date = date_dialog.findViewById(R.id.done_date_labels);
@@ -866,7 +922,7 @@ public class CheckInTemplate extends AppCompatActivity {
         fab_Open = (FloatingActionButton) findViewById(R.id.fab_Open_checkIn);
         fab_Close = (FloatingActionButton) findViewById(R.id.fab_Close_checkIn);
 
-        doneAssetCheckin = findViewById(R.id.doneAssetCheckin);
+        done_create_checkin_template = findViewById(R.id.doneAssetCheckin);
         alertDialog = new AlertDialog.Builder(this);
     }
 
@@ -915,28 +971,27 @@ public class CheckInTemplate extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    void getTemplateData() {
-
-        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
-        while (cursor.moveToNext()) {
-
-            Template_Id = cursor.getString(0);
-
-        }
-    }
-
-    void getCheckInData() {
+    void getCheckinData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from checkin");
         while (cursor.moveToNext()) {
 
-            String AssetTemplate_Id = cursor.getString(0);
+            String CheckinTemplate_Id = cursor.getString(0);
             String Widget_Type = cursor.getString(1);
             String Widget_Label = cursor.getString(2);
-            String Widget_Data = cursor.getString(3);
-            String Template_Id = cursor.getString(4);
+            String Template_Id = cursor.getString(3);
 
-            Log.e("CheckIn_Data", "checkIn_Id: " + AssetTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label + " ,Widget_Data: " + Widget_Data);
+            Log.e("Checkin_Data", "CheckIn_Id: " + CheckinTemplate_Id + " ,Template_Id: " + Template_Id + " ,Widget_Type: " + Widget_Type + " ,Widget_Label: " + Widget_Label);
+        }
+    }
+
+    void getTemplateId() {
+
+        Cursor cursor = databaseHelper.RetrieveData("select * from Template");
+        while (cursor.moveToNext()) {
+
+            TemplateId = cursor.getString(0);
+
         }
     }
 
@@ -945,7 +1000,7 @@ public class CheckInTemplate extends AppCompatActivity {
 
     }
 
-    void font(){
+    void font() {
         ubuntu_light_font = Typeface.createFromAsset(CheckInTemplate.this.getAssets(), "font/ubuntu_light.ttf");
         ubuntu_medium_font = Typeface.createFromAsset(CheckInTemplate.this.getAssets(), "font/Ubuntu-Medium.ttf");
         source_sans_pro = Typeface.createFromAsset(CheckInTemplate.this.getAssets(), "font/SourceSansPro-Light.ttf");

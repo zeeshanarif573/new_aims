@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="#efefef"
-    tools:context="com.example.muhammadzeeshan.aims_new.Activity.TemplateManagement">
+    tools:context="com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement">
 
     <ExpandableListView
         android:id="@+id/expandable_ListView"

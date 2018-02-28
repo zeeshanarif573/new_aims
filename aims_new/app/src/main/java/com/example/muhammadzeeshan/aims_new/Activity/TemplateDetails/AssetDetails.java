@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
+import com.example.muhammadzeeshan.aims_new.Activity.Templates.CheckInTemplate;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.CheckOutTemplate;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.InspectTemplate;
 import com.example.muhammadzeeshan.aims_new.Adapter.ViewAssetAdapter;
@@ -39,7 +40,7 @@ public class AssetDetails extends AppCompatActivity {
     Button checkOut, checkIn, Inspect;
     ViewAssetAdapter assetsAdapter;
     String status;
-    String getAssetId, getTemplateId;
+    String getAssetId, getAssetName, getTemplateId;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -57,7 +58,9 @@ public class AssetDetails extends AppCompatActivity {
         Intent intent = getIntent();
         getAssetId = intent.getStringExtra("AssetId");
         getTemplateId = intent.getStringExtra("TemplateId");
-        Toast.makeText(this, getAssetId, Toast.LENGTH_SHORT).show();
+        getAssetName= intent.getStringExtra("AssetName");
+
+        Toast.makeText(this, getTemplateId, Toast.LENGTH_SHORT).show();
 
         getWidgets();
         checkOperation();
@@ -81,8 +84,16 @@ public class AssetDetails extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (getCheckoutData()) {
-                    startActivity(new Intent(AssetDetails.this, CheckOutDetails.class));
+
+                    Intent intent = new Intent(AssetDetails.this, CheckOutDetails.class);
+                    intent.putExtra("AssetId", getAssetId);
+                    intent.putExtra("TemplateId", getTemplateId);
+                    intent.putExtra("AssetName", getAssetName);
+
+                    startActivity(intent);
+
                 } else {
+
                     Snackbar.make(mainLayout, "You first have to create CheckOut Template..", Snackbar.LENGTH_LONG).show();
 
                     Handler handler = new Handler();
@@ -92,14 +103,16 @@ public class AssetDetails extends AppCompatActivity {
 
                             Intent intent = new Intent(AssetDetails.this, CheckOutTemplate.class);
                             intent.putExtra("from", "AssetDetails");
+                            intent.putExtra("AssetId", getAssetId);
+                            intent.putExtra("TemplateId", getTemplateId);
+                            intent.putExtra("AssetName", getAssetName);
+
                             startActivity(intent);
+
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }, 1200);
                 }
-
-                //  databaseHelper.UpdateAssetTable(getAssetId, "CheckOut");
-                //   Snackbar.make(mainLayout, "Status Updated to CheckOut", Snackbar.LENGTH_SHORT).show();
 
             }
         });
@@ -108,26 +121,34 @@ public class AssetDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                if(getCheckInData()){
-//                    startActivity(new Intent(AssetDetails.this, CheckInDetails.class));
-//                }
-//                else {
-//                    Snackbar.make(mainLayout, "You first have to create CheckIn Template..", Snackbar.LENGTH_LONG).show();
-//
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//
-//                            startActivity(new Intent(AssetDetails.this, CheckInTemplate.class));
-//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-//                        }
-//                    }, 1200);
-//                }
+                if (getCheckInData()) {
+                    Intent intent = new Intent(AssetDetails.this, CheckInDetails.class);
+                    intent.putExtra("AssetId", getAssetId);
+                    intent.putExtra("TemplateId", getTemplateId);
+                    intent.putExtra("AssetName", getAssetName);
 
-                nextAcivity();
-                databaseHelper.UpdateAssetTable(getAssetId, "Instock");
-                Snackbar.make(mainLayout, "Status Updated to Instock", Snackbar.LENGTH_SHORT).show();
+
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(mainLayout, "You first have to create CheckIn Template..", Snackbar.LENGTH_LONG).show();
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Intent intent = new Intent(AssetDetails.this, CheckInTemplate.class);
+                            intent.putExtra("from", "AssetDetails");
+                            intent.putExtra("AssetId", getAssetId);
+                            intent.putExtra("TemplateId", getTemplateId);
+                            intent.putExtra("AssetName", getAssetName);
+
+                            startActivity(intent);
+
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                    }, 1200);
+                }
 
             }
         });
@@ -136,8 +157,15 @@ public class AssetDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (getCheckInData()) {
-                    startActivity(new Intent(AssetDetails.this, InspectDetails.class));
+                if (getInspectData()) {
+                    Intent intent = new Intent(AssetDetails.this, InspectDetails.class);
+                    intent.putExtra("AssetId", getAssetId);
+                    intent.putExtra("TemplateId", getTemplateId);
+                    intent.putExtra("AssetName", getAssetName);
+
+
+                    startActivity(intent);
+
                 } else {
                     Snackbar.make(mainLayout, "You first have to create Inspect Template..", Snackbar.LENGTH_LONG).show();
 
@@ -146,12 +174,18 @@ public class AssetDetails extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            startActivity(new Intent(AssetDetails.this, InspectTemplate.class));
+                            Intent intent = new Intent(AssetDetails.this, InspectTemplate.class);
+                            intent.putExtra("from", "AssetDetails");
+                            intent.putExtra("AssetId", getAssetId);
+                            intent.putExtra("TemplateId", getTemplateId);
+                            intent.putExtra("AssetName", getAssetName);
+
+                            startActivity(intent);
+
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                     }, 1200);
                 }
-
             }
         });
 
@@ -473,14 +507,6 @@ public class AssetDetails extends AppCompatActivity {
 
             Log.e("Status", status);
         }
-    }
-
-    public void nextAcivity() {
-
-        assetsAdapter = new ViewAssetAdapter(AssetDetails.this, R.layout.view_asset_layout, form_list);
-        listView.setAdapter(assetsAdapter);
-        assetsAdapter.notifyDataSetChanged();
-        startActivity(new Intent(AssetDetails.this, MainActivity.class));
     }
 
     void font() {

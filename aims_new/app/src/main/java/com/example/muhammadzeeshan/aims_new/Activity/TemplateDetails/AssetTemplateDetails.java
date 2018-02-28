@@ -47,8 +47,8 @@ import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
 import com.example.muhammadzeeshan.aims_new.Models.DateModel;
 import com.example.muhammadzeeshan.aims_new.Models.SignaturePadModel;
 import com.example.muhammadzeeshan.aims_new.Models.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplateData;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.Models.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
@@ -72,7 +72,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.SavingData;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getArrayList;
@@ -113,12 +117,16 @@ public class AssetTemplateDetails extends AppCompatActivity {
     GeneralMethods generalMethods;
     private ArrayList<DateModel> labelTextViewList = new ArrayList<>();
     private DateModel latestLabel;
+    Date currentTime;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_asset_template_details);
+
+        currentTime = Calendar.getInstance().getTime();
 
         databaseHelper = new DatabaseHelper(this);
         Intent intent = getIntent();
@@ -148,18 +156,19 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                         progress1.dismiss();
 
-                        databaseHelper.insertDataIntoAsset(new AssetData(SelectedItemId, AssetTitle, AssetDescription, SelectedItem, "InStock"));
+                        databaseHelper.insertDataIntoAsset(new AssetData(SelectedItemId, AssetTitle, AssetDescription, SelectedItem, "Instock"));
 
                         getAssetData();
                         getAssetTemplateInfo();
 
                         InsertDataIntoAssetTemplate();
-                        getAssetTemplateData();
+                        getTemplateData();
+                        generateReport();
 
                         Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
                         startActivity(new Intent(AssetTemplateDetails.this, MainActivity.class));
                     }
-                }, 2000);
+                }, 3000);
 
 
             }
@@ -168,7 +177,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     void generateReport() {
 
-        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/alto.pdf";
+        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/" + AssetTitle +"\\"+ currentTime + ".pdf";
 
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/PDF");
@@ -214,30 +223,30 @@ public class AssetTemplateDetails extends AppCompatActivity {
         header.setFont(titleFont);
         // Add item into Paragraph
 
-        try {
-
-            BitmapFactory.Options logo_options = new BitmapFactory.Options();
-            logo_options.inSampleSize = 8;
-
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-            Bitmap result = Bitmap.createScaledBitmap(bitmap,
-                    80, 80, false);
-
-            Log.e("Inside PDF", bitmap.toString());
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            Image image = Image.getInstance(stream.toByteArray());
-            image.setAlignment(Element.ALIGN_CENTER);
-            header.add(image);
-
-        } catch (IOException ex) {
-            return;
-        }
+//        try {
+//
+//            BitmapFactory.Options logo_options = new BitmapFactory.Options();
+//            logo_options.inSampleSize = 8;
+//
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//
+//            Bitmap result = Bitmap.createScaledBitmap(bitmap,
+//                    80, 80, false);
+//
+//            Log.e("Inside PDF", bitmap.toString());
+//
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//            Image image = Image.getInstance(stream.toByteArray());
+//            image.setAlignment(Element.ALIGN_CENTER);
+//            header.add(image);
+//
+//        } catch (IOException ex) {
+//            return;
+//        }
 
         header.add("\n");
-        header.add(header_name.getText().toString() + "\n");
+        header.add("Header Name" + "\n");
         header.add("\n");
 
         // Create Table into Document with 1 Row
@@ -407,6 +416,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
         // Create new Page in PDF
         document.newPage();
     }
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -978,25 +988,25 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
             //Condition for EditText..............................
             if (id_widget_model.getEditText() != null) {
-                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getEditText().getText().toString()));
 
 //           Condition for CheckBox..............................
             } else if (id_widget_model.getCheckBox() != null) {
                 if (id_widget_model.getCheckBox().isChecked()) {
-                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
+                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "Checked"));
                 } else {
-                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
+                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), "UnChecked"));
                 }
             }
 
 //          Condition for TextView..............................
             else if (id_widget_model.getTextView() != null) {
-                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getTextView().getText().toString()));
             }
 
 //          Condition for Section..............................
             else if (id_widget_model.getSection() != null) {
-                databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
+                databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), id_widget_model.getSection().getText().toString()));
             }
 
 //          Condition for Camera..............................
@@ -1011,12 +1021,12 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                 if (FinalImageString.length() > 1) {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
-                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
 
 
                 } else {
                     String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
-                    databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
 
                 }
 
@@ -1027,7 +1037,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
+                        databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getDate()));
 
                     }
                 }
@@ -1039,7 +1049,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 for (DateModel dateModel : labelTextViewList) {
 
                     if (id_widget_model.getId().equals(dateModel.getId())) {
-                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
+                        databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), dateModel.getTime()));
 
                     }
                 }
@@ -1057,7 +1067,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                         photo = addJpgSignatureToGallery(signatureBitmap);
                         signatureImage.add(photo);
-                        databaseHelper.insertIntoAssetTemplateData(new AssetTemplateData(SelectedItemId, AssetId, id_widget_model.getId(), photo.toString()));
+                        databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), photo.toString()));
 
                     }
                 }
@@ -1211,7 +1221,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
         }
     }
 
-    void getAssetTemplateData() {
+    void getTemplateData() {
 
         Cursor cursor = databaseHelper.RetrieveData("select * from asset_template_data");
         while (cursor.moveToNext()) {
@@ -1247,4 +1257,5 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public void onBackPressed() {
 
     }
+
 }

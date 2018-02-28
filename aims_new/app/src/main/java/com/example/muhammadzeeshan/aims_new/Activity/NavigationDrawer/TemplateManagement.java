@@ -1,4 +1,4 @@
-package com.example.muhammadzeeshan.aims_new.Activity;
+package com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,9 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 
+import com.example.muhammadzeeshan.aims_new.Activity.CreateTemplate;
+import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
 import com.example.muhammadzeeshan.aims_new.Adapter.TemplateAdapter;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
-import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateDescription;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class TemplateManagement extends AppCompatActivity {
     ExpandableListView listView;
     TemplateAdapter templateAdapter;
     List parentlist;
-    HashMap<String, List<TemplateData>> map;
+    HashMap<String, List<TemplateDescription>> map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class TemplateManagement extends AppCompatActivity {
 
     }
 
-    public HashMap<String, List<TemplateData>> getInfo() {
+    public HashMap<String, List<TemplateDescription>> getInfo() {
 
         getTemplateData();
 
@@ -79,7 +81,7 @@ public class TemplateManagement extends AppCompatActivity {
             Template_Name = cursor.getString(1);
             Template_Description = cursor.getString(2);
 
-            parentlist.add(new TemplateData(Template_Id, Template_Name, Template_Description));
+            parentlist.add(new TemplateDescription(Template_Id, Template_Name, Template_Description));
 
             Log.e("TemplateManagement_Data", "Template_Id: " + Template_Id + " ,Template_Name: " + Template_Name);
         }

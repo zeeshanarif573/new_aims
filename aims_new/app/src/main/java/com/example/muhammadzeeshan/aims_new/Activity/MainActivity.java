@@ -120,10 +120,13 @@ public class MainActivity extends AppCompatActivity {
                 AssetData assetData = form_list.get(position);
                 String AssetId = assetData.getAsset_id();
                 String TemplateId = assetData.getTemplate_id();
+                String AssetName = assetData.getAsset_name();
 
                 Intent intent = new Intent(MainActivity.this, AssetDetails.class);
                 intent.putExtra("AssetId", AssetId);
                 intent.putExtra("TemplateId", TemplateId);
+                intent.putExtra("AssetName", AssetName);
+
                 startActivity(intent);
             }
         });

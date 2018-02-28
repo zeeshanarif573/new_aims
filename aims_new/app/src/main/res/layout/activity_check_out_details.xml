@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails">
+    tools:context="com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.CheckOutDetails">
 
     <LinearLayout
         android:layout_width="match_parent"

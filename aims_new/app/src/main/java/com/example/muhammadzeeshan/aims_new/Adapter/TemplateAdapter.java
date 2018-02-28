@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
+import com.example.muhammadzeeshan.aims_new.Models.TemplateDescription;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.util.HashMap;
@@ -20,10 +20,10 @@ import java.util.List;
 public class TemplateAdapter extends BaseExpandableListAdapter {
 
     Context context;
-    HashMap<String, List<TemplateData>> map;
-    List<TemplateData> list;
+    HashMap<String, List<TemplateDescription>> map;
+    List<TemplateDescription> list;
 
-    public TemplateAdapter(Context context , HashMap<String , List<TemplateData>> map, List<TemplateData> list){
+    public TemplateAdapter(Context context , HashMap<String , List<TemplateDescription>> map, List<TemplateDescription> list){
 
         this.context = context;
         this.map = map;
@@ -69,7 +69,7 @@ public class TemplateAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int parent, boolean isExpanded, View view, ViewGroup parentView) {
 
-        TemplateData templateData = list.get(parent);
+        TemplateDescription templateDescription = list.get(parent);
 
         if(view == null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -77,7 +77,7 @@ public class TemplateAdapter extends BaseExpandableListAdapter {
         }
 
         TextView parentTextView = view.findViewById(R.id.parentText);
-        parentTextView.setText(templateData.getTemplate_name());
+        parentTextView.setText(templateDescription.getTemplate_name());
 
         return view;
     }
