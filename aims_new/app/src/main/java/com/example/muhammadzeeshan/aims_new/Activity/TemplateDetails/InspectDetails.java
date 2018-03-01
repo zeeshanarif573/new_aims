@@ -363,7 +363,6 @@ public class InspectDetails extends AppCompatActivity {
                     }
                 }
 
-
             }
 
             //Condition for Time..............................

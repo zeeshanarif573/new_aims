@@ -58,9 +58,9 @@ public class Splash extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-//                startActivity(new Intent(Splash.this, MainActivity.class));
-//                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-//                finish();
+                startActivity(new Intent(Splash.this, MainActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                finish();
 
             }
         });

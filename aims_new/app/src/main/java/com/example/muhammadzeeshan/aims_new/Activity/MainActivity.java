@@ -1,19 +1,23 @@
 package com.example.muhammadzeeshan.aims_new.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetDetails;
+import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails;
 import com.example.muhammadzeeshan.aims_new.Adapter.ViewAssetAdapter;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.Fragments.NavigationDrawer;
@@ -35,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     String AssetId, AssetName, AssetDescription, Status, TemplateId;
     android.support.v4.app.FragmentTransaction fragmentTransaction;
 
+    String header_name , footer_name , logo;
+    public static final String DEFAULT = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,19 @@ public class MainActivity extends AppCompatActivity {
 
         initialization();
         getAssetData();
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("PdfData", 0);
+        header_name = pref.getString("headerName", DEFAULT);
+        footer_name = pref.getString("footerName", DEFAULT);
+        logo = pref.getString("Logo", DEFAULT);
+
+        if(header_name.equals(DEFAULT) || footer_name.equals(DEFAULT) || logo.equals(DEFAULT)){
+            Toast.makeText(MainActivity.this, "No Data Found...", Toast.LENGTH_SHORT).show();
+        }
+
+        else {
+        //    Log.e("SharedPreference", "HeaderName: " + header_name + " ,FooterName: " + footer_name + " ,Logo: " + logo);
+        }
 
         createAsset.setOnClickListener(new View.OnClickListener() {
             @Override

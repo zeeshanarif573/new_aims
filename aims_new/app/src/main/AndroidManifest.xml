@@ -43,13 +43,14 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <activity android:name=".Activity.Splash" />
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.Splash" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".Activity.MainActivity">
         </activity>
         <activity android:name=".Activity.CreateAsset" />
         <activity android:name=".Activity.ViewAsset" />
@@ -65,7 +66,8 @@
         <activity android:name=".Activity.TemplateDetails.CheckInDetails" />
         <activity android:name=".Activity.TemplateDetails.InspectDetails" />
         <activity android:name=".Activity.PDF_Activity" />
-        <activity android:name=".Activity.NavigationDrawer.Reports"></activity>
+        <activity android:name=".Activity.NavigationDrawer.Reports" />
+        <activity android:name=".Activity.NavigationDrawer.Settings"></activity>
     </application>
 
 </manifest>

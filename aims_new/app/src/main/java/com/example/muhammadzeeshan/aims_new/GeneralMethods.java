@@ -27,7 +27,7 @@ public class GeneralMethods {
     public static ProgressDialog progress1;
     public static ProgressDialog creatingTemplate;
     public static ProgressDialog creatingAsset;
-    public static ProgressDialog progress2;
+    public static ProgressDialog creatingpdf;
     public static ProgressDialog progress3;
 
 
@@ -113,13 +113,22 @@ public class GeneralMethods {
     }
 
 
-    public static void Loader2(View view, Context context) {
-        progress2 = new ProgressDialog(context);
-        progress2.setTitle("Pdf is Generating");
-        progress2.setMessage("Please Wait...");
-        progress2.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    public static void CreatingPdf(View view, Context context) {
+        creatingpdf = new ProgressDialog(context);
+        creatingpdf.setTitle("Pdf is Generating");
+        creatingpdf.setMessage("Please Wait...");
+        creatingpdf.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-        progress2.show();
+        creatingpdf.show();
+    }
+
+    public static void CreatingHeader(View view, Context context) {
+        creatingpdf = new ProgressDialog(context);
+        creatingpdf.setTitle("Creating");
+        creatingpdf.setMessage("Please Wait...");
+        creatingpdf.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+        creatingpdf.show();
     }
 
     public static void DeletingRecord(View view, Context context) {

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -41,13 +42,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.GeneralMethods;
+import com.example.muhammadzeeshan.aims_new.Models.AssetData;
+import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
 import com.example.muhammadzeeshan.aims_new.Models.DateModel;
 import com.example.muhammadzeeshan.aims_new.Models.SignaturePadModel;
-import com.example.muhammadzeeshan.aims_new.Models.AssetData;
-import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.TemplateData;
 import com.example.muhammadzeeshan.aims_new.Models.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
@@ -72,8 +74,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,6 +81,7 @@ import java.util.Date;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.SavingData;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getArrayList;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getOutputMediaFile;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class AssetTemplateDetails extends AppCompatActivity {
 
@@ -92,13 +93,12 @@ public class AssetTemplateDetails extends AppCompatActivity {
     DatePicker date_picker;
     Button getDate, getTime, back_btn_generate_widget;
     TimePicker time_picker;
-    EditText report_name, header_name, footer_name;
-    Button continue_dialog, logo, generate_report;
+    String header_name, footer_name, logo;
     ImageView dis_Image;
     LinearLayout displayImages;
     ArrayList<CameraModel> ImageList;
     AlertDialog.Builder alertDialog;
-    Dialog dialog, get_header_footer_pdf;
+    Dialog dialog;
     Button doneAssetDetails;
     int hour, minute;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -109,8 +109,6 @@ public class AssetTemplateDetails extends AppCompatActivity {
     ArrayList<File> signatureImage;
     String time, get_hour, get_min;
     File photoFile;
-    ProgressDialog progress1;
-    ProgressDialog progress2;
     private int PICK_IMAGE_REQUEST = 20;
     String date, AssetTitle, AssetDescription, SelectedItem, SelectedItemId, SelectedItemName;
     String AssetId;
@@ -118,7 +116,9 @@ public class AssetTemplateDetails extends AppCompatActivity {
     private ArrayList<DateModel> labelTextViewList = new ArrayList<>();
     private DateModel latestLabel;
     Date currentTime;
-
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    public static final String DEFAULT = "";
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -142,34 +142,67 @@ public class AssetTemplateDetails extends AppCompatActivity {
         getCreatedWidgets();
 
         Log.e("SelectedItemId", SelectedItemId);
+    }
+
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        pref = getApplicationContext().getSharedPreferences("PdfData", 0);
+        editor = pref.edit();
+
+        header_name = pref.getString("headerName", DEFAULT);
+        footer_name = pref.getString("footerName", DEFAULT);
+        logo = pref.getString("Logo", DEFAULT);
+
+        Log.e("SharedPreference", "getName: " + header_name + " , getFooter: " + footer_name + " ,getLogo: " + logo);
+
 
         doneAssetDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
 
-                SavingData(view, AssetTemplateDetails.this);
+                if (header_name.equals(DEFAULT) || footer_name.equals(DEFAULT) || logo.equals(DEFAULT)) {
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                    Snackbar.make(layout, "First Set pdf header and logo in Settings...", Snackbar.LENGTH_SHORT).show();
 
-                        progress1.dismiss();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        databaseHelper.insertDataIntoAsset(new AssetData(SelectedItemId, AssetTitle, AssetDescription, SelectedItem, "Instock"));
+                            Intent intent = new Intent(AssetTemplateDetails.this, Settings.class);
+                            intent.putExtra("from","AssetTemplateDetails");
+                            startActivity(intent);
+                        }
+                    }, 2000);
 
-                        getAssetData();
-                        getAssetTemplateInfo();
+                } else  {
 
-                        InsertDataIntoAssetTemplate();
-                        getTemplateData();
-                        generateReport();
+                    SavingData(view, AssetTemplateDetails.this);
 
-                        Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
-                        startActivity(new Intent(AssetTemplateDetails.this, MainActivity.class));
-                    }
-                }, 3000);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            progress1.dismiss();
+
+                            databaseHelper.insertDataIntoAsset(new AssetData(SelectedItemId, AssetTitle, AssetDescription, SelectedItem, "Instock"));
+
+                            getAssetData();
+                            getAssetTemplateInfo();
+
+                            InsertDataIntoAssetTemplate();
+                            getTemplateData();
+                            generateReport();
+
+                            Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
+                            startActivity(new Intent(AssetTemplateDetails.this, MainActivity.class));
+                        }
+                    }, 3000);
+                }
 
             }
         });
@@ -177,7 +210,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     void generateReport() {
 
-        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/" + AssetTitle +"\\"+ currentTime + ".pdf";
+        String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/" + AssetTitle + "\\" + currentTime + ".pdf";
 
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/PDF");
@@ -223,30 +256,29 @@ public class AssetTemplateDetails extends AppCompatActivity {
         header.setFont(titleFont);
         // Add item into Paragraph
 
-//        try {
-//
-//            BitmapFactory.Options logo_options = new BitmapFactory.Options();
-//            logo_options.inSampleSize = 8;
-//
-//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-//
-//            Bitmap result = Bitmap.createScaledBitmap(bitmap,
-//                    80, 80, false);
-//
-//            Log.e("Inside PDF", bitmap.toString());
-//
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//            Image image = Image.getInstance(stream.toByteArray());
-//            image.setAlignment(Element.ALIGN_CENTER);
-//            header.add(image);
-//
-//        } catch (IOException ex) {
-//            return;
-//        }
+        try {
+
+            BitmapFactory.Options logo_options = new BitmapFactory.Options();
+            logo_options.inSampleSize = 8;
+
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(logo));
+
+            Bitmap result = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+
+            Log.e("Inside PDF", bitmap.toString());
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            Image image = Image.getInstance(stream.toByteArray());
+            image.setAlignment(Element.ALIGN_CENTER);
+            header.add(image);
+
+        } catch (IOException ex) {
+            return;
+        }
 
         header.add("\n");
-        header.add("Header Name" + "\n");
+        header.add(header_name + "\n");
         header.add("\n");
 
         // Create Table into Document with 1 Row
@@ -1144,33 +1176,12 @@ public class AssetTemplateDetails extends AppCompatActivity {
         doneAssetDetails = findViewById(R.id.doneAssetDetails);
         generalMethods = new GeneralMethods();
 
-        progress1 = new ProgressDialog(this);
-        progress2 = new ProgressDialog(this);
-
         dialog = new Dialog(this);
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
 
-
-        get_header_footer_pdf = new Dialog(this);
-        //    get_header_footer_pdf.setContentView(R.layout.get_header_footer_pdf);
-
-        get_header_footer_pdf.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        get_header_footer_pdf.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
-
-//        report_name = (EditText) dialog.findViewById(R.id.report_name);
-//        continue_dialog = (Button) dialog.findViewById(R.id.continue_dialog);
-//
-//        header_name = get_header_footer_pdf.findViewById(R.id.header_name);
-//
-//        logo = get_header_footer_pdf.findViewById(R.id.logo);
-//        dis_Image = get_header_footer_pdf.findViewById(R.id.dis_image);
-//
-//        generate_report = get_header_footer_pdf.findViewById(R.id.generate_report);
-
         alertDialog = new AlertDialog.Builder(this);
-
 
         databaseHelper = new DatabaseHelper(this);
         widgetList = new ArrayList<>();
@@ -1199,9 +1210,6 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
         date_picker = date_dialog.findViewById(R.id.date_picker);
         time_picker = time_dialog.findViewById(R.id.timePicker);
-
-        //  done_submit_form = (Button) findViewById(R.id.done_submit_form);
-        //  back_btn_generate_widget = (Button) findViewById(R.id.back_btn_generate_widget);
 
         signatureImage = new ArrayList<>();
     }

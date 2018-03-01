@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#5ac0ef">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PDF Settings"
+                android:fontFamily="@font/ubuntu_light"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/header_name"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:maxLines="1"
+                android:inputType="text"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:fontFamily="@font/ubuntu_light"
+                android:textStyle="bold"
+                android:hint="Enter Header Name..."/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/footer_name"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:maxLines="1"
+                android:inputType="text"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:hint="Enter Footer Name..."/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/selectLogo"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/icon_add_attachments"
+                android:ellipsize="end"
+                android:hint="Choose Logo..."
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:fontFamily="@font/ubuntu_light"
+                android:textStyle="bold"
+                android:text="Choose Image for Logo.."/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/displayLogo"
+                android:visibility="gone"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/generate_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/check_buttons"
+                android:padding="10dp"
+                android:text="Done"
+                android:fontFamily="@font/ubuntu_light"
+                android:textStyle="bold"
+                android:textColor="#fff" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Reports;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.R;
 
@@ -69,7 +70,9 @@ public class NavigationDrawer extends Fragment {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Settings Clicked", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+                startActivity(new Intent(getContext(), Settings.class));
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
