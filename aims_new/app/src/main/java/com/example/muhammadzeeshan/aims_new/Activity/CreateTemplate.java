@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -34,34 +36,47 @@ public class CreateTemplate extends AppCompatActivity {
         setContentView(R.layout.activity_create_template);
 
         initialization();
+        hideKeyboard();
 
         submitCreateTemplate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
 
-                CreatingTemplateLoader(view, CreateTemplate.this);
+                if (TextUtils.isEmpty(create_template_name.getText().toString())) {
 
-                //Handler for Saving Data.........................
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+                    create_template_name.setError("Please give title of Template");
 
-                    @Override
-                    public void run() {
+                } else if (TextUtils.isEmpty(create_template_desc.getText().toString())) {
 
-                        creatingTemplate.dismiss();
-                        databaseHelper.insertDataIntoTemplate(new TemplateDescription(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+                    create_template_desc.setError("Please give desciption of Template");
 
-                        dialog = alertDialog.create();
-                        dialog.show();
+                } else {
 
-                        getData();
-                        finish();
-                        startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    CreatingTemplateLoader(view, CreateTemplate.this);
 
-                        dialog.dismiss();
-                    }
-                }, 2000);
+                    //Handler for Saving Data.........................
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            creatingTemplate.dismiss();
+                            databaseHelper.insertDataIntoTemplate(new TemplateDescription(create_template_name.getText().toString(), create_template_desc.getText().toString()));
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            getData();
+
+                            finish();
+                            startActivity(new Intent(CreateTemplate.this, AssetTemplate.class));
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
+                        }
+                    }, 2000);
+                }
 
             }
         });
@@ -90,6 +105,11 @@ public class CreateTemplate extends AppCompatActivity {
             Log.e("Template_ID", Template_Id);
 
         }
+    }
+
+    public void hideKeyboard() {
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override

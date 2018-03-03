@@ -14,7 +14,7 @@
         android:background="#5ac0ef">
 
         <Button
-            android:id="@+id/back_btn_report"
+            android:id="@+id/back_btn_settings"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center"

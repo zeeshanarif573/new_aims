@@ -3,7 +3,6 @@ package com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -41,6 +40,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.HeaderFooterPageEvent;
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
@@ -55,7 +55,6 @@ import com.example.muhammadzeeshan.aims_new.Models.Widgets_Model;
 import com.example.muhammadzeeshan.aims_new.R;
 import com.example.muhammadzeeshan.aims_new.Utility.utils;
 import com.github.gcacace.signaturepad.views.SignaturePad;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -63,6 +62,7 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -73,6 +73,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -119,6 +120,8 @@ public class AssetTemplateDetails extends AppCompatActivity {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     public static final String DEFAULT = "";
+    PdfWriter writer;
+    Widgets_Model widgets_model;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -126,9 +129,6 @@ public class AssetTemplateDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_asset_template_details);
 
-        currentTime = Calendar.getInstance().getTime();
-
-        databaseHelper = new DatabaseHelper(this);
         Intent intent = getIntent();
 
         AssetTitle = intent.getStringExtra("AssetTitle");
@@ -137,6 +137,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
         SelectedItemId = intent.getStringExtra("SelectedItemId");
         SelectedItemName = intent.getStringExtra("SelectedItemName");
 
+        currentTime = Calendar.getInstance().getTime();
 
         init();
         getCreatedWidgets();
@@ -145,8 +146,9 @@ public class AssetTemplateDetails extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
 
         pref = getApplicationContext().getSharedPreferences("PdfData", 0);
@@ -173,12 +175,12 @@ public class AssetTemplateDetails extends AppCompatActivity {
                         public void run() {
 
                             Intent intent = new Intent(AssetTemplateDetails.this, Settings.class);
-                            intent.putExtra("from","AssetTemplateDetails");
+                            intent.putExtra("from", "AssetTemplateDetails");
                             startActivity(intent);
                         }
                     }, 2000);
 
-                } else  {
+                } else {
 
                     SavingData(view, AssetTemplateDetails.this);
 
@@ -200,41 +202,45 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                             Snackbar.make(layout, "Record saved Successfully..", Snackbar.LENGTH_LONG).show();
                             startActivity(new Intent(AssetTemplateDetails.this, MainActivity.class));
+
                         }
                     }, 3000);
-                }
 
+                }
             }
         });
+
     }
 
     void generateReport() {
 
         String FILE = Environment.getExternalStorageDirectory().toString() + "/PDF/" + AssetTitle + "\\" + currentTime + ".pdf";
 
+        Log.e("File: ", FILE);
+
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/PDF");
         myDir.mkdirs();
 
-        Document document = new Document(PageSize.A4);
+        // create document
+        Document document = new Document(PageSize.A4, 36, 36, 90, 36);
+
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(FILE));
+            writer = PdfWriter.getInstance(document, new FileOutputStream(FILE));
 
-            // Open Document for Writting into document
+            // add header and footer
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent(this);
+            writer.setPageEvent(event);
+
+            // write to document
             document.open();
-
-            // User Define Method
-            //	addMetaData(document);
             addTitlePage(document);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        // Close Document after writting all content
-        document.close();
 
         Toast.makeText(AssetTemplateDetails.this, "PDF Genrated Successfully", Toast.LENGTH_SHORT).show();
 
@@ -246,129 +252,95 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public void addTitlePage(Document document) throws DocumentException {
         // Font Style for Document
 
-        Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 22, Font.BOLD, BaseColor.GRAY);
-        Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-        Font normal = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
-
-        // Start New Paragraph
-        Paragraph header = new Paragraph();
-        // Set Font in this Paragraph
-        header.setFont(titleFont);
-        // Add item into Paragraph
+        Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 26, Font.BOLD);
+        Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 15, Font.BOLD);
+        Font normal = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.NORMAL);
 
         try {
 
-            BitmapFactory.Options logo_options = new BitmapFactory.Options();
-            logo_options.inSampleSize = 8;
+            Paragraph prProfile = new Paragraph();
 
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(logo));
+            prProfile.add("\n");
+            prProfile.add("\n");
 
-            Bitmap result = Bitmap.createScaledBitmap(bitmap, 80, 80, false);
+            prProfile.setFont(normal);
 
-            Log.e("Inside PDF", bitmap.toString());
+            int ImageIndex = 0;
+            for (Widgets_Model widgets_model : widgetList) {
 
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            result.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            Image image = Image.getInstance(stream.toByteArray());
-            image.setAlignment(Element.ALIGN_CENTER);
-            header.add(image);
-
-        } catch (IOException ex) {
-            return;
-        }
-
-        header.add("\n");
-        header.add(header_name + "\n");
-        header.add("\n");
-
-        // Create Table into Document with 1 Row
-        PdfPTable myTable = new PdfPTable(1);
-        // 100.0f mean width of table is same as Document size
-
-        // Create New Cell into Table
-        PdfPCell myCell = new PdfPCell(new Paragraph(""));
-        myCell.setBorder(Rectangle.BOTTOM);
-
-        // Add Cell into Table
-        myTable.addCell(myCell);
-
-        header.setAlignment(Element.ALIGN_CENTER);
-
-        // Add all above details into Document
-        document.add(header);
-        document.add(myTable);
-
-        Paragraph prPersinalInfo = new Paragraph();
-        prPersinalInfo.setAlignment(Element.ALIGN_CENTER);
-
-        document.add(prPersinalInfo);
-        document.add(myTable);
-
-        Paragraph prProfile = new Paragraph();
-        prProfile.setFont(smallBold);
-        prProfile.add("\n \n Details : \n ");
-        prProfile.setFont(normal);
-
-        int ImageIndex = 0;
-        for (Widgets_Model widgets_model : widgetList) {
-
-            //Condition for EditText..............................
-            if (widgets_model.getEditText() != null) {
-                prProfile.add("\n");
-                prProfile.add(" " + widgets_model.getLabel() + ":");
-                prProfile.add(" " + widgets_model.getEditText().getText().toString());
-
-                prProfile.add("\n");
-
-            }
-
-            //Condition for CheckBox..............................
-            else if (widgets_model.getCheckBox() != null) {
-                if (widgets_model.getCheckBox().isChecked()) {
+                //Condition for EditText..............................
+                if (widgets_model.getEditText() != null) {
                     prProfile.add("\n");
-                    prProfile.add(widgets_model.getLabel() + ":");
-                    prProfile.add("Checked");
+                    prProfile.add(" " + widgets_model.getLabel() + ":");
+                    prProfile.add(" " + widgets_model.getEditText().getText().toString());
+
                     prProfile.add("\n");
-                } else {
-                    prProfile.add("\n");
-                    prProfile.add(widgets_model.getLabel() + ":");
-                    prProfile.add("UnChecked");
-                    prProfile.add("\n");
+
                 }
-            }
 
-            //Condition for TextView..............................
-            else if (widgets_model.getTextView() != null) {
-                prProfile.add("\n");
-                prProfile.add(" " + widgets_model.getLabel() + ":");
-                prProfile.add(" " + widgets_model.getTextView().getText().toString());
-                prProfile.add("\n");
-            }
+                //Condition for CheckBox..............................
+                else if (widgets_model.getCheckBox() != null) {
 
-            //Condition for Camera..............................
-            else if (widgets_model.getImageView() != null) {
-
-                for (CameraModel cameraModel : ImageList) {
-                    if (widgets_model.getId().equals(cameraModel.getId())) {
+                    if (widgets_model.getCheckBox().isChecked()) {
+                        prProfile.add("\n");
+                        prProfile.add("\n");
 
                         try {
-
-                            Log.e("AbsolutePath", cameraModel.getImage_file().getAbsolutePath());
-
-                            // get input stream
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inSampleSize = 20;
-
-                            Bitmap bmp = BitmapFactory.decodeFile(cameraModel.getImage_file().getAbsolutePath(), options);
+                            InputStream ims = getAssets().open("check.png");
+                            Bitmap bmp = BitmapFactory.decodeStream(ims);
+                            Bitmap result = Bitmap.createScaledBitmap(bmp, 20, 20, false);
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             Image image = Image.getInstance(stream.toByteArray());
+//                            prProfile.add(image);
+//                            prProfile.add("\n");
 
-                            prProfile.add("\n");
-                            prProfile.add(" " + widgets_model.getLabel() + ":");
-                            prProfile.add("\n");
-                            prProfile.add(image);
-                            prProfile.add("\n");
+                            PdfPTable table = new PdfPTable(2);
+                            PdfPCell cellOne = new PdfPCell(new Phrase(widgets_model.getLabel()));
+                            PdfPCell cellTwo = new PdfPCell(image);
+
+                            cellOne.setBorder(Rectangle.NO_BORDER);
+                            cellTwo.setBorder(Rectangle.NO_BORDER);
+
+                            table.setWidthPercentage(35);
+                            table.setHorizontalAlignment(Element.ALIGN_LEFT);
+                            table.addCell(cellOne);
+                            table.addCell(cellTwo);
+
+                            prProfile.add(table);
+
+                        } catch (IOException ex) {
+                            return;
+                        }
+
+
+                    } else {
+                        prProfile.add("\n");
+                        prProfile.add("\n");
+
+                        try {
+                            InputStream ims = getAssets().open("check_box_empty.png");
+                            Bitmap bmp = BitmapFactory.decodeStream(ims);
+                            Bitmap result = Bitmap.createScaledBitmap(bmp, 20, 20, false);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            Image image = Image.getInstance(stream.toByteArray());
+//                            prProfile.add(image);
+//                            prProfile.add("\n");
+
+                            PdfPTable table = new PdfPTable(2);
+                            PdfPCell cellOne = new PdfPCell(new Phrase(widgets_model.getLabel()));
+                            PdfPCell cellTwo = new PdfPCell(image);
+
+                            cellOne.setBorder(Rectangle.NO_BORDER);
+                            cellTwo.setBorder(Rectangle.NO_BORDER);
+
+                            table.setWidthPercentage(35);
+                            table.setHorizontalAlignment(Element.ALIGN_LEFT);
+                            table.addCell(cellOne);
+                            table.addCell(cellTwo);
+
+                            prProfile.add(table);
 
                         } catch (IOException ex) {
                             return;
@@ -376,77 +348,129 @@ public class AssetTemplateDetails extends AppCompatActivity {
                     }
                 }
 
-            }
+                //Condition for TextView..............................
+                else if (widgets_model.getTextView() != null) {
+                    prProfile.add("\n");
+                    prProfile.add("\n");
+                    prProfile.add(" " + widgets_model.getLabel() + ":");
+                    prProfile.add(" " + widgets_model.getTextView().getText().toString());
+                    prProfile.add("\n");
+                }
 
-            //Condition for Date..............................
-            else if (widgets_model.getDatePicker() != null) {
+                //Condition for Camera..............................
+                else if (widgets_model.getImageView() != null) {
 
-                for (DateModel dateModel : labelTextViewList) {
+                    for (CameraModel cameraModel : ImageList) {
+                        if (widgets_model.getId().equals(cameraModel.getId())) {
 
-                    if (widgets_model.getId().equals(dateModel.getId())) {
+                            try {
 
-                        prProfile.add("\n");
-                        prProfile.add(" " + widgets_model.getLabel() + ":");
-                        prProfile.add(" " + dateModel.getDate());
-                        prProfile.add("\n");
+                                Log.e("AbsolutePath", cameraModel.getImage_file().getAbsolutePath());
 
+                                // get input stream
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inSampleSize = 20;
+
+                                Bitmap bmp = BitmapFactory.decodeFile(cameraModel.getImage_file().getAbsolutePath(), options);
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                Image image = Image.getInstance(stream.toByteArray());
+
+                                prProfile.add("\n");
+                                prProfile.add("\n");
+                                prProfile.add(" " + widgets_model.getLabel() + ":");
+                                prProfile.add("\n");
+                                prProfile.add(image);
+                                prProfile.add("\n");
+
+                            } catch (IOException ex) {
+                                return;
+                            }
+                        }
                     }
+
                 }
 
+                //Condition for Date..............................
+                else if (widgets_model.getDatePicker() != null) {
 
-            }
+                    for (DateModel dateModel : labelTextViewList) {
 
-            //Condition for Time..............................
-            else if (widgets_model.getTimePicker() != null) {
+                        if (widgets_model.getId().equals(dateModel.getId())) {
 
-                for (DateModel dateModel : labelTextViewList) {
+                            prProfile.add("\n");
+                            prProfile.add("\n");
+                            prProfile.add(" " + widgets_model.getLabel() + ":");
+                            prProfile.add(" " + dateModel.getDate());
+                            prProfile.add("\n");
 
-                    if (widgets_model.getId().equals(dateModel.getId())) {
-
-                        prProfile.add("\n");
-                        prProfile.add(" " + widgets_model.getLabel() + ":");
-                        prProfile.add(" " + dateModel.getTime());
-                        prProfile.add("\n");
-
+                        }
                     }
+
                 }
 
-            }
+                //Condition for Time..............................
+                else if (widgets_model.getTimePicker() != null) {
 
-            //Condition for Signature..............................
-            else if (widgets_model.getSignature() != null) {
+                    for (DateModel dateModel : labelTextViewList) {
 
-                prProfile.add("\n");
-                prProfile.add(" " + widgets_model.getLabel() + ":");
-                prProfile.add("\n");
+                        if (widgets_model.getId().equals(dateModel.getId())) {
 
-                try {
+                            prProfile.add("\n");
+                            prProfile.add("\n");
+                            prProfile.add(" " + widgets_model.getLabel() + ":");
+                            prProfile.add(" " + dateModel.getTime());
+                            prProfile.add("\n");
 
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 3;
+                        }
+                    }
 
-                    Bitmap bmp = BitmapFactory.decodeFile(signatureImage.get(ImageIndex).getAbsolutePath(), options);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                    Image image = Image.getInstance(stream.toByteArray());
-
-                    prProfile.add(image);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
 
-                ImageIndex++;
+                //Condition for Signature..............................
+                else if (widgets_model.getSignature() != null) {
+
+                    prProfile.add("\n");
+                    prProfile.add("\n");
+                    prProfile.add(" " + widgets_model.getLabel() + ":");
+                    prProfile.add("\n");
+
+                    try {
+
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 3;
+
+                        Bitmap bmp = BitmapFactory.decodeFile(signatureImage.get(ImageIndex).getAbsolutePath(), options);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        Image image = Image.getInstance(stream.toByteArray());
+                        image.setBorder(2);
+                        image.setBorderWidthTop(2);
+                        image.setBorderWidthBottom(2);
+                        image.setBorderWidthLeft(2);
+                        image.setBorderWidthRight(2);
+
+                        prProfile.add(image);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    ImageIndex++;
+                }
             }
 
+            document.add(prProfile);
 
+        } catch (DocumentException e) {
+            e.printStackTrace();
         }
 
-        prProfile.setFont(smallBold);
-        document.add(prProfile);
-
         // Create new Page in PDF
+
         document.newPage();
+        document.close();
+
     }
 
 

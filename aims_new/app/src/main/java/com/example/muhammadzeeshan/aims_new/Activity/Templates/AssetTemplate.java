@@ -777,37 +777,46 @@ public class AssetTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                CreatingTemplateLoader(view, AssetTemplate.this);
+                if(AssetTemplateWidgetsLayout.getChildCount() == 0){
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                    Snackbar.make(AssetTemplateWidgetsLayout , "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
+                }
 
-                        creatingTemplate.dismiss();
-                        for (int i = 0; i < list.size(); i++) {
+                else {
 
-                            Log.e("ListSize", String.valueOf(list.size()));
-                            databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                    CreatingTemplateLoader(view, AssetTemplate.this);
 
-                            getAssetTemplateData();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            creatingTemplate.dismiss();
+                            for (int i = 0; i < list.size(); i++) {
+
+                                Log.e("ListSize", String.valueOf(list.size()));
+                                databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+
+                                getAssetTemplateData();
+                            }
+
+                            dialog = alertDialog.create();
+                            dialog.show();
+
+                            Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            finish();
+                            Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
+                            intent.putExtra("from", "AssetTemplate");
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                            dialog.dismiss();
+
                         }
+                    }, 2000);
+                }
 
-                        dialog = alertDialog.create();
-                        dialog.show();
-
-                        Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                        finish();
-                        Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
-                        intent.putExtra("from", "AssetTemplate");
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                        dialog.dismiss();
-
-                    }
-                }, 2000);
             }
         });
     }

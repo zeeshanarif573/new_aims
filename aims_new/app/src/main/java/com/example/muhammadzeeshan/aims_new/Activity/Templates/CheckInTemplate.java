@@ -794,67 +794,77 @@ public class CheckInTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                CreatingTemplateLoader(view, CheckInTemplate.this);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                if(CheckInWidgetsLayout.getChildCount() == 0){
 
-                        creatingTemplate.dismiss();
+                    Snackbar.make(CheckInWidgetsLayout , "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
+                }
 
-                        if (from.equalsIgnoreCase("CheckOutTemplate")) {
+                else {
 
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getCheckinData();
+                    CreatingTemplateLoader(view, CheckInTemplate.this);
 
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            creatingTemplate.dismiss();
+
+                            if (from.equalsIgnoreCase("CheckOutTemplate")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getCheckinData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(CheckInTemplate.this, InspectTemplate.class);
+                                intent.putExtra("from", "CheckInTemplate");
+                                startActivity(intent);
+
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
+
+                            } else if (from.equalsIgnoreCase("AssetDetails")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getCheckinData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                                Intent intent = new Intent(CheckInTemplate.this, CheckInDetails.class);
+                                intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                                intent.putExtra("AssetId", getAssetDetail_AssetId);
+                                intent.putExtra("AssetName", getAssetDetail_AssetName);
+                                startActivity(intent);
+
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
                             }
 
-                            dialog = alertDialog.create();
-                            dialog.show();
 
-                            Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(CheckInTemplate.this, InspectTemplate.class);
-                            intent.putExtra("from", "CheckInTemplate");
-                            startActivity(intent);
-
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
-
-                        } else if (from.equalsIgnoreCase("AssetDetails")) {
-
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoCheckinTemplate(new CheckInWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getCheckinData();
-
-                            }
-
-                            dialog = alertDialog.create();
-                            dialog.show();
-
-                            Toast.makeText(CheckInTemplate.this, "CheckIn Template is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
-
-                            Intent intent = new Intent(CheckInTemplate.this, CheckInDetails.class);
-                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
-                            intent.putExtra("AssetId", getAssetDetail_AssetId);
-                            intent.putExtra("AssetName", getAssetDetail_AssetName);
-                            startActivity(intent);
-
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
                         }
+                    }, 2000);
+                }
 
-
-                    }
-                }, 2000);
             }
         });
 

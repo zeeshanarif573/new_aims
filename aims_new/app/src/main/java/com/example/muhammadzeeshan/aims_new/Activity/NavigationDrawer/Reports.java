@@ -36,8 +36,8 @@ public class Reports extends AppCompatActivity {
         back_btn_report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
 
+                finish();
                 startActivity(new Intent(Reports.this, MainActivity.class));
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -82,11 +82,12 @@ public class Reports extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        finish();
+        super.onBackPressed();
 
+        finish();
         startActivity(new Intent(Reports.this, MainActivity.class));
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        super.onBackPressed();
+
     }
 
     void init(){

@@ -37,7 +37,7 @@ public class Settings extends AppCompatActivity {
 
     CardView managePdfSetting;
     Dialog pdfDialog;
-    Button generate_settings, selectLogo;
+    Button generate_settings, selectLogo, back_btn_settings;
     EditText header, footer;
     Uri uri;
     File uriToFile;
@@ -225,6 +225,15 @@ public class Settings extends AppCompatActivity {
             }
         });
 
+        back_btn_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                finish();
+                startActivity(new Intent(Settings.this , MainActivity.class));
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }
+        });
 
     }
 
@@ -242,6 +251,16 @@ public class Settings extends AppCompatActivity {
         footer = pdfDialog.findViewById(R.id.footer_name);
         displayLogo = pdfDialog.findViewById(R.id.displayLogo);
 
+        back_btn_settings = findViewById(R.id.back_btn_settings);
+
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        finish();
+        startActivity(new Intent(Settings.this , MainActivity.class));
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
 }

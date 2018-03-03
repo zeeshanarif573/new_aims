@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails;
 import com.example.muhammadzeeshan.aims_new.Activity.Templates.AssetTemplate;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
@@ -72,8 +73,8 @@ public class CreateAsset extends AppCompatActivity {
         back_btn_createAsset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
 
+                finish();
                 startActivity(new Intent(CreateAsset.this, MainActivity.class));
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
@@ -97,13 +98,13 @@ public class CreateAsset extends AppCompatActivity {
 
                         select_type.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
-                        create_asset_title.setError("Please give title of form");
+                        create_asset_title.setError("Please give title of Asset");
 
                     } else if (TextUtils.isEmpty(create_asset_desc.getText().toString())) {
 
                         select_type.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
-                        create_asset_desc.setError("Please give desciption of form");
+                        create_asset_desc.setError("Please give desciption of Asset");
 
                     } else {
 
@@ -163,8 +164,11 @@ public class CreateAsset extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
         super.onBackPressed();
+
+        finish();
+        startActivity(new Intent(CreateAsset.this, MainActivity.class));
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
     }
 

@@ -44,13 +44,15 @@
         </provider>
 
         <activity android:name=".Activity.Splash" >
+        </activity>
+        <activity android:name=".Activity.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".Activity.MainActivity">
+
         </activity>
         <activity android:name=".Activity.CreateAsset" />
         <activity android:name=".Activity.ViewAsset" />

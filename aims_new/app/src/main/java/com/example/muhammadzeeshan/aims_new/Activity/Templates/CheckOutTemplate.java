@@ -794,67 +794,76 @@ public class CheckOutTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                CreatingTemplateLoader(view, CheckOutTemplate.this);
+                if(CheckoutWidgetsLayout.getChildCount() == 0){
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                    Snackbar.make(CheckoutWidgetsLayout , "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
+                }
 
-                        creatingTemplate.dismiss();
+                else {
 
-                        if (from.equalsIgnoreCase("AssetTemplate")) {
+                    CreatingTemplateLoader(view, CheckOutTemplate.this);
 
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getCheckoutData();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            creatingTemplate.dismiss();
+
+                            if (from.equalsIgnoreCase("AssetTemplate")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getCheckoutData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(CheckOutTemplate.this, CheckInTemplate.class);
+                                intent.putExtra("from", "CheckOutTemplate");
+                                startActivity(intent);
+
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
+
+                            } else if (from.equalsIgnoreCase("AssetDetails")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getCheckoutData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                                Intent intent = new Intent(CheckOutTemplate.this, CheckOutDetails.class);
+                                intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                                intent.putExtra("AssetId", getAssetDetail_AssetId);
+                                intent.putExtra("AssetName", getAssetDetail_AssetName);
+
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
                             }
 
-                            dialog = alertDialog.create();
-                            dialog.show();
 
-                            Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(CheckOutTemplate.this, CheckInTemplate.class);
-                            intent.putExtra("from", "CheckOutTemplate");
-                            startActivity(intent);
-
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
-
-                        } else if (from.equalsIgnoreCase("AssetDetails")) {
-
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoCheckoutTemplate(new CheckOutWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getCheckoutData();
-
-                            }
-
-                            dialog = alertDialog.create();
-                            dialog.show();
-
-                            Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
-
-                            Intent intent = new Intent(CheckOutTemplate.this, CheckOutDetails.class);
-                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
-                            intent.putExtra("AssetId", getAssetDetail_AssetId);
-                            intent.putExtra("AssetName", getAssetDetail_AssetName);
-
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
                         }
+                    }, 2000);
+                }
 
-
-                    }
-                }, 2000);
             }
         });
     }

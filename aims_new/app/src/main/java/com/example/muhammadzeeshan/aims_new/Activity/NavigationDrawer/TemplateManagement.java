@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 
 import com.example.muhammadzeeshan.aims_new.Activity.CreateTemplate;
@@ -28,6 +29,7 @@ public class TemplateManagement extends AppCompatActivity {
     ExpandableListView listView;
     TemplateAdapter templateAdapter;
     List parentlist;
+    Button backBtn_templateMgt;
     HashMap<String, List<TemplateDescription>> map;
 
     @Override
@@ -48,6 +50,15 @@ public class TemplateManagement extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
+
+        backBtn_templateMgt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                startActivity(new Intent(TemplateManagement.this, MainActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
     }
 
     void initialization(){
@@ -55,9 +66,11 @@ public class TemplateManagement extends AppCompatActivity {
         parentlist = new ArrayList<>();
         map = new HashMap<>();
 
+        backBtn_templateMgt = findViewById(R.id.back_btn_templateMgt);
+
         listView = findViewById(R.id.expandable_ListView);
 
-       // listView.setEmptyView(findViewById(R.id.welcome_template_text));
+        listView.setEmptyView(findViewById(R.id.welcome_template_text));
         databaseHelper = new DatabaseHelper(this);
         createTemplate = findViewById(R.id.createTemplate);
 
@@ -89,6 +102,10 @@ public class TemplateManagement extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        super.onBackPressed();
+
+        finish();
         startActivity(new Intent(TemplateManagement.this, MainActivity.class));
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }

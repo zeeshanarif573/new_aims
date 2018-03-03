@@ -101,6 +101,9 @@ public class GeneralMethods {
         creatingTemplate.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         creatingTemplate.show();
+
+        creatingTemplate.setCancelable(false);
+        creatingTemplate.setCanceledOnTouchOutside(false);
     }
 
     public static void SavingData(View view, Context context) {
@@ -110,6 +113,9 @@ public class GeneralMethods {
         progress1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         progress1.show();
+
+        progress1.setCancelable(false);
+        progress1.setCanceledOnTouchOutside(false);
     }
 
 
@@ -120,6 +126,9 @@ public class GeneralMethods {
         creatingpdf.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         creatingpdf.show();
+
+        creatingpdf.setCancelable(false);
+        creatingpdf.setCanceledOnTouchOutside(false);
     }
 
     public static void CreatingHeader(View view, Context context) {
@@ -129,6 +138,9 @@ public class GeneralMethods {
         creatingpdf.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         creatingpdf.show();
+
+        creatingpdf.setCancelable(false);
+        creatingpdf.setCanceledOnTouchOutside(false);
     }
 
     public static void DeletingRecord(View view, Context context) {

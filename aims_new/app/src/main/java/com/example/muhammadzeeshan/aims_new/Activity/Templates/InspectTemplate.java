@@ -798,63 +798,72 @@ public class InspectTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                CreatingTemplateLoader(view, InspectTemplate.this);
+                if(InspectWidgetsLayout.getChildCount() == 0){
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                    Snackbar.make(InspectWidgetsLayout , "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
+                }
 
-                        creatingTemplate.dismiss();
+                else {
 
-                        if (from.equalsIgnoreCase("CheckInTemplate")) {
+                    CreatingTemplateLoader(view, InspectTemplate.this);
 
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getInspectData();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            creatingTemplate.dismiss();
+
+                            if (from.equalsIgnoreCase("CheckInTemplate")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getInspectData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
+
+                            } else if (from.equalsIgnoreCase("AssetDetails")) {
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                    getInspectData();
+
+                                }
+
+                                dialog = alertDialog.create();
+                                dialog.show();
+
+                                Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
+
+                                Intent intent = new Intent(InspectTemplate.this, InspectDetails.class);
+                                intent.putExtra("TemplateId", getAssetDetail_TemplateId);
+                                intent.putExtra("AssetId", getAssetDetail_AssetId);
+                                intent.putExtra("AssetName", getAssetDetail_AssetName);
+
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                dialog.dismiss();
                             }
 
-                            dialog = alertDialog.create();
-                            dialog.show();
-
-                            Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            startActivity(new Intent(InspectTemplate.this, CreateAsset.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
-
-                        } else if (from.equalsIgnoreCase("AssetDetails")) {
-
-                            for (int i = 0; i < list.size(); i++) {
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoInspectTemplate(new InspectWidgets(getAssetDetail_TemplateId, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
-                                getInspectData();
-
-                            }
-
-                            dialog = alertDialog.create();
-                            dialog.show();
-
-                            Toast.makeText(InspectTemplate.this, "Inspect Template is Created Successfully", Toast.LENGTH_SHORT).show();
-
-                            Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
-
-                            Intent intent = new Intent(InspectTemplate.this, InspectDetails.class);
-                            intent.putExtra("TemplateId", getAssetDetail_TemplateId);
-                            intent.putExtra("AssetId", getAssetDetail_AssetId);
-                            intent.putExtra("AssetName", getAssetDetail_AssetName);
-
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-                            dialog.dismiss();
                         }
+                    }, 2000);
+                }
 
-                    }
-                }, 2000);
             }
         });
         
