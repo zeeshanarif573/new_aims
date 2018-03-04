@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -17,12 +18,10 @@
     <uses-feature android:name="android.hardware.camera.front" />
     <uses-feature android:name="android.hardware.microphone" />
     <uses-feature android:name="android.hardware.camera2" />
-    <uses-feature
-        android:name="android.hardware.camera.autofocus"
-        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="true" />
     <uses-feature android:name="android.hardware.camera.flash" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
 
     <application
         android:allowBackup="true"
@@ -33,15 +32,16 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path" />
-        </provider>
+
+        <!--<provider-->
+            <!--android:name="android.support.v4.content.FileProvider"-->
+            <!--android:authorities="${applicationId}.provider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+                <!--android:resource="@xml/provider_path" />-->
+        <!--</provider>-->
 
         <activity android:name=".Activity.Splash" >
         </activity>
@@ -68,6 +68,7 @@
         <activity android:name=".Activity.TemplateDetails.CheckInDetails" />
         <activity android:name=".Activity.TemplateDetails.InspectDetails" />
         <activity android:name=".Activity.PDF_Activity" />
+        <activity android:name=".Activity.CameraAcitivity" />
         <activity android:name=".Activity.NavigationDrawer.Reports" />
         <activity android:name=".Activity.NavigationDrawer.Settings"></activity>
     </application>

@@ -85,14 +85,6 @@ public class GeneralMethods {
         });
     }
 
-    public static void CreatingAssetLoader(View view, Context context) {
-        creatingAsset = new ProgressDialog(context);
-        creatingAsset.setTitle("Creating Asset");
-        creatingAsset.setMessage("Please Wait...");
-        creatingAsset.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-        creatingAsset.show();
-    }
 
     public static void CreatingTemplateLoader(View view, Context context) {
         creatingTemplate = new ProgressDialog(context);

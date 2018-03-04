@@ -11,9 +11,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
+import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,9 +27,14 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.OrientationEventListener;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -40,6 +50,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.CameraAcitivity;
 import com.example.muhammadzeeshan.aims_new.Activity.HeaderFooterPageEvent;
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
@@ -78,6 +89,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.SavingData;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getArrayList;
@@ -92,7 +104,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
     ArrayList<Widgets_Model> widgetList;
     Dialog date_dialog, time_dialog;
     DatePicker date_picker;
-    Button getDate, getTime, back_btn_generate_widget;
+    Button getDate, getTime;
     TimePicker time_picker;
     String header_name, footer_name, logo;
     ImageView dis_Image;
@@ -121,7 +133,9 @@ public class AssetTemplateDetails extends AppCompatActivity {
     SharedPreferences.Editor editor;
     public static final String DEFAULT = "";
     PdfWriter writer;
-    Widgets_Model widgets_model;
+    public static int reqCode;
+    ArrayList<String> listOfCaptureimges;
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -671,13 +685,16 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
                         int indexAndId = Integer.parseInt(indexAndIdString);
 
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        photoFile = getOutputMediaFile();
-                        Uri fileProvider = FileProvider.getUriForFile(AssetTemplateDetails.this, getApplicationContext().getPackageName() + ".provider", photoFile);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+//                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                        photoFile = getOutputMediaFile();
+//                        Uri fileProvider = FileProvider.getUriForFile(AssetTemplateDetails.this, getApplicationContext().getPackageName() + ".provider", photoFile);
+//                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
+
+                        Intent intent = new Intent(AssetTemplateDetails.this, CameraAcitivity.class);
                         if (intent.resolveActivity(getPackageManager()) != null) {
-                            // Start the image capture intent to take photo
+
+                        //     Start the image capture intent to take photo
                             startActivityForResult(intent, indexAndId);
                         }
                     }
@@ -932,7 +949,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
         if (requestCode != PICK_IMAGE_REQUEST) {
 
             Log.e("OnResult", requestCode + "");
-            int reqCode = Integer.parseInt(String.valueOf(requestCode).substring(0, 1));
+            reqCode = Integer.parseInt(String.valueOf(requestCode).substring(0, 1));
             String id = String.valueOf(requestCode).substring(1);
             Log.e("OnResultSplit", reqCode + "/" + id);
 
@@ -943,6 +960,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
             if (reqCode == 1) {
                 if (resultCode == RESULT_OK) {
                     ImageList.add(cameraModel);
+
                     getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout1);
 
                 } else { // Result was a failure
@@ -1289,5 +1307,465 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public void onBackPressed() {
 
     }
+
+
+    //Surface View All Methods......................................................
+//
+//    @Override
+//    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+//
+//        try {
+//            if (flag == 0) {
+//                camera = Camera.open(0);
+//            } else {
+//                camera = Camera.open(1);
+//            }
+//        } catch (RuntimeException e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        try {
+//            Camera.Parameters param;
+//            param = camera.getParameters();
+//            List<Camera.Size> sizes = param.getSupportedPreviewSizes();
+//            //get diff to get perfact preview sizes
+//            DisplayMetrics displaymetrics = new DisplayMetrics();
+//            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+//            int height = displaymetrics.heightPixels;
+//            int width = displaymetrics.widthPixels;
+//            long diff = (height * 1000 / width);
+//            long cdistance = Integer.MAX_VALUE;
+//            int idx = 0;
+//            for (int i = 0; i < sizes.size(); i++) {
+//                long value = (long) (sizes.get(i).width * 1000) / sizes.get(i).height;
+//                if (value > diff && value < cdistance) {
+//                    idx = i;
+//                    cdistance = value;
+//                }
+//                Log.e("WHHATSAPP", "width=" + sizes.get(i).width + " height=" + sizes.get(i).height);
+//            }
+//            Log.e("WHHATSAPP", "INDEX:  " + idx);
+//            Camera.Size cs = sizes.get(idx);
+//            param.setPreviewSize(cs.width, cs.height);
+//            param.setPictureSize(cs.width, cs.height);
+//            camera.setParameters(param);
+//            setCameraDisplayOrientation(0);
+//
+//            camera.setPreviewDisplay(surfaceHolder);
+//            camera.startPreview();
+//
+//            if (flashType == 1) {
+//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//
+//            } else if (flashType == 2) {
+//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//                Camera.Parameters params = null;
+//                if (camera != null) {
+//                    params = camera.getParameters();
+//
+//                    if (params != null) {
+//                        List<String> supportedFlashModes = params.getSupportedFlashModes();
+//
+//                        if (supportedFlashModes != null) {
+//                            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
+//                                param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//                            } else if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)) {
+//                                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            } else if (flashType == 3) {
+//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//
+//            }
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//    }
+//
+//    @Override
+//    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+//
+//        refreshCamera();
+//    }
+//
+//    @Override
+//    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+//
+//        try {
+//            camera.stopPreview();
+//            camera.release();
+//            camera = null;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void captureImageCallback() {
+//
+//        surfaceHolder = imgSurface.getHolder();
+//        surfaceHolder.addCallback(this);
+//        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//        jpegCallback = new Camera.PictureCallback() {
+//            public void onPictureTaken(byte[] data, Camera camera) {
+//
+//                refreshCamera();
+//
+//                cancelSavePicTaskIfNeed();
+//                savePicTask = new AssetTemplateDetails.SavePicTask(data, getPhotoRotation());
+//                savePicTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+//
+//            }
+//        };
+//    }
+//
+//    public void refreshCamera() {
+//
+//        if (surfaceHolder.getSurface() == null) {
+//            return;
+//        }
+//        try {
+//            camera.stopPreview();
+//            Camera.Parameters param = camera.getParameters();
+//
+//            if (flag == 0) {
+//
+//                if (flag == 0 && flashType == 2) {
+//                    param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//                    Camera.Parameters params = null;
+//                    if (camera != null) {
+//                        params = camera.getParameters();
+//
+//                        if (params != null) {
+//                            List<String> supportedFlashModes = params.getSupportedFlashModes();
+//
+//                            if (supportedFlashModes != null) {
+//                                if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
+//                                    param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//                                } else if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)) {
+//                                    param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//                                }
+//                            }
+//                        }
+//                    }
+//                    //   imgFlashOnOff.setImageResource(R.drawable.ic_flash_on);
+//                } else if (flashType == 3) {
+//                    param.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+//                    //    imgFlashOnOff.setImageResource(R.drawable.ic_flash_off);
+//                }
+//            }
+//
+//
+//            refrechCameraPreview(param);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void refrechCameraPreview(Camera.Parameters param) {
+//        try {
+//            camera.setParameters(param);
+//            setCameraDisplayOrientation(0);
+//
+//            camera.setPreviewDisplay(surfaceHolder);
+//            camera.startPreview();
+//            camera.autoFocus(myAutoFocusCallback);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    final Camera.AutoFocusCallback myAutoFocusCallback = new Camera.AutoFocusCallback() {
+//
+//        @Override
+//        public void onAutoFocus(boolean arg0, Camera arg1) {
+//            if (arg0) {
+//                camera.autoFocus(this);
+//                camera.cancelAutoFocus();
+//            }
+//        }
+//    };
+//
+//    public void setCameraDisplayOrientation(int cameraId) {
+//
+//        Camera.CameraInfo info = new Camera.CameraInfo();
+//        Camera.getCameraInfo(cameraId, info);
+//
+//        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+//
+//        if (Build.MODEL.equalsIgnoreCase("Nexus 6") && flag == 1) {
+//            rotation = Surface.ROTATION_180;
+//        }
+//        int degrees = 0;
+//        switch (rotation) {
+//
+//            case Surface.ROTATION_0:
+//
+//                degrees = 0;
+//                break;
+//
+//            case Surface.ROTATION_90:
+//
+//                degrees = 90;
+//                break;
+//
+//            case Surface.ROTATION_180:
+//
+//                degrees = 180;
+//                break;
+//
+//            case Surface.ROTATION_270:
+//
+//                degrees = 270;
+//                break;
+//
+//        }
+//
+//        int result;
+//
+//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//
+//            result = (info.orientation + degrees) % 360;
+//            result = (360 - result) % 360; // compensate the mirror
+//
+//        } else {
+//            result = (info.orientation - degrees + 360) % 360;
+//
+//        }
+//        camera.setDisplayOrientation(result);
+//    }
+//
+//    private int mPhotoAngle = 90;
+//
+//    private int getPhotoRotation() {
+//        int rotation;
+//        int orientation = mPhotoAngle;
+//
+//        Camera.CameraInfo info = new Camera.CameraInfo();
+//        if (flag == 0) {
+//            Camera.getCameraInfo(0, info);
+//        } else {
+//            Camera.getCameraInfo(1, info);
+//        }
+//
+//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//            rotation = (info.orientation - orientation + 360) % 360;
+//        } else {
+//            rotation = (info.orientation + orientation) % 360;
+//        }
+//        return rotation;
+//    }
+//
+//    private void cancelSavePicTaskIfNeed() {
+//        if (savePicTask != null && savePicTask.getStatus() == AsyncTask.Status.RUNNING) {
+//            savePicTask.cancel(true);
+//        }
+//    }
+//
+//    private String getSavePhotoLocal(Bitmap bitmap) {
+//        String path = "";
+//
+//        try {
+//            OutputStream output;
+//            File file = new File(folder.getAbsolutePath(), "wc" + System.currentTimeMillis() + ".jpg");
+//            Log.e("path", file.toString());
+//            // preferencesHandler.setCurrentCapturedImgs(file.toString());
+//            Log.e("sor", file.toString());
+//
+//
+////            listOfCaptureimgs.add(file.toString());
+////            for (int i = 0; i < this.listOfCaptureimgs.size(); i++) {
+////                Log.e(String.valueOf(i), this.listOfCaptureimgs.get(i));
+////            }
+//
+//            //Data of Comma separated Images Sent into Database...................
+//
+////            String Images = "";
+////            Log.e("list size", String.valueOf(listOfCaptureimgs.size()));
+////            for (int i = 0; i < listOfCaptureimgs.size(); i++) {
+////                Log.e("index", String.valueOf(i));
+////                if (i != listOfCaptureimgs.size()-1)
+////                    Images += listOfCaptureimgs.get(i) + ",";
+////                else
+////                    Images += listOfCaptureimgs.get(i);
+////            }
+////            Log.e("ImagesString", Images);
+//
+//
+//            try {
+//                output = new FileOutputStream(file);
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+//                output.flush();
+//                output.close();
+//                path = file.getAbsolutePath();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return path;
+//    }
+//
+//    public String saveToSDCard(byte[] data, int rotation) throws IOException {
+//        String imagePath = "";
+//
+//        try {
+//            final BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;
+//            BitmapFactory.decodeByteArray(data, 0, data.length, options);
+//
+//            DisplayMetrics metrics = new DisplayMetrics();
+//            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//
+//            int reqHeight = metrics.heightPixels;
+//            int reqWidth = metrics.widthPixels;
+//            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+//
+//            options.inJustDecodeBounds = false;
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+//            if (rotation != 0) {
+//                Matrix mat = new Matrix();
+//                mat.postRotate(rotation);
+//                bitmap1 = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
+//
+//                Paint paint = new Paint();
+//                paint.setColor(getResources().getColor(R.color.dark_blue));
+//                paint.setAntiAlias(true);
+//                paint.setStrokeWidth(4);
+//                paint.setStyle(Paint.Style.STROKE);
+//                paint.setStrokeJoin(Paint.Join.ROUND);
+//                paint.setStrokeCap(Paint.Cap.ROUND);
+//                Canvas canvas = new Canvas(bitmap1);
+//                canvas.drawCircle(get_x - 100, get_y - 100, 100, paint);
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                bitmap1.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//                arr = baos.toByteArray();
+//                this.listOfCardview.add(Base64.encodeToString(arr, Base64.DEFAULT));
+//                for (int i = 1; i < this.listOfCardview.size(); i++) {
+//                    Log.e(String.valueOf(i), this.listOfCardview.get(i));
+//
+//                }
+//
+//                Log.e("checkcoordinatesave", "X" + String.valueOf(get_x - 100) + " Y " + String.valueOf(get_y - 100).toString());
+//                if (bitmap != bitmap1) {
+//                    bitmap.recycle();
+//                }
+//
+//                imagePath = getSavePhotoLocal(bitmap1);
+//
+//                if (bitmap1 != null) {
+//                    bitmap1.recycle();
+//                    Toast.makeText(AssetTemplateDetails.this, "Bitmap Cleared", Toast.LENGTH_SHORT).show();
+//                }
+//            } else {
+//                imagePath = getSavePhotoLocal(bitmap);
+//                if (bitmap != null) {
+//                    bitmap.recycle();
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return imagePath;
+//    }
+//
+//    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+//        final int height = options.outHeight;
+//        final int width = options.outWidth;
+//        int inSampleSize = 1;
+//
+//        if (height > reqHeight || width > reqWidth) {
+//            if (width > height) {
+//                inSampleSize = Math.round((float) height / (float) reqHeight);
+//            } else {
+//                inSampleSize = Math.round((float) width / (float) reqWidth);
+//            }
+//        }
+//        return inSampleSize;
+//    }
+//
+//
+//    private AssetTemplateDetails.SavePicTask savePicTask;
+//
+//    private class SavePicTask extends AsyncTask<Void, Void, String> {
+//        private byte[] data;
+//        private int rotation = 0;
+//
+//        public SavePicTask(byte[] data, int rotation) {
+//            this.data = data;
+//            this.rotation = rotation;
+//        }
+//
+//
+//        @Override
+//        protected String doInBackground(Void... params) {
+//
+//            try {
+//                return saveToSDCard(data, rotation);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//    }
+//
+//    private void identifyOrientationEvents() {
+//
+//        myOrientationEventListener = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL) {
+//            @Override
+//            public void onOrientationChanged(int iAngle) {
+//
+//                final int iLookup[] = {0, 0, 0, 90, 90, 90, 90, 90, 90, 180, 180, 180, 180, 180, 180, 270, 270, 270, 270, 270, 270, 0, 0, 0}; // 15-degree increments
+//                if (iAngle != ORIENTATION_UNKNOWN) {
+//
+//                    int iNewOrientation = iLookup[iAngle / 15];
+//                    if (iOrientation != iNewOrientation) {
+//                        iOrientation = iNewOrientation;
+//                        if (iOrientation == 0) {
+//                            mOrientation = 90;
+//                        } else if (iOrientation == 270) {
+//                            mOrientation = 0;
+//                        } else if (iOrientation == 90) {
+//                            mOrientation = 180;
+//                        }
+//
+//                    }
+//                    mPhotoAngle = normalize(iAngle);
+//                }
+//            }
+//        };
+//
+//        if (myOrientationEventListener.canDetectOrientation()) {
+//            myOrientationEventListener.enable();
+//        }
+//    }
+//
+//    private int normalize(int degrees) {
+//        if (degrees > 315 || degrees <= 45) {
+//            return 0;
+//        }
+//
+//        if (degrees > 45 && degrees <= 135) {
+//            return 90;
+//        }
+//
+//        if (degrees > 135 && degrees <= 225) {
+//            return 180;
+//        }
+//
+//        if (degrees > 225 && degrees <= 315) {
+//            return 270;
+//        }
+//
+//        throw new RuntimeException("Error....");
+//    }
 
 }
