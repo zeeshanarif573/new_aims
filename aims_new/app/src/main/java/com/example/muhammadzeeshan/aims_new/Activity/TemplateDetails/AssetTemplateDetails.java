@@ -11,30 +11,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.hardware.Camera;
-import android.hardware.SensorManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.OrientationEventListener;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -52,10 +40,12 @@ import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.CameraAcitivity;
 import com.example.muhammadzeeshan.aims_new.Activity.HeaderFooterPageEvent;
+import com.example.muhammadzeeshan.aims_new.Activity.ImageEditing;
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.GeneralMethods;
+import com.example.muhammadzeeshan.aims_new.LayoutModel;
 import com.example.muhammadzeeshan.aims_new.Models.AssetData;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
 import com.example.muhammadzeeshan.aims_new.Models.CameraModel;
@@ -78,6 +68,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -89,11 +80,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.SavingData;
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getArrayList;
-import static com.example.muhammadzeeshan.aims_new.GeneralMethods.getOutputMediaFile;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.progress1;
 
 public class AssetTemplateDetails extends AppCompatActivity {
@@ -134,7 +122,13 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public static final String DEFAULT = "";
     PdfWriter writer;
     public static int reqCode;
+
     ArrayList<String> listOfCaptureimges;
+    ArrayList<LayoutModel> cameraWidget;
+    public static int CAMERA_REQUEST_CODE = 1111;
+    String get_imgs_url;
+    ArrayList<String> imageStringList = new ArrayList<>();
+    public LayoutModel layoutModel1 = null;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -154,9 +148,9 @@ public class AssetTemplateDetails extends AppCompatActivity {
         currentTime = Calendar.getInstance().getTime();
 
         init();
+
         getCreatedWidgets();
 
-        Log.e("SelectedItemId", SelectedItemId);
     }
 
 
@@ -672,18 +666,23 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 scrollView_Layout.addView(scrollView);
                 scrollView.addView(displayImages);
 
-                final String finalIndex = String.valueOf(index);
+//                final String finalIndex = String.valueOf(index);
                 final String widgetId = Widget_Id;
+
+                final LayoutModel layoutModel = new LayoutModel();
+                layoutModel.setWidgetId(displayImages.getId());
+
+                cameraWidget.add(layoutModel);
 
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
-                        Log.e("Clicked", finalIndex + "/" + widgetId);
-                        String indexAndIdString = finalIndex + widgetId;
-                        Log.e("Clicked", indexAndIdString);
-
-                        int indexAndId = Integer.parseInt(indexAndIdString);
+//                        Log.e("Clicked", finalIndex + "/" + widgetId);
+//                        String indexAndIdString = finalIndex + widgetId;
+//                        Log.e("Clicked", indexAndIdString);
+//
+//                        int indexAndId = Integer.parseInt(indexAndIdString);
 
 //                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //                        photoFile = getOutputMediaFile();
@@ -691,12 +690,19 @@ public class AssetTemplateDetails extends AppCompatActivity {
 //                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
 
-                        Intent intent = new Intent(AssetTemplateDetails.this, CameraAcitivity.class);
-                        if (intent.resolveActivity(getPackageManager()) != null) {
+//                        Intent intent = new Intent(AssetTemplateDetails.this, CameraAcitivity.class);
+//                        if (intent.resolveActivity(getPackageManager()) != null) {
+//
+//                             Start the image capture intent to take photo
+//                            startActivityForResult(intent, indexAndId);
+//                        }
 
-                        //     Start the image capture intent to take photo
-                            startActivityForResult(intent, indexAndId);
-                        }
+
+                        Intent intent = new Intent(AssetTemplateDetails.this, CameraAcitivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("model", layoutModel);
+                        intent.putExtra("bundle", bundle);
+                        startActivityForResult(intent, CAMERA_REQUEST_CODE);
                     }
                 });
 
@@ -941,119 +947,131 @@ public class AssetTemplateDetails extends AppCompatActivity {
         }
     }
 
+    private String getImagesPath() {
+        String ImagesString = "";
+        for (int i = 0; i < listOfCaptureimges.size(); i++) {
+            Log.e("Received Images", listOfCaptureimges.get(i));
+
+            Log.e("index", String.valueOf(i));
+            if (i != listOfCaptureimges.size() - 1)
+                ImagesString += listOfCaptureimges.get(i) + ",";
+            else
+                ImagesString += listOfCaptureimges.get(i);
+
+        }
+
+        return ImagesString;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode != PICK_IMAGE_REQUEST) {
+        if (requestCode == CAMERA_REQUEST_CODE) {
 
-            Log.e("OnResult", requestCode + "");
-            reqCode = Integer.parseInt(String.valueOf(requestCode).substring(0, 1));
-            String id = String.valueOf(requestCode).substring(1);
-            Log.e("OnResultSplit", reqCode + "/" + id);
+            if (listOfCaptureimges.size() == 0)
+                listOfCaptureimges = data.getStringArrayListExtra("images");
 
-            CameraModel cameraModel = new CameraModel();
-            cameraModel.setId(id);
-            cameraModel.setImage_file(photoFile);
+            else {
+                ArrayList<String> tempList = data.getStringArrayListExtra("images");
 
-            if (reqCode == 1) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout1);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 2) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout2);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 3) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout3);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 4) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout4);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 5) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout5);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 6) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout6);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 7) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout7);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 8) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout8);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
-                }
-            } else if (reqCode == 9) {
-                if (resultCode == RESULT_OK) {
-                    ImageList.add(cameraModel);
-                    getArrayList(photoFile, this, AssetTemplateDetails.this, R.id.layout9);
-
-                } else { // Result was a failure
-                    Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                for (String image : tempList) {
+                    listOfCaptureimges.add(image);
                 }
             }
 
+            Bundle bundle = data.getBundleExtra("bundleReturn");
+            LayoutModel layoutModel = (LayoutModel) bundle.getSerializable("modelReturn");
 
-        } else if (requestCode == PICK_IMAGE_REQUEST && data != null) {
-            uri = data.getData();
-            uriToFile = new File(uri.getPath());
+            LinearLayout linearLayout = findViewById(layoutModel.getWidgetId());
+            linearLayout.removeAllViewsInLayout();
 
-            Log.e("UriToFile", uriToFile.getAbsolutePath());
+            if (listOfCaptureimges.size() > 0)
+                getcapturedimages(layoutModel);
 
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-
-                Log.e("BitmapGallery", bitmap.toString());
-
-                dis_Image.setVisibility(View.VISIBLE);
-                dis_Image.setImageBitmap(bitmap);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(this, "Picture wasn't Selected!", Toast.LENGTH_SHORT).show();
+            imageStringList.add(getImagesPath());
+            Log.e("ImagesString", getImagesPath());
         }
 
+        if (requestCode == 987) {
+
+            String reqType = data.getStringExtra("type");
+            int image_no = Integer.parseInt(data.getStringExtra("image_id"));
+
+            Log.e("indexImage", String.valueOf(image_no));
+
+            if (reqType.equals("delete")) {
+                listOfCaptureimges.remove(image_no);
+
+                LinearLayout linearLayout = findViewById(layoutModel1.getWidgetId());
+                linearLayout.removeAllViewsInLayout();
+
+                if (listOfCaptureimges.size() > 0) {
+                    getcapturedimages(layoutModel1);
+                }
+                imageStringList.remove(layoutModel1.getWidgetId()-1);
+                imageStringList.add(layoutModel1.getWidgetId()-1, getImagesPath());
+            }
+
+            if (reqType.equals("update")) {
+
+
+                String updateImageUrl = data.getStringExtra("updated_image");
+
+                LinearLayout linearLayoutnew = findViewById(layoutModel1.getWidgetId());
+                linearLayoutnew.removeAllViewsInLayout();
+
+                listOfCaptureimges.remove(image_no);
+                listOfCaptureimges.add(image_no, updateImageUrl);
+
+                Log.e("new url", updateImageUrl);
+
+                if (listOfCaptureimges.size() > 0)
+                    getcapturedimages(layoutModel1);
+
+                imageStringList.remove(layoutModel1.getWidgetId()-1);
+                imageStringList.add(layoutModel1.getWidgetId()-1, getImagesPath());
+
+            }
+
+        }
+
+    }
+
+    private void getcapturedimages(final LayoutModel layoutModel) {
+
+        for (int i = 0; i < listOfCaptureimges.size(); i++) {
+
+            final ImageView imagebyCode = new ImageView(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(170, 160);
+            imagebyCode.setLayoutParams(params);
+
+            LinearLayout linearLayout = findViewById(layoutModel.getWidgetId());
+            linearLayout.addView(imagebyCode);
+            Picasso.with(this).load(new File(listOfCaptureimges.get(i))).into(imagebyCode);
+            get_imgs_url = listOfCaptureimges.get(i);
+
+            final int finalI = i;
+
+            imagebyCode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    layoutModel1 = layoutModel;
+
+                    Log.e("indexImage", String.valueOf(finalI));
+
+                    Intent intent_image_editing = new Intent(AssetTemplateDetails.this, ImageEditing.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("capture_img_no", String.valueOf(finalI));
+                    extras.putString("capture_img", listOfCaptureimges.get(finalI));
+                    intent_image_editing.putExtras(extras);
+                    startActivityForResult(intent_image_editing, 987);
+
+                }
+            });
+        }
     }
 
     public void InsertDataIntoAssetTemplate() {
@@ -1085,24 +1103,39 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
 //          Condition for Camera..............................
             else if (id_widget_model.getImageView() != null) {
-                StringBuilder FinalImageString = new StringBuilder("");
 
-                for (CameraModel cameraModel : ImageList) {
-                    if (id_widget_model.getId().equals(cameraModel.getId())) {
-                        FinalImageString.append(cameraModel.getImage_file().getAbsolutePath() + ",");
+//                StringBuilder FinalImageString = new StringBuilder("");
+//
+//                for (CameraModel cameraModel : ImageList) {
+//                    if (id_widget_model.getId().equals(cameraModel.getId())) {
+//                        FinalImageString.append(cameraModel.getImage_file().getAbsolutePath() + ",");
+//                    }
+//                }
+//
+//                if (FinalImageString.length() > 1) {
+//                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
+//                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+//
+//
+//                } else {
+//                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
+//                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
+//
+//                }
+
+                String FinalImageString = "";
+                if (imageStringList.size() != 0) {
+
+                    for (int i = 0; i < imageStringList.size(); i++) {
+                        if (i != imageStringList.size() - 1)
+                            FinalImageString += imageStringList.get(i) + ",";
+                        else
+                            FinalImageString += imageStringList.get(i);
+
                     }
                 }
 
-                if (FinalImageString.length() > 1) {
-                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length() - 1);
-                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
-
-
-                } else {
-                    String imagePath = FinalImageString.toString().substring(0, FinalImageString.length());
-                    databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), imagePath));
-
-                }
+                databaseHelper.insertIntoAssetTemplateData(new TemplateData(SelectedItemId, AssetId, id_widget_model.getId(), FinalImageString));
 
 
 //                Condition for Date..............................
@@ -1215,6 +1248,10 @@ public class AssetTemplateDetails extends AppCompatActivity {
 
     void init() {
 
+        listOfCaptureimges = new ArrayList<>();
+
+        cameraWidget = new ArrayList();
+
         doneAssetDetails = findViewById(R.id.doneAssetDetails);
         generalMethods = new GeneralMethods();
 
@@ -1307,465 +1344,5 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public void onBackPressed() {
 
     }
-
-
-    //Surface View All Methods......................................................
-//
-//    @Override
-//    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-//
-//        try {
-//            if (flag == 0) {
-//                camera = Camera.open(0);
-//            } else {
-//                camera = Camera.open(1);
-//            }
-//        } catch (RuntimeException e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//
-//        try {
-//            Camera.Parameters param;
-//            param = camera.getParameters();
-//            List<Camera.Size> sizes = param.getSupportedPreviewSizes();
-//            //get diff to get perfact preview sizes
-//            DisplayMetrics displaymetrics = new DisplayMetrics();
-//            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-//            int height = displaymetrics.heightPixels;
-//            int width = displaymetrics.widthPixels;
-//            long diff = (height * 1000 / width);
-//            long cdistance = Integer.MAX_VALUE;
-//            int idx = 0;
-//            for (int i = 0; i < sizes.size(); i++) {
-//                long value = (long) (sizes.get(i).width * 1000) / sizes.get(i).height;
-//                if (value > diff && value < cdistance) {
-//                    idx = i;
-//                    cdistance = value;
-//                }
-//                Log.e("WHHATSAPP", "width=" + sizes.get(i).width + " height=" + sizes.get(i).height);
-//            }
-//            Log.e("WHHATSAPP", "INDEX:  " + idx);
-//            Camera.Size cs = sizes.get(idx);
-//            param.setPreviewSize(cs.width, cs.height);
-//            param.setPictureSize(cs.width, cs.height);
-//            camera.setParameters(param);
-//            setCameraDisplayOrientation(0);
-//
-//            camera.setPreviewDisplay(surfaceHolder);
-//            camera.startPreview();
-//
-//            if (flashType == 1) {
-//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//
-//            } else if (flashType == 2) {
-//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//                Camera.Parameters params = null;
-//                if (camera != null) {
-//                    params = camera.getParameters();
-//
-//                    if (params != null) {
-//                        List<String> supportedFlashModes = params.getSupportedFlashModes();
-//
-//                        if (supportedFlashModes != null) {
-//                            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
-//                                param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-//                            } else if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)) {
-//                                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            } else if (flashType == 3) {
-//                param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//
-//            }
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//    }
-//
-//    @Override
-//    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-//
-//        refreshCamera();
-//    }
-//
-//    @Override
-//    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-//
-//        try {
-//            camera.stopPreview();
-//            camera.release();
-//            camera = null;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void captureImageCallback() {
-//
-//        surfaceHolder = imgSurface.getHolder();
-//        surfaceHolder.addCallback(this);
-//        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-//        jpegCallback = new Camera.PictureCallback() {
-//            public void onPictureTaken(byte[] data, Camera camera) {
-//
-//                refreshCamera();
-//
-//                cancelSavePicTaskIfNeed();
-//                savePicTask = new AssetTemplateDetails.SavePicTask(data, getPhotoRotation());
-//                savePicTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-//
-//            }
-//        };
-//    }
-//
-//    public void refreshCamera() {
-//
-//        if (surfaceHolder.getSurface() == null) {
-//            return;
-//        }
-//        try {
-//            camera.stopPreview();
-//            Camera.Parameters param = camera.getParameters();
-//
-//            if (flag == 0) {
-//
-//                if (flag == 0 && flashType == 2) {
-//                    param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//                    Camera.Parameters params = null;
-//                    if (camera != null) {
-//                        params = camera.getParameters();
-//
-//                        if (params != null) {
-//                            List<String> supportedFlashModes = params.getSupportedFlashModes();
-//
-//                            if (supportedFlashModes != null) {
-//                                if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
-//                                    param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-//                                } else if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)) {
-//                                    param.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-//                                }
-//                            }
-//                        }
-//                    }
-//                    //   imgFlashOnOff.setImageResource(R.drawable.ic_flash_on);
-//                } else if (flashType == 3) {
-//                    param.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-//                    //    imgFlashOnOff.setImageResource(R.drawable.ic_flash_off);
-//                }
-//            }
-//
-//
-//            refrechCameraPreview(param);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void refrechCameraPreview(Camera.Parameters param) {
-//        try {
-//            camera.setParameters(param);
-//            setCameraDisplayOrientation(0);
-//
-//            camera.setPreviewDisplay(surfaceHolder);
-//            camera.startPreview();
-//            camera.autoFocus(myAutoFocusCallback);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    final Camera.AutoFocusCallback myAutoFocusCallback = new Camera.AutoFocusCallback() {
-//
-//        @Override
-//        public void onAutoFocus(boolean arg0, Camera arg1) {
-//            if (arg0) {
-//                camera.autoFocus(this);
-//                camera.cancelAutoFocus();
-//            }
-//        }
-//    };
-//
-//    public void setCameraDisplayOrientation(int cameraId) {
-//
-//        Camera.CameraInfo info = new Camera.CameraInfo();
-//        Camera.getCameraInfo(cameraId, info);
-//
-//        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-//
-//        if (Build.MODEL.equalsIgnoreCase("Nexus 6") && flag == 1) {
-//            rotation = Surface.ROTATION_180;
-//        }
-//        int degrees = 0;
-//        switch (rotation) {
-//
-//            case Surface.ROTATION_0:
-//
-//                degrees = 0;
-//                break;
-//
-//            case Surface.ROTATION_90:
-//
-//                degrees = 90;
-//                break;
-//
-//            case Surface.ROTATION_180:
-//
-//                degrees = 180;
-//                break;
-//
-//            case Surface.ROTATION_270:
-//
-//                degrees = 270;
-//                break;
-//
-//        }
-//
-//        int result;
-//
-//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//
-//            result = (info.orientation + degrees) % 360;
-//            result = (360 - result) % 360; // compensate the mirror
-//
-//        } else {
-//            result = (info.orientation - degrees + 360) % 360;
-//
-//        }
-//        camera.setDisplayOrientation(result);
-//    }
-//
-//    private int mPhotoAngle = 90;
-//
-//    private int getPhotoRotation() {
-//        int rotation;
-//        int orientation = mPhotoAngle;
-//
-//        Camera.CameraInfo info = new Camera.CameraInfo();
-//        if (flag == 0) {
-//            Camera.getCameraInfo(0, info);
-//        } else {
-//            Camera.getCameraInfo(1, info);
-//        }
-//
-//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//            rotation = (info.orientation - orientation + 360) % 360;
-//        } else {
-//            rotation = (info.orientation + orientation) % 360;
-//        }
-//        return rotation;
-//    }
-//
-//    private void cancelSavePicTaskIfNeed() {
-//        if (savePicTask != null && savePicTask.getStatus() == AsyncTask.Status.RUNNING) {
-//            savePicTask.cancel(true);
-//        }
-//    }
-//
-//    private String getSavePhotoLocal(Bitmap bitmap) {
-//        String path = "";
-//
-//        try {
-//            OutputStream output;
-//            File file = new File(folder.getAbsolutePath(), "wc" + System.currentTimeMillis() + ".jpg");
-//            Log.e("path", file.toString());
-//            // preferencesHandler.setCurrentCapturedImgs(file.toString());
-//            Log.e("sor", file.toString());
-//
-//
-////            listOfCaptureimgs.add(file.toString());
-////            for (int i = 0; i < this.listOfCaptureimgs.size(); i++) {
-////                Log.e(String.valueOf(i), this.listOfCaptureimgs.get(i));
-////            }
-//
-//            //Data of Comma separated Images Sent into Database...................
-//
-////            String Images = "";
-////            Log.e("list size", String.valueOf(listOfCaptureimgs.size()));
-////            for (int i = 0; i < listOfCaptureimgs.size(); i++) {
-////                Log.e("index", String.valueOf(i));
-////                if (i != listOfCaptureimgs.size()-1)
-////                    Images += listOfCaptureimgs.get(i) + ",";
-////                else
-////                    Images += listOfCaptureimgs.get(i);
-////            }
-////            Log.e("ImagesString", Images);
-//
-//
-//            try {
-//                output = new FileOutputStream(file);
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-//                output.flush();
-//                output.close();
-//                path = file.getAbsolutePath();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return path;
-//    }
-//
-//    public String saveToSDCard(byte[] data, int rotation) throws IOException {
-//        String imagePath = "";
-//
-//        try {
-//            final BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inJustDecodeBounds = true;
-//            BitmapFactory.decodeByteArray(data, 0, data.length, options);
-//
-//            DisplayMetrics metrics = new DisplayMetrics();
-//            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-//
-//            int reqHeight = metrics.heightPixels;
-//            int reqWidth = metrics.widthPixels;
-//            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-//
-//            options.inJustDecodeBounds = false;
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-//            if (rotation != 0) {
-//                Matrix mat = new Matrix();
-//                mat.postRotate(rotation);
-//                bitmap1 = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
-//
-//                Paint paint = new Paint();
-//                paint.setColor(getResources().getColor(R.color.dark_blue));
-//                paint.setAntiAlias(true);
-//                paint.setStrokeWidth(4);
-//                paint.setStyle(Paint.Style.STROKE);
-//                paint.setStrokeJoin(Paint.Join.ROUND);
-//                paint.setStrokeCap(Paint.Cap.ROUND);
-//                Canvas canvas = new Canvas(bitmap1);
-//                canvas.drawCircle(get_x - 100, get_y - 100, 100, paint);
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                bitmap1.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//                arr = baos.toByteArray();
-//                this.listOfCardview.add(Base64.encodeToString(arr, Base64.DEFAULT));
-//                for (int i = 1; i < this.listOfCardview.size(); i++) {
-//                    Log.e(String.valueOf(i), this.listOfCardview.get(i));
-//
-//                }
-//
-//                Log.e("checkcoordinatesave", "X" + String.valueOf(get_x - 100) + " Y " + String.valueOf(get_y - 100).toString());
-//                if (bitmap != bitmap1) {
-//                    bitmap.recycle();
-//                }
-//
-//                imagePath = getSavePhotoLocal(bitmap1);
-//
-//                if (bitmap1 != null) {
-//                    bitmap1.recycle();
-//                    Toast.makeText(AssetTemplateDetails.this, "Bitmap Cleared", Toast.LENGTH_SHORT).show();
-//                }
-//            } else {
-//                imagePath = getSavePhotoLocal(bitmap);
-//                if (bitmap != null) {
-//                    bitmap.recycle();
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return imagePath;
-//    }
-//
-//    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-//        final int height = options.outHeight;
-//        final int width = options.outWidth;
-//        int inSampleSize = 1;
-//
-//        if (height > reqHeight || width > reqWidth) {
-//            if (width > height) {
-//                inSampleSize = Math.round((float) height / (float) reqHeight);
-//            } else {
-//                inSampleSize = Math.round((float) width / (float) reqWidth);
-//            }
-//        }
-//        return inSampleSize;
-//    }
-//
-//
-//    private AssetTemplateDetails.SavePicTask savePicTask;
-//
-//    private class SavePicTask extends AsyncTask<Void, Void, String> {
-//        private byte[] data;
-//        private int rotation = 0;
-//
-//        public SavePicTask(byte[] data, int rotation) {
-//            this.data = data;
-//            this.rotation = rotation;
-//        }
-//
-//
-//        @Override
-//        protected String doInBackground(Void... params) {
-//
-//            try {
-//                return saveToSDCard(data, rotation);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//    }
-//
-//    private void identifyOrientationEvents() {
-//
-//        myOrientationEventListener = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL) {
-//            @Override
-//            public void onOrientationChanged(int iAngle) {
-//
-//                final int iLookup[] = {0, 0, 0, 90, 90, 90, 90, 90, 90, 180, 180, 180, 180, 180, 180, 270, 270, 270, 270, 270, 270, 0, 0, 0}; // 15-degree increments
-//                if (iAngle != ORIENTATION_UNKNOWN) {
-//
-//                    int iNewOrientation = iLookup[iAngle / 15];
-//                    if (iOrientation != iNewOrientation) {
-//                        iOrientation = iNewOrientation;
-//                        if (iOrientation == 0) {
-//                            mOrientation = 90;
-//                        } else if (iOrientation == 270) {
-//                            mOrientation = 0;
-//                        } else if (iOrientation == 90) {
-//                            mOrientation = 180;
-//                        }
-//
-//                    }
-//                    mPhotoAngle = normalize(iAngle);
-//                }
-//            }
-//        };
-//
-//        if (myOrientationEventListener.canDetectOrientation()) {
-//            myOrientationEventListener.enable();
-//        }
-//    }
-//
-//    private int normalize(int degrees) {
-//        if (degrees > 315 || degrees <= 45) {
-//            return 0;
-//        }
-//
-//        if (degrees > 45 && degrees <= 135) {
-//            return 90;
-//        }
-//
-//        if (degrees > 135 && degrees <= 225) {
-//            return 180;
-//        }
-//
-//        if (degrees > 225 && degrees <= 315) {
-//            return 270;
-//        }
-//
-//        throw new RuntimeException("Error....");
-//    }
 
 }

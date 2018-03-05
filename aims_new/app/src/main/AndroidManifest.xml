@@ -69,6 +69,7 @@
         <activity android:name=".Activity.TemplateDetails.InspectDetails" />
         <activity android:name=".Activity.PDF_Activity" />
         <activity android:name=".Activity.CameraAcitivity" />
+        <activity android:name=".Activity.ImageEditing" />
         <activity android:name=".Activity.NavigationDrawer.Reports" />
         <activity android:name=".Activity.NavigationDrawer.Settings"></activity>
     </application>

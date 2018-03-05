@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.TemplateDetails.AssetTemplateDetails;
+import com.example.muhammadzeeshan.aims_new.LayoutModel;
 import com.example.muhammadzeeshan.aims_new.R;
 
 import java.io.ByteArrayOutputStream;
@@ -79,6 +80,7 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
     byte[] arr;
     private LinearLayout linearLayout_btn_upload;
     private LinearLayout linearLayout;
+    private LayoutModel layoutModel;
 
     @Override
     protected void onResume() {
@@ -99,10 +101,21 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_acitivity);
 
+
         initControls();
         identifyOrientationEvents();
 
-        getOutputMediaFile();
+        if (getIntent().getExtras() != null) {
+            Bundle bundle = getIntent().getBundleExtra("bundle");
+            layoutModel = (LayoutModel) bundle.getSerializable("model");
+
+            Log.e("widget_In", String.valueOf(layoutModel.getWidgetId()));
+        }
+
+        folder = new File(Environment.getExternalStorageDirectory() + "/iAuditor Data");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
 
         //capture image on callback
         captureImageCallback();
@@ -146,9 +159,9 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
                     idx = i;
                     cdistance = value;
                 }
-                Log.e("WHHATSAPP", "width=" + sizes.get(i).width + " height=" + sizes.get(i).height);
+
             }
-            Log.e("WHHATSAPP", "INDEX:  " + idx);
+
             Camera.Size cs = sizes.get(idx);
             param.setPreviewSize(cs.width, cs.height);
             param.setPictureSize(cs.width, cs.height);
@@ -348,17 +361,23 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
                     @Override
                     public void onClick(View view) {
 
-                        Intent intent_recycler_activity = new Intent(CameraAcitivity.this, AssetTemplateDetails.class);
-                        startActivity(intent_recycler_activity);
-
-                        bitmap1.recycle();
-
+//                        Intent intent_recycler_activity = new Intent(CameraAcitivity.this, AssetTemplateDetails.class);
+//                        startActivity(intent_recycler_activity);
+//                        bitmap1.recycle();
 //                        Intent intent = new Intent();
 //                        Bundle bundle = new Bundle();
 //                        bundle.putSerializable("modelReturn", layoutModel);
 //                        intent.putExtra("bundleReturn", bundle);
-                        intent_recycler_activity.putStringArrayListExtra("images", listOfCaptureimgs);
-                        setResult(AssetTemplateDetails.reqCode, intent_recycler_activity);
+//                        intent_recycler_activity.putStringArrayListExtra("images", listOfCaptureimgs);
+//                        setResult(AssetTemplateDetails.reqCode, intent_recycler_activity);
+//                        finish();
+
+                        Intent intent = new Intent();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("modelReturn", layoutModel);
+                        intent.putExtra("bundleReturn", bundle);
+                        intent.putStringArrayListExtra("images", listOfCaptureimgs);
+                        setResult(AssetTemplateDetails.CAMERA_REQUEST_CODE, intent);
                         finish();
                     }
                 });
@@ -390,9 +409,9 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
                         linearLayout.setOnTouchListener(null);
                         get_x = event.getX();
                         get_y = event.getY();
-                        imageView_circle_shape.setX(get_x - 100);
-                        imageView_circle_shape.setY(get_y - 100);
-                        imageView_circle_shape.setVisibility(VISIBLE);
+//                        imageView_circle_shape.setX(get_x - 100);
+//                        imageView_circle_shape.setY(get_y - 100);
+//                        imageView_circle_shape.setVisibility(VISIBLE);
                         Log.e("checkcoordinate", "X" + String.valueOf(get_x - 100) + " Y " + String.valueOf(get_y - 100).toString());
 //                refreshCamera();
                         if (isSpaceAvailable()) {
@@ -406,13 +425,13 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    imageView_circle_shape.setVisibility(View.GONE);
+//                                    imageView_circle_shape.setVisibility(View.GONE);
 
                                 }
                             }, IMG_TIMEOUT);
                         } else {
                             hintTextView.setText("Your Memory is Full");
-                            imageView_circle_shape.setVisibility(View.GONE);
+//                            imageView_circle_shape.setVisibility(View.GONE);
                             Toast.makeText(CameraAcitivity.this, "Memory is not available", Toast.LENGTH_SHORT).show();
                             inActiveCameraCapture();
                         }
@@ -588,8 +607,8 @@ public class CameraAcitivity extends AppCompatActivity implements SurfaceHolder.
         textCounter = (TextView) findViewById(R.id.textCounter);
         imgCapture = (ImageView) findViewById(R.id.imgCapture);
         linearLayout = (LinearLayout) findViewById(R.id.layout_Camera);
-        imageView_circle_shape = (ImageView) findViewById(R.id.img_circle_shape);
-        imageView_circle_shape.setVisibility(View.GONE);
+       // imageView_circle_shape = (ImageView) findViewById(R.id.img_circle_shape);
+//        imageView_circle_shape.setVisibility(View.GONE);
         textCounter.setVisibility(View.GONE);
         hintTextView = (TextView) findViewById(R.id.hintTextView);
 
