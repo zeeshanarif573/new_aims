@@ -825,7 +825,7 @@ public class CheckOutTemplate extends AppCompatActivity {
                                 Toast.makeText(CheckOutTemplate.this, "CheckOut is Created Successfully", Toast.LENGTH_SHORT).show();
 
                                 Intent intent = new Intent(CheckOutTemplate.this, CheckInTemplate.class);
-                                intent.putExtra("from", "CheckOutTemplate");
+                                intent.putExtra("from", "AssetTemplate");
                                 startActivity(intent);
 
                                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

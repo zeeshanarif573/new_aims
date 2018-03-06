@@ -122,7 +122,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
     public static final String DEFAULT = "";
     PdfWriter writer;
     public static int reqCode;
-
+    String finalIndex;
     ArrayList<String> listOfCaptureimges;
     ArrayList<LayoutModel> cameraWidget;
     public static int CAMERA_REQUEST_CODE = 1111;
@@ -666,8 +666,8 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 scrollView_Layout.addView(scrollView);
                 scrollView.addView(displayImages);
 
-//                final String finalIndex = String.valueOf(index);
-                final String widgetId = Widget_Id;
+                String finalIndex = String.valueOf(index);
+                //    final String widgetId = Widget_Id;
 
                 final LayoutModel layoutModel = new LayoutModel();
                 layoutModel.setWidgetId(displayImages.getId());
@@ -678,7 +678,7 @@ public class AssetTemplateDetails extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-//                        Log.e("Clicked", finalIndex + "/" + widgetId);
+                        //Log.e("Clicked", finalIndex + "/" + widgetId);
 //                        String indexAndIdString = finalIndex + widgetId;
 //                        Log.e("Clicked", indexAndIdString);
 //
@@ -1010,15 +1010,14 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 if (listOfCaptureimges.size() > 0) {
                     getcapturedimages(layoutModel1);
                 }
-                imageStringList.remove(layoutModel1.getWidgetId()-1);
-                imageStringList.add(layoutModel1.getWidgetId()-1, getImagesPath());
+
+                imageStringList.remove(finalIndex);
+                imageStringList.add(finalIndex);
             }
 
             if (reqType.equals("update")) {
 
-
                 String updateImageUrl = data.getStringExtra("updated_image");
-
                 LinearLayout linearLayoutnew = findViewById(layoutModel1.getWidgetId());
                 linearLayoutnew.removeAllViewsInLayout();
 
@@ -1030,11 +1029,10 @@ public class AssetTemplateDetails extends AppCompatActivity {
                 if (listOfCaptureimges.size() > 0)
                     getcapturedimages(layoutModel1);
 
-                imageStringList.remove(layoutModel1.getWidgetId()-1);
-                imageStringList.add(layoutModel1.getWidgetId()-1, getImagesPath());
+                imageStringList.remove(finalIndex);
+                imageStringList.add(finalIndex);
 
             }
-
         }
 
     }
