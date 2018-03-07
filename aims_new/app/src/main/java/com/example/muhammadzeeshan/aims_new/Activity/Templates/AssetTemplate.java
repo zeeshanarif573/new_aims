@@ -2,7 +2,6 @@ package com.example.muhammadzeeshan.aims_new.Activity.Templates;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -31,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.muhammadzeeshan.aims_new.Activity.CreateAsset;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.DisableSwipeBehavior;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
@@ -63,6 +63,7 @@ public class AssetTemplate extends AppCompatActivity {
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
     CoordinatorLayout snackbar_Layout;
     AlertDialog dialog;
+    String from = "";
     CircleButton editTextButton, textViewButton, sectionButton, checkBoxButton, signatureButton, cameraButton, dateButton, timeButton;
 
     @Override
@@ -74,6 +75,12 @@ public class AssetTemplate extends AppCompatActivity {
         dialog_transparency();
 
         getTemplateData();
+
+        if (getIntent().getExtras() != null) {
+            if (getIntent().hasExtra("from")) {
+                from = getIntent().getStringExtra("from");
+            }
+        }
 
         fab_Open.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -755,7 +762,10 @@ public class AssetTemplate extends AppCompatActivity {
                         dialogInterface.dismiss();
 
                         finish();
-                        startActivity(new Intent(AssetTemplate.this, CheckOutTemplate.class));
+
+                        Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
+                        intent.putExtra("from", "AssetTemplate");
+                        startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
@@ -777,44 +787,88 @@ public class AssetTemplate extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(AssetTemplateWidgetsLayout.getChildCount() == 0){
+                if (AssetTemplateWidgetsLayout.getChildCount() == 0) {
 
-                    Snackbar.make(AssetTemplateWidgetsLayout , "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(AssetTemplateWidgetsLayout, "Please Add Widgets first..", Snackbar.LENGTH_SHORT).show();
                 }
-
                 else {
 
-                    CreatingTemplateLoader(view, AssetTemplate.this);
+                    if (from.equalsIgnoreCase("CreateAsset")) {
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+                        CreatingTemplateLoader(view, AssetTemplate.this);
 
-                            creatingTemplate.dismiss();
-                            for (int i = 0; i < list.size(); i++) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
 
-                                Log.e("ListSize", String.valueOf(list.size()));
-                                databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+                                creatingTemplate.dismiss();
+                                for (int i = 0; i < list.size(); i++) {
 
-                                getAssetTemplateData();
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+
+                                    getAssetTemplateData();
+                                }
+
+                                Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                                finish();
+                                Intent intent = new Intent(AssetTemplate.this, CreateAsset.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
                             }
+                        }, 2000);
 
-                            dialog = alertDialog.create();
-                            dialog.show();
+                    } else {
 
-                            Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
+                        CreatingTemplateLoader(view, AssetTemplate.this);
 
-                            finish();
-                            Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
-                            intent.putExtra("from", "AssetTemplate");
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
 
-                            dialog.dismiss();
+                                creatingTemplate.dismiss();
+                                AlertDialog dialog = alertDialog.create();
+                                dialog.show();
 
-                        }
-                    }, 2000);
+                                for (int i = 0; i < list.size(); i++) {
+
+                                    Log.e("ListSize", String.valueOf(list.size()));
+                                    databaseHelper.insertDataIntoAssetTemplate(new AssetTemplatesWidgets(Template_Id, list.get(i).getWidget_type(), list.get(i).getWidget_label()));
+
+                                    getAssetTemplateData();
+                                }
+
+                                Toast.makeText(AssetTemplate.this, "AssetTemplate is Created Successfully", Toast.LENGTH_SHORT).show();
+
+                            }
+                        }, 2000);
+
+                        alertDialog.setTitle("Alert");
+                        alertDialog.setMessage("Want to create checkout, checkin and inspect?");
+                        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(AssetTemplate.this, CheckOutTemplate.class);
+                                intent.putExtra("from", "AssetTemplate");
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            }
+                        });
+
+                        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(AssetTemplate.this, CreateAsset.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                            }
+                        });
+
+                    }
                 }
 
             }

@@ -104,7 +104,7 @@ public class CreateAsset extends AppCompatActivity {
 
                         select_type.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
-                        create_asset_desc.setError("Please give desciption of Asset");
+                        create_asset_desc.setError("Please give description of Asset");
 
                     } else {
 
@@ -141,8 +141,11 @@ public class CreateAsset extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    startActivity(new Intent(CreateAsset.this, AssetTemplate.class));
+                                    Intent intent = new Intent(CreateAsset.this, AssetTemplate.class);
+                                    intent.putExtra("from", "CreateAsset");
+                                    startActivity(intent);
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
                                 }
                             }, 2000);
 

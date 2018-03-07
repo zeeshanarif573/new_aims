@@ -850,6 +850,8 @@ public class InspectTemplate extends AppCompatActivity {
                                 Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
 
                                 Intent intent = new Intent(InspectTemplate.this, InspectDetails.class);
+
+                                intent.putExtra("fromInspectTemplate", "InspectTemplate");
                                 intent.putExtra("TemplateId", getAssetDetail_TemplateId);
                                 intent.putExtra("AssetId", getAssetDetail_AssetId);
                                 intent.putExtra("AssetName", getAssetDetail_AssetName);

@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import com.example.muhammadzeeshan.aims_new.Activity.HeaderFooterPageEvent;
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.GeneralMethods;
 import com.example.muhammadzeeshan.aims_new.Models.AssetTemplate.AssetTemplatesWidgets;
@@ -117,6 +118,7 @@ public class CheckInDetails extends AppCompatActivity {
     private DateModel latestLabel;
     Date currentTime;
     PdfWriter writer;
+    String from = "" , CheckinTemplateId ;
     
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -126,17 +128,52 @@ public class CheckInDetails extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
 
-        Intent intent = getIntent();
-        getCheckin_TemplateId = intent.getStringExtra("TemplateId");
-        getCheckin_AssetId = intent.getStringExtra("AssetId");
-        getCheckin_AssetName = intent.getStringExtra("AssetName");
-
         currentTime = Calendar.getInstance().getTime();
 
         Log.e("Id","Template_ID: " + getCheckin_TemplateId + " Asset_ID: " + getCheckin_AssetId);
 
         init();
-        getCreatedWidgets();
+
+
+        if (getIntent().getExtras() != null) {
+            if (getIntent().hasExtra("from")) {
+
+                from = getIntent().getStringExtra("from");
+                CheckinTemplateId = getIntent().getStringExtra("CheckinTemplateId");
+                Log.e("CheckinTemplateId", CheckinTemplateId);
+
+            } else if (getIntent().hasExtra("fromAssetDetails")) {
+
+                from = getIntent().getStringExtra("fromAssetDetails");
+                getCheckin_TemplateId = getIntent().getStringExtra("AssetId");
+                getCheckin_AssetId = getIntent().getStringExtra("TemplateId");
+                getCheckin_AssetName = getIntent().getStringExtra("AssetName");
+
+                Log.e("getCheckin_AssetId", getCheckin_AssetId);
+
+            } else if (getIntent().hasExtra("fromCheckInTemplate")) {
+
+                from = getIntent().getStringExtra("fromCheckInTemplate");
+                getCheckin_TemplateId = getIntent().getStringExtra("AssetId");
+                getCheckin_AssetId = getIntent().getStringExtra("TemplateId");
+                getCheckin_AssetName = getIntent().getStringExtra("AssetName");
+
+                Log.e("fromCheckInTemplate", getCheckin_AssetId);
+            }
+        }
+
+
+        if (from.equalsIgnoreCase("TemplateAdapter")) {
+            getCreatedWidgetsForTemplateAdapter();
+            doneCheckInDetails.setVisibility(View.GONE);
+
+        } else if (from.equalsIgnoreCase("AssetDetails")) {
+            getCreatedWidgets();
+
+        } else if (from.equalsIgnoreCase("CheckInTemplate")) {
+            getCreatedWidgets();
+        }
+
 
         doneCheckInDetails.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -879,6 +916,454 @@ public class CheckInDetails extends AppCompatActivity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    void getCreatedWidgetsForTemplateAdapter() {
+
+        int index = 0;
+
+        Cursor cursor = databaseHelper.RetrieveData("Select * from checkin where Template_Id =" + CheckinTemplateId);
+        while (cursor.moveToNext()) {
+
+            Widget_Id = (cursor.getString(0));
+            generate_type = cursor.getString(1);
+            generate_label = cursor.getString(2);
+
+            //Condition for EditText.....................
+            if (generate_type.equals("EditText")) {
+
+                hideKeyboard();
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 0, 10, 10);
+                LinearLayout linearLayout_parent = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params1.setMargins(20, 0, 20, 15);
+
+                LinearLayout linearLayout_for_editText = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, params1, getResources().getDrawable(R.drawable.custom_edittext_widget));
+
+                TextView textView = utils.CreateTextView(CheckInDetails.this, generate_label, 25, 10, 0, 0);
+
+                EditText editText = utils.CreateEdittext(CheckInDetails.this, "", 15, 20, 10, 15, new ColorDrawable(Color.TRANSPARENT));
+
+                Widgets_Model widgets_model = new Widgets_Model();
+                widgets_model.setId(Widget_Id);
+                widgets_model.setEditText(editText);
+                widgets_model.setLabel(generate_label);
+
+                widgetList.add(widgets_model);
+
+                layout.addView(linearLayout_parent);
+                linearLayout_parent.addView(textView);
+                linearLayout_parent.addView(linearLayout_for_editText);
+                linearLayout_for_editText.addView(editText);
+
+            }
+
+            //Condition for CheckBox.....................
+            else if (generate_type.equals("CheckBox")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 15);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                LinearLayout.LayoutParams child_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                child_params.setMargins(12, 0, 0, 0);
+
+                LinearLayout childLayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.HORIZONTAL, child_params, null);
+
+                CheckBox checkBox = utils.CreateCheckBox(CheckInDetails.this, 0, 0, 0, 0, null);
+                TextView textView_hint = utils.CreateTextView(CheckInDetails.this, generate_label, 0, 10, 10, 15);
+
+                Widgets_Model widgets_model = new Widgets_Model();
+                widgets_model.setId(Widget_Id);
+                widgets_model.setCheckBox(checkBox);
+                widgets_model.setLabel(generate_label);
+
+                widgetList.add(widgets_model);
+
+                layout.addView(parentlayout);
+                //parentlayout.addView(textView_heading);
+                parentlayout.addView(childLayout);
+                childLayout.addView(checkBox);
+                childLayout.addView(textView_hint);
+
+            }
+
+            //Condition for TextView.....................
+            else if (generate_type.equals("TextView")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 15);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                TextView textView_heading = utils.CreateTextView(CheckInDetails.this, generate_label, 25, 15, 10, 15);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(20, 0, 20, 15);
+
+                Widgets_Model widgets_model = new Widgets_Model();
+                widgets_model.setId(Widget_Id);
+                widgets_model.setLabel(generate_label);
+                widgets_model.setTextView(textView_heading);
+
+                widgetList.add(widgets_model);
+
+                parentlayout.addView(textView_heading);
+                layout.addView(parentlayout);
+
+            }
+
+            //Condition for Section.....................
+            else if (generate_type.equals("Section")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 15);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                TextView textView_heading = utils.CreateTextView(CheckInDetails.this, generate_label, 25, 15, 10, 15);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(20, 0, 20, 15);
+
+                Widgets_Model widgets_model = new Widgets_Model();
+                widgets_model.setId(Widget_Id);
+                widgets_model.setLabel(generate_label);
+                widgets_model.setSection(textView_heading);
+
+                widgetList.add(widgets_model);
+
+                parentlayout.addView(textView_heading);
+                layout.addView(parentlayout);
+
+            }
+
+            //Condition for Camera.....................
+            else if (generate_type.equals("Camera")) {
+
+                index++;
+
+                final TextView Label_textView = new TextView(this);//
+                Label_textView.setText(generate_label);
+                Label_textView.setPadding(8, 25, 0, 0);
+
+                LinearLayout Vertical_Layout = new LinearLayout(this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 20, 0, 15);
+                Vertical_Layout.setLayoutParams(params);
+
+                LinearLayout Button_layout = new LinearLayout(this);
+                LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(90, 90);
+                params2.setMargins(0, 0, 0, 0);
+                Button button = new Button(this);
+                Drawable drawable = getResources().getDrawable(R.drawable.icon_add_attachments);
+                button.setBackground(drawable);
+                Button_layout.setLayoutParams(params2);
+                Button_layout.addView(button);
+
+                LinearLayout scrollView_Layout = new LinearLayout(this);
+
+                HorizontalScrollView scrollView = new HorizontalScrollView(this);
+                HorizontalScrollView.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 100);
+                layoutParams.setMargins(0, 0, 0, 0);
+                scrollView.setLayoutParams(layoutParams);
+
+                displayImages = new LinearLayout(this);
+                LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(150, 150);
+                params1.setMargins(0, 0, 0, 0);
+                displayImages.setLayoutParams(params1);
+
+                if (index == 1)
+                    displayImages.setId(R.id.layout1);
+                if (index == 2)
+                    displayImages.setId(R.id.layout2);
+                if (index == 3)
+                    displayImages.setId(R.id.layout3);
+                if (index == 4)
+                    displayImages.setId(R.id.layout4);
+                if (index == 5)
+                    displayImages.setId(R.id.layout5);
+                if (index == 6)
+                    displayImages.setId(R.id.layout6);
+                if (index == 7)
+                    displayImages.setId(R.id.layout7);
+                if (index == 8)
+                    displayImages.setId(R.id.layout8);
+                if (index == 9)
+                    displayImages.setId(R.id.layout9);
+
+
+                scrollView_Layout.addView(scrollView);
+                scrollView.addView(displayImages);
+
+                final String finalIndex = String.valueOf(index);
+                final String widgetId = Widget_Id;
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Log.e("Clicked", finalIndex + "/" + widgetId);
+                        String indexAndIdString = finalIndex + widgetId;
+                        Log.e("Clicked", indexAndIdString);
+
+                        int indexAndId = Integer.parseInt(indexAndIdString);
+
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        photoFile = getOutputMediaFile();
+                        Uri fileProvider = FileProvider.getUriForFile(CheckInDetails.this, getApplicationContext().getPackageName() + ".provider", photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
+
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            // Start the image capture intent to take photo
+                            startActivityForResult(intent, indexAndId);
+                        }
+                    }
+                });
+
+                Widgets_Model id_widget_model = new Widgets_Model();
+                id_widget_model.setId(Widget_Id);
+                id_widget_model.setImageView(displayImages);
+                id_widget_model.setLabel(generate_label);
+
+
+                widgetList.add(id_widget_model);
+
+                layout.addView(Label_textView);
+                layout.addView(Vertical_Layout);
+                Vertical_Layout.addView(Button_layout);
+                Vertical_Layout.addView(scrollView_Layout);
+
+            }
+
+            //Condition for Signature.....................
+            else if (generate_type.equals("Signature")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 15);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                LinearLayout.LayoutParams linear_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                linear_params.setMargins(0, 20, 0, 10);
+                LinearLayout horizontal_layout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.HORIZONTAL, linear_params, null);
+
+                LinearLayout.LayoutParams image_params = new LinearLayout.LayoutParams(60, 50);
+                linear_params.setMargins(0, 20, 0, 10);
+                LinearLayout signature_layout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, image_params, null);
+
+                ImageView signature_icon = utils.CreateImageView(CheckInDetails.this, 0, 10, 0, 0, getResources().getDrawable(R.drawable.signature));
+                TextView signature_hint = utils.CreateTextView(CheckInDetails.this, generate_label, 0, 5, 15, 0);
+
+                LinearLayout.LayoutParams signature_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 230);
+                signature_params.setMargins(20, 10, 20, 10);
+                LinearLayout signatureLayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, signature_params, null);
+                signatureLayout.setLayoutParams(signature_params);
+
+                final SignaturePad pad = utils.CreateSignature(CheckInDetails.this, 20, 25, 15, 0, getResources().getDrawable(R.drawable.custom_edittext_widget));
+
+                LinearLayout button_Layout = new LinearLayout(this);
+                button_Layout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 60);
+                buttonParams.setMargins(30, 0, 30, 16);
+                button_Layout.setLayoutParams(buttonParams);
+
+                Button button = utils.CreateButton(CheckInDetails.this, "Clear", 20, 0, 20, 0, getResources().getDrawable(R.drawable.custom_delete_button));
+                button.setTextColor(getResources().getColor(R.color.white));
+                button_Layout.addView(button);
+
+                Widgets_Model id_widget_model = new Widgets_Model();
+                id_widget_model.setId(Widget_Id);
+                id_widget_model.setSignature(pad);
+                id_widget_model.setLabel(generate_label);
+
+                padList.add(new SignaturePadModel(id_widget_model.getId(), pad));
+
+                Log.e("padListSize", padList.size() + "");
+
+                widgetList.add(id_widget_model);
+                Log.e("index", String.valueOf(index));
+
+                layout.addView(parentlayout);
+                parentlayout.addView(horizontal_layout);
+                parentlayout.addView(signatureLayout);
+                parentlayout.addView(button_Layout);
+                signatureLayout.addView(pad);
+                horizontal_layout.addView(signature_layout);
+                signature_layout.addView(signature_icon);
+                horizontal_layout.addView(signature_hint);
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        pad.clear();
+                    }
+                });
+
+            }
+
+            //Condition for Date.....................
+            else if (generate_type.equals("Date")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 15);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                LinearLayout.LayoutParams linear_params = new LinearLayout.LayoutParams(600, ViewGroup.LayoutParams.MATCH_PARENT);
+                linear_params.setMargins(25, 10, 0, 0);
+                final LinearLayout horizontal_layout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.HORIZONTAL, linear_params, null);
+
+                TextView textView_heading = utils.CreateTextView(CheckInDetails.this, generate_label, 25, 15, 10, 15);
+
+                ImageView date_icon = utils.CreateImageView(CheckInDetails.this, 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_calendar));
+
+                final Widgets_Model id_widget_model = new Widgets_Model();
+                id_widget_model.setId(Widget_Id);
+                id_widget_model.setDatePicker(date_picker);
+                id_widget_model.setLabel(generate_label);
+
+                widgetList.add(id_widget_model);
+
+                final TextView date_textView = utils.CreateTextView(CheckInDetails.this, "", 10, 5, 10, 15);
+
+                DateModel dateModel = new DateModel();
+                dateModel.setId(id_widget_model.getId());
+                dateModel.setLabelTextView(date_textView);
+                labelTextViewList.add(dateModel);
+
+                parentlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Log.e("clickedDate", id_widget_model.getLabel());
+
+                        for (DateModel dateModel1 : labelTextViewList) {
+                            if (id_widget_model.getId().equals(dateModel1.getId())) {
+
+                                latestLabel = new DateModel();
+                                latestLabel.setId(dateModel1.getId());
+                                latestLabel.setLabelTextView(dateModel1.getLabelTextView());
+                            }
+                        }
+                        date_dialog.show();
+                    }
+                });
+
+                getDate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        int day = date_picker.getDayOfMonth();
+                        int month = date_picker.getMonth() + 1;
+                        int year = date_picker.getYear();
+
+                        date = String.valueOf(day + "-" + month + "-" + year);
+
+                        for (int i = 0; i < labelTextViewList.size(); i++) {
+                            DateModel dateModel1 = labelTextViewList.get(i);
+
+                            if (latestLabel.getId().equals(dateModel1.getId())) {
+                                labelTextViewList.get(i).setDate(date);
+                            }
+                        }
+
+                        latestLabel.getLabelTextView().setText(date);
+                        date_dialog.dismiss();
+                    }
+                });
+
+                layout.addView(parentlayout);
+                parentlayout.addView(textView_heading);
+                parentlayout.addView(horizontal_layout);
+                horizontal_layout.addView(date_icon);
+                horizontal_layout.addView(date_textView);
+
+            }
+
+            //Condition for Time.....................
+            else if (generate_type.equals("Time")) {
+
+                LinearLayout.LayoutParams parent_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                parent_params.setMargins(0, 0, 10, 20);
+                LinearLayout parentlayout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.VERTICAL, parent_params, getResources().getDrawable(R.drawable.custom_linear_background));
+
+                LinearLayout.LayoutParams linear_params = new LinearLayout.LayoutParams(600, ViewGroup.LayoutParams.MATCH_PARENT);
+                linear_params.setMargins(25, 10, 0, 5);
+                LinearLayout horizontal_layout = utils.CreateLinearLayout(CheckInDetails.this, LinearLayout.HORIZONTAL, linear_params, null);
+
+                TextView textView_heading = utils.CreateTextView(CheckInDetails.this, generate_label, 25, 15, 10, 15);
+                ImageView time_icon = utils.CreateImageView(CheckInDetails.this, 0, 0, 0, 0, getResources().getDrawable(R.drawable.ic_action_clock));
+
+
+                final Widgets_Model id_widget_model = new Widgets_Model();
+                id_widget_model.setId(Widget_Id);
+                id_widget_model.setTimePicker(time_picker);
+                id_widget_model.setLabel(generate_label);
+
+                widgetList.add(id_widget_model);
+
+                final TextView time_textView = utils.CreateTextView(CheckInDetails.this, "", 10, 5, 10, 15);
+
+                DateModel dateModel = new DateModel();
+                dateModel.setId(id_widget_model.getId());
+                dateModel.setLabelTextView(time_textView);
+                labelTextViewList.add(dateModel);
+
+                parentlayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Log.e("clickedTime", id_widget_model.getLabel());
+
+                        for (DateModel dateModel1 : labelTextViewList) {
+                            if (id_widget_model.getId().equals(dateModel1.getId())) {
+
+                                latestLabel = new DateModel();
+                                latestLabel.setId(dateModel1.getId());
+                                latestLabel.setLabelTextView(dateModel1.getLabelTextView());
+                            }
+                        }
+                        time_dialog.show();
+                    }
+                });
+
+                getTime.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        hour = time_picker.getCurrentHour();
+                        minute = time_picker.getCurrentMinute();
+
+                        get_hour = String.valueOf(hour);
+                        get_min = String.valueOf(minute);
+
+                        time = String.valueOf(get_hour + ":" + get_min);
+
+                        for (int i = 0; i < labelTextViewList.size(); i++) {
+                            DateModel dateModel1 = labelTextViewList.get(i);
+
+                            if (latestLabel.getId().equals(dateModel1.getId())) {
+                                labelTextViewList.get(i).setTime(time);
+                            }
+                        }
+                        latestLabel.getLabelTextView().setText(time);
+                        time_dialog.dismiss();
+                    }
+                });
+
+                layout.addView(parentlayout);
+                parentlayout.addView(textView_heading);
+                parentlayout.addView(horizontal_layout);
+                horizontal_layout.addView(time_icon);
+                horizontal_layout.addView(time_textView);
+
+            }
+
+            generate_list.add(new AssetTemplatesWidgets(generate_type, generate_label));
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1163,20 +1648,9 @@ public class CheckInDetails extends AppCompatActivity {
 
 
         get_header_footer_pdf = new Dialog(this);
-        //    get_header_footer_pdf.setContentView(R.layout.get_header_footer_pdf);
 
         get_header_footer_pdf.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         get_header_footer_pdf.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
-
-//        report_name = (EditText) dialog.findViewById(R.id.report_name);
-//        continue_dialog = (Button) dialog.findViewById(R.id.continue_dialog);
-//
-//        header_name = get_header_footer_pdf.findViewById(R.id.header_name);
-//
-//        logo = get_header_footer_pdf.findViewById(R.id.logo);
-//        dis_Image = get_header_footer_pdf.findViewById(R.id.dis_image);
-//
-//        generate_report = get_header_footer_pdf.findViewById(R.id.generate_report);
 
         alertDialog = new AlertDialog.Builder(this);
 
@@ -1248,5 +1722,7 @@ public class CheckInDetails extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
+        startActivity(new Intent(getApplicationContext() , TemplateManagement.class));
     }
 }

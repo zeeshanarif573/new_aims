@@ -31,6 +31,7 @@ import java.io.File;
 
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingHeader;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.CreatingPdf;
+import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingheader;
 import static com.example.muhammadzeeshan.aims_new.GeneralMethods.creatingpdf;
 
 public class Settings extends AppCompatActivity {
@@ -60,6 +61,7 @@ public class Settings extends AppCompatActivity {
             if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
 
                 uri = data.getData();
+
                 String[] FILE = {MediaStore.Images.Media.DATA};
 
                 Cursor cursor = getContentResolver().query(uri, FILE, null, null, null);
@@ -164,7 +166,7 @@ public class Settings extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    creatingpdf.dismiss();
+                                    creatingheader.dismiss();
 
                                     //GetData from EditText...............................
                                     getHeader = header.getText().toString();
@@ -196,7 +198,7 @@ public class Settings extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    creatingpdf.dismiss();
+                                    creatingheader.dismiss();
 
                                     //GetData from EditText...............................
                                     getHeader = header.getText().toString();

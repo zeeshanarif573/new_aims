@@ -26,8 +26,8 @@ public class GeneralMethods {
     static byte[] byteArray;
     public static ProgressDialog progress1;
     public static ProgressDialog creatingTemplate;
-    public static ProgressDialog creatingAsset;
     public static ProgressDialog creatingpdf;
+    public static ProgressDialog creatingheader;
     public static ProgressDialog progress3;
 
 
@@ -69,8 +69,6 @@ public class GeneralMethods {
 
                 Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
 
-                //    Intent intent = new Intent(context, ImageEditing.class);
-
                 Bitmap bitmap = takenImage;
 
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -78,9 +76,6 @@ public class GeneralMethods {
                 byteArray = stream.toByteArray();
 
                 Log.e("Byte Array", String.valueOf(byteArray));
-//
-                //    intent.putExtra("ByteArray", byteArray);
-                //   context.startActivity(intent);
             }
         });
     }
@@ -110,7 +105,6 @@ public class GeneralMethods {
         progress1.setCanceledOnTouchOutside(false);
     }
 
-
     public static void CreatingPdf(View view, Context context) {
         creatingpdf = new ProgressDialog(context);
         creatingpdf.setTitle("Pdf is Generating");
@@ -124,15 +118,15 @@ public class GeneralMethods {
     }
 
     public static void CreatingHeader(View view, Context context) {
-        creatingpdf = new ProgressDialog(context);
-        creatingpdf.setTitle("Creating");
-        creatingpdf.setMessage("Please Wait...");
-        creatingpdf.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        creatingheader = new ProgressDialog(context);
+        creatingheader.setTitle("Creating");
+        creatingheader.setMessage("Please Wait...");
+        creatingheader.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-        creatingpdf.show();
+        creatingheader.show();
 
-        creatingpdf.setCancelable(false);
-        creatingpdf.setCanceledOnTouchOutside(false);
+        creatingheader.setCancelable(false);
+        creatingheader.setCanceledOnTouchOutside(false);
     }
 
     public static void DeletingRecord(View view, Context context) {

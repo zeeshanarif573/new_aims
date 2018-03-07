@@ -772,7 +772,11 @@ public class CheckInTemplate extends AppCompatActivity {
                         dialogInterface.dismiss();
 
                         finish();
-                        startActivity(new Intent(CheckInTemplate.this, InspectTemplate.class));
+
+                        Intent intent = new Intent(CheckInTemplate.this, InspectTemplate.class);
+                        intent.putExtra("from", "CheckInTemplate");
+                        startActivity(intent);
+
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 });
@@ -850,6 +854,8 @@ public class CheckInTemplate extends AppCompatActivity {
                                 Log.e("Checking", "Asset_ID1: " + getAssetDetail_AssetId + " ,Template_ID1: " + getAssetDetail_TemplateId);
 
                                 Intent intent = new Intent(CheckInTemplate.this, CheckInDetails.class);
+
+                                intent.putExtra("fromCheckInTemplate", "CheckInTemplate");
                                 intent.putExtra("TemplateId", getAssetDetail_TemplateId);
                                 intent.putExtra("AssetId", getAssetDetail_AssetId);
                                 intent.putExtra("AssetName", getAssetDetail_AssetName);

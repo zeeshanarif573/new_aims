@@ -13,14 +13,13 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btn"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
             android:layout_gravity="center"
-            android:id="@+id/btn"
+            android:layout_marginLeft="10dp"
             android:background="@drawable/ic_action_arrow_back"
-            />
+            android:padding="10dp" />
 
 
         <TextView
@@ -28,15 +27,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="35dp"
-            android:layout_weight="0.37"
             android:layout_marginRight="20dp"
+            android:layout_weight="0.37"
+            android:fontFamily="@font/ubuntu_light"
             android:gravity="center"
+            android:id="@+id/header_checkoutDetails"
             android:text="CheckOut Details"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:fontFamily="@font/ubuntu_light"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/doneCheckoutDetails"

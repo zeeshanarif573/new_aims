@@ -43,6 +43,7 @@ import com.example.muhammadzeeshan.aims_new.Activity.HeaderFooterPageEvent;
 import com.example.muhammadzeeshan.aims_new.Activity.ImageEditing;
 import com.example.muhammadzeeshan.aims_new.Activity.MainActivity;
 import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.Settings;
+import com.example.muhammadzeeshan.aims_new.Activity.NavigationDrawer.TemplateManagement;
 import com.example.muhammadzeeshan.aims_new.Database.DatabaseHelper;
 import com.example.muhammadzeeshan.aims_new.GeneralMethods;
 import com.example.muhammadzeeshan.aims_new.LayoutModel;
@@ -1341,6 +1342,8 @@ public class AssetTemplateDetails extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        finish();
+        startActivity(new Intent(getApplicationContext() , TemplateManagement.class));
     }
 
 }

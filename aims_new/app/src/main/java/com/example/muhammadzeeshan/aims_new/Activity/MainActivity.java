@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("AssetId", AssetId);
                 intent.putExtra("TemplateId", TemplateId);
                 intent.putExtra("AssetName", AssetName);
+                intent.putExtra("AssetDescription", AssetDescription);
 
                 startActivity(intent);
             }

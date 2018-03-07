@@ -34,13 +34,12 @@ import static com.example.muhammadzeeshan.aims_new.Activity.MainActivity.listVie
 
 public class AssetDetails extends AppCompatActivity {
 
-    String getReportId;
     DatabaseHelper databaseHelper;
     LinearLayout mainLayout;
     Button checkOut, checkIn, Inspect;
-    ViewAssetAdapter assetsAdapter;
     String status;
-    String getAssetId, getAssetName, getTemplateId;
+    String getAssetId, getAssetName, getTemplateId, getAssetDescription;
+    TextView assetDetailAssetName;
     Typeface ubuntu_light_font, ubuntu_medium_font, source_sans_pro;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -54,11 +53,15 @@ public class AssetDetails extends AppCompatActivity {
         checkOut = findViewById(R.id.checkOut);
         checkIn = findViewById(R.id.checkIn);
         Inspect = findViewById(R.id.Inspect);
+        assetDetailAssetName = findViewById(R.id.assetDetailAssetName);
 
         Intent intent = getIntent();
         getAssetId = intent.getStringExtra("AssetId");
         getTemplateId = intent.getStringExtra("TemplateId");
         getAssetName= intent.getStringExtra("AssetName");
+        getAssetDescription= intent.getStringExtra("AssetDescription");
+
+        assetDetailAssetName.setText(getAssetName);
 
         Toast.makeText(this, getTemplateId, Toast.LENGTH_SHORT).show();
 
@@ -89,6 +92,7 @@ public class AssetDetails extends AppCompatActivity {
                     intent.putExtra("AssetId", getAssetId);
                     intent.putExtra("TemplateId", getTemplateId);
                     intent.putExtra("AssetName", getAssetName);
+                    intent.putExtra("fromAssetDetails", "AssetDetails");
 
                     startActivity(intent);
 
@@ -126,6 +130,7 @@ public class AssetDetails extends AppCompatActivity {
                     intent.putExtra("AssetId", getAssetId);
                     intent.putExtra("TemplateId", getTemplateId);
                     intent.putExtra("AssetName", getAssetName);
+                    intent.putExtra("fromAssetDetails", "AssetDetails");
 
 
                     startActivity(intent);
@@ -162,7 +167,7 @@ public class AssetDetails extends AppCompatActivity {
                     intent.putExtra("AssetId", getAssetId);
                     intent.putExtra("TemplateId", getTemplateId);
                     intent.putExtra("AssetName", getAssetName);
-
+                    intent.putExtra("fromAssetDetails", "AssetDetails");
 
                     startActivity(intent);
 
@@ -301,10 +306,7 @@ public class AssetDetails extends AppCompatActivity {
                 label.setTextSize(16);
 
                 font();
-                label.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
                 data.setTypeface(ubuntu_light_font, ubuntu_light_font.BOLD);
-
-                label.setText(cursor.getString(3) + ":");
                 data.setText(cursor.getString(4));
 
                 linearLayout.addView(label);
